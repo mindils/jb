@@ -1,0 +1,4 @@
+rootProject.name = 'jb'
+include 'common'
+include 'service'
+
