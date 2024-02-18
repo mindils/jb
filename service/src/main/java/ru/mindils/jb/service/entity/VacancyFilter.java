@@ -1,11 +1,15 @@
 package ru.mindils.jb.service.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +29,16 @@ public class VacancyFilter {
 
   private String code;
   private String name;
-  private LocalDateTime createdAt;
-  private LocalDateTime modifiedAt;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "vacancyFilter", fetch = FetchType.LAZY)
+  private List<VacancyFilterParams> params = new ArrayList<>();
+
+  private Instant createdAt;
+  private Instant modifiedAt;
+
+  public void addParam(VacancyFilterParams param) {
+    params.add(param);
+    param.setVacancyFilter(this);
+  }
 }

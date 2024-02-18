@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +25,6 @@ public class User {
   private String username;
   private String password;
   private String role;
-  private LocalDateTime createdAt;
-  private LocalDateTime modifiedAt;
+  private Instant createdAt;
+  private Instant modifiedAt;
 }

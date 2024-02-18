@@ -1,9 +1,13 @@
 package ru.mindils.jb.service.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-@Table(name = "employer")
 public class Employer {
 
   /**
@@ -25,7 +28,14 @@ public class Employer {
   private String name;
   private Boolean trusted;
   private String description;
-  private Boolean is_detailed;
-  private LocalDateTime localCreatedAt;
-  private LocalDateTime localModifiedAt;
+  private Boolean detailed;
+
+  @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY)
+  private List<Vacancy> vacancy = new ArrayList<>();
+
+  @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
+  private EmployerInfo employerInfo;
+
+  private Instant createdAt;
+  private Instant modifiedAt;
 }

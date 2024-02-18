@@ -1,8 +1,14 @@
+plugins {
+    id 'io.freefair.lombok' version "${lombokPluginVersion}"
+}
+
 dependencies {
     implementation project(':common')
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
 
-    implementation 'org.hibernate:hibernate-core:6.4.4.Final'
-    runtimeOnly 'org.postgresql:postgresql:42.7.1'
+    implementation "org.hibernate:hibernate-core:${hibernateCoreVersion}"
+    runtimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
+
+    testImplementation "org.testcontainers:postgresql:${testContainersPostgresVersion}"
 }

@@ -1,3 +1,15 @@
+ext {
+    junitVersion = '5.9.1'
+    assertjCoreVersion = '3.24.2'
+    mockitoVersion = '4.11.0'
+    jacksonDatabindVersion = '2.16.1'
+    hibernateCoreVersion = '6.4.4.Final'
+    postgresqlVersion = '42.7.1'
+    lombokPluginVersion = '8.6'
+
+    testContainersPostgresVersion = '1.19.5'
+}
+
 allprojects {
     repositories {
         mavenCentral()
@@ -16,15 +28,10 @@ subprojects {
 
     dependencies {
 
-        compileOnly 'org.projectlombok:lombok:1.18.30'
-        annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-        testCompileOnly 'org.projectlombok:lombok:1.18.30'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-        testImplementation platform('org.junit:junit-bom:5.9.1')
-        testImplementation 'org.junit.jupiter:junit-jupiter'
-        testImplementation "org.assertj:assertj-core:3.24.2"
-        testImplementation "org.mockito:mockito-junit-jupiter:4.11.0"
+        testImplementation platform("org.junit:junit-bom:${junitVersion}")
+        testImplementation "org.junit.jupiter:junit-jupiter"
+        testImplementation "org.assertj:assertj-core:${assertjCoreVersion}"
+        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
     }
 
     jacocoTestReport {
