@@ -1,5 +1,6 @@
 package ru.mindils.jb.service.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -41,7 +42,10 @@ public class VacancyInfo {
    * </ul>
    * Пример значения: 0.7532.
    */
+  @Column(precision = 10, scale = 4)
   private BigDecimal aiApproved;
+
+  private Boolean approved;
 
   @Enumerated(EnumType.STRING)
   private VacancyStatusEnum status;

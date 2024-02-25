@@ -4,6 +4,7 @@ docker/data
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+HELP.md
 
 ### IntelliJ IDEA ###
 .idea/

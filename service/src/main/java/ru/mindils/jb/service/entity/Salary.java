@@ -1,5 +1,6 @@
 package ru.mindils.jb.service.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +14,12 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Salary {
 
-  private Boolean salaryGross;
-  private Integer salaryFrom;
-  private Integer salaryTo;
-  private String salaryCurrency;
+  @Column(name = "salary_gross")
+  private Boolean gross;
+  @Column(name = "salary_from")
+  private Integer from;
+  @Column(name = "salary_to")
+  private Integer to;
+  @Column(name = "salary_currency")
+  private String currency;
 }

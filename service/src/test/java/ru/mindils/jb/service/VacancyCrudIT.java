@@ -1,28 +1,43 @@
 package ru.mindils.jb.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyCRUDIT {
+
+@TestInstance(PER_CLASS)
+public class VacancyCrudIT {
 
   private SessionFactory sessionFactory;
   private Session session;
 
+  @BeforeAll
+  void setUpAll() {
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  void tearDownAll() {
+    sessionFactory.close();
+  }
+
   @BeforeEach
   void setUp() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
     session = sessionFactory.openSession();
     session.beginTransaction();
   }
@@ -31,7 +46,6 @@ public class VacancyCRUDIT {
   void tearDown() {
     session.getTransaction().rollback();
     session.close();
-    sessionFactory.close();
   }
 
   @Test
@@ -52,6 +66,10 @@ public class VacancyCRUDIT {
 
     session.persist(employer);
     session.persist(vacancy);
+    session.flush();
+
+    session.evict(employer);
+    session.evict(vacancy);
 
     Vacancy actualResult = session.get(Vacancy.class, vacancy.getId());
 
@@ -71,6 +89,7 @@ public class VacancyCRUDIT {
 
     session.merge(readVacancy);
     session.flush();
+    session.evict(vacancy);
 
     Vacancy actualResult = session.get(Vacancy.class, vacancy.getId());
 
@@ -89,6 +108,7 @@ public class VacancyCRUDIT {
 
     session.remove(readVacancy);
     session.flush();
+    session.evict(vacancy);
 
     Vacancy actualResult = session.get(Vacancy.class, vacancy.getId());
 
@@ -114,10 +134,10 @@ public class VacancyCRUDIT {
         .premium(false)
         .city("Москва")
         .salary(Salary.builder()
-            .salaryFrom(100000)
-            .salaryTo(150000)
-            .salaryCurrency("RUR")
-            .salaryGross(true)
+            .from(100000)
+            .to(150000)
+            .currency("RUR")
+            .gross(true)
             .build())
         .type("open")
         .publishedAt(Instant.now())

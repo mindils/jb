@@ -1,25 +1,39 @@
 package ru.mindils.jb.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.time.Instant;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import ru.mindils.jb.service.entity.VacancyFilter;
 import ru.mindils.jb.service.entity.VacancyFilterParams;
 import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyFilterCRUDIT {
+@TestInstance(PER_CLASS)
+public class VacancyFilterCrudIT {
 
   private SessionFactory sessionFactory;
   private Session session;
 
+  @BeforeAll
+  void setUpAll() {
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  void tearDownAll() {
+    sessionFactory.close();
+  }
+
   @BeforeEach
   void setUp() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
     session = sessionFactory.openSession();
     session.beginTransaction();
   }
@@ -28,7 +42,6 @@ public class VacancyFilterCRUDIT {
   void tearDown() {
     session.getTransaction().rollback();
     session.close();
-    sessionFactory.close();
   }
 
   @Test
@@ -45,6 +58,7 @@ public class VacancyFilterCRUDIT {
     VacancyFilter vacancyFilter = getVacancyFilter();
 
     session.persist(vacancyFilter);
+    session.evict(vacancyFilter);
 
     VacancyFilter actualResult = session.get(VacancyFilter.class, vacancyFilter.getId());
 
@@ -61,6 +75,7 @@ public class VacancyFilterCRUDIT {
     vacancyFilter.setName("Новое название фильтра");
     session.merge(vacancyFilter);
     session.flush();
+    session.evict(vacancyFilter);
 
     VacancyFilter actualResult = session.get(VacancyFilter.class, vacancyFilter.getId());
 
@@ -76,6 +91,7 @@ public class VacancyFilterCRUDIT {
 
     session.remove(vacancyFilter);
     session.flush();
+    session.evict(vacancyFilter);
 
     VacancyFilter actualResult = session.get(VacancyFilter.class, vacancyFilter.getId());
 

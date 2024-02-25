@@ -1,7 +1,6 @@
 package ru.mindils.jb.service.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,13 +12,17 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@ToString(exclude = "params")
+@EqualsAndHashCode(exclude = "params")
 @Table(name = "vacancy_filter")
 public class VacancyFilter {
 
@@ -31,7 +34,7 @@ public class VacancyFilter {
   private String name;
 
   @Builder.Default
-  @OneToMany(mappedBy = "vacancyFilter", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "vacancyFilter")
   private List<VacancyFilterParams> params = new ArrayList<>();
 
   private Instant createdAt;

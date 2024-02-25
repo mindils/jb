@@ -1,26 +1,38 @@
 package ru.mindils.jb.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.time.Instant;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import ru.mindils.jb.service.entity.Employer;
-import ru.mindils.jb.service.entity.EmployerInfo;
-import ru.mindils.jb.service.entity.EmployerStatusEnum;
 import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class EmployerInfoCRUDIT {
+@TestInstance(PER_CLASS)
+public class EmployerCrudIT {
 
   private SessionFactory sessionFactory;
   private Session session;
 
+  @BeforeAll
+  void setUpAll() {
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  void tearDownAll() {
+    sessionFactory.close();
+  }
+
   @BeforeEach
   void setUp() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
     session = sessionFactory.openSession();
     session.beginTransaction();
   }
@@ -29,69 +41,60 @@ public class EmployerInfoCRUDIT {
   void tearDown() {
     session.getTransaction().rollback();
     session.close();
-    sessionFactory.close();
   }
 
   @Test
-  void createEmployerInfo() {
+  void createEmployer() {
     Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
 
     session.persist(employer);
-    session.persist(employerInfo);
     session.flush();
 
-    assertThat(employerInfo.getId()).isNotNull();
+    assertThat(employer.getId()).isNotNull();
   }
 
   @Test
-  void readEmployerInfo() {
+  void readEmployer() {
     Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
 
     session.persist(employer);
-    session.persist(employerInfo);
     session.flush();
+    session.evict(employer);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+    Employer actualResult = session.get(Employer.class, employer.getId());
 
-    assertThat(actualResult).isEqualTo(employerInfo);
+    assertThat(actualResult).isEqualTo(employer);
   }
 
   @Test
-  void updateEmployerInfo() {
+  void updateEmployer() {
     Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
 
     session.persist(employer);
-    session.persist(employerInfo);
     session.flush();
 
-    employerInfo.setStatus(EmployerStatusEnum.APPROVED);
-    session.merge(employerInfo);
+    employer.setName("ООО Рога и копыта 2");
+    session.merge(employer);
     session.flush();
+    session.evict(employer);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+    Employer actualResult = session.get(Employer.class, employer.getId());
 
-    assertThat(actualResult).isEqualTo(employerInfo);
+    assertThat(actualResult).isEqualTo(employer);
   }
 
   @Test
-  void deleteEmployerInfo() {
+  void deleteEmployer() {
     Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
 
     session.persist(employer);
-    session.persist(employerInfo);
     session.flush();
 
-    session.remove(employerInfo);
+    session.remove(employer);
     session.flush();
+    session.evict(employer);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+    Employer actualResult = session.get(Employer.class, employer.getId());
 
     assertThat(actualResult).isNull();
   }
@@ -105,13 +108,7 @@ public class EmployerInfoCRUDIT {
         .detailed(true)
         .modifiedAt(Instant.now())
         .createdAt(Instant.now())
-        .build();
-  }
-
-  private static EmployerInfo getEmployerInfo(Employer employer) {
-    return EmployerInfo.builder()
-        .employer(employer)
-        .status(EmployerStatusEnum.NEW)
+        .createdAt(Instant.now())
         .build();
   }
 }

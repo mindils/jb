@@ -5,19 +5,25 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
+@ToString(exclude = {"vacancy", "employerInfo"})
+@EqualsAndHashCode(exclude = {"vacancy", "employerInfo"})
 public class Employer {
 
   /**
@@ -26,11 +32,14 @@ public class Employer {
   @Id
   private String id;
   private String name;
-  private Boolean trusted;
+
+  @Builder.Default
+  private Boolean trusted = false;
   private String description;
   private Boolean detailed;
 
-  @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY)
+  @Builder.Default
+  @OneToMany(mappedBy = "employer")
   private List<Vacancy> vacancy = new ArrayList<>();
 
   @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
@@ -38,4 +47,14 @@ public class Employer {
 
   private Instant createdAt;
   private Instant modifiedAt;
+
+  @PrePersist
+  public void prePersist() {
+    createdAt = Instant.now();
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    modifiedAt = Instant.now();
+  }
 }
