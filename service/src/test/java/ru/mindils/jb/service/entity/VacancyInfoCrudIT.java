@@ -1,6 +1,7 @@
-package ru.mindils.jb.service;
+package ru.mindils.jb.service.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -8,31 +9,27 @@ import java.util.List;
 import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.graph.GraphSemantic;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.mindils.jb.service.entity.Employer;
-import ru.mindils.jb.service.entity.Salary;
-import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyInfo;
-import ru.mindils.jb.service.entity.VacancyStatusEnum;
+import org.junit.jupiter.api.TestInstance;
 import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyEntityGraphsIT {
+@TestInstance(PER_CLASS)
+public class VacancyInfoCrudIT {
 
-  private static SessionFactory sessionFactory;
+  private SessionFactory sessionFactory;
   private Session session;
 
   @BeforeAll
-  static void setUpAll() {
+  void setUpAll() {
     sessionFactory = HibernateTestUtil.buildSessionFactory();
   }
 
   @AfterAll
-  static void tearDownAll() {
+  void tearDownAll() {
     sessionFactory.close();
   }
 
@@ -49,7 +46,20 @@ public class VacancyEntityGraphsIT {
   }
 
   @Test
-  void readVacancyWithEntityGraphs() {
+  void createVacancy() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    session.persist(employer);
+    session.persist(vacancy);
+    session.persist(vacancyInfo);
+
+    assertThat(vacancyInfo.getId()).isNotNull();
+  }
+
+  @Test
+  void readVacancyInfo() {
     Employer employer = getEmployer();
     Vacancy vacancy = getVacancy(employer);
     VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
@@ -62,13 +72,50 @@ public class VacancyEntityGraphsIT {
     session.evict(vacancy);
     session.evict(vacancyInfo);
 
-    Map<String, Object> properties = Map.of(
-        GraphSemantic.FETCH.name(), session.getEntityGraph("Vacancy.detail")
-    );
+    VacancyInfo actualResult = session.get(VacancyInfo.class, vacancyInfo.getId());
 
-    Vacancy actualResult = session.find(Vacancy.class, vacancy.getId(), properties);
+    assertThat(actualResult).isEqualTo(vacancyInfo);
+  }
 
-    assertThat(actualResult).isEqualTo(vacancy);
+  @Test
+  void updateVacancyInfo() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    session.persist(employer);
+    session.persist(vacancy);
+    session.persist(vacancyInfo);
+
+    VacancyInfo readVacancyInfo = session.get(VacancyInfo.class, vacancyInfo.getId());
+    readVacancyInfo.setStatus(VacancyStatusEnum.APPROVED);
+
+    session.merge(readVacancyInfo);
+    session.flush();
+
+    VacancyInfo actualResult = session.get(VacancyInfo.class, vacancyInfo.getId());
+
+    assertThat(actualResult).isEqualTo(readVacancyInfo);
+  }
+
+  @Test
+  void deleteVacancyInfo() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    session.persist(employer);
+    session.persist(vacancy);
+    session.persist(vacancyInfo);
+
+    VacancyInfo readVacancyInfo = session.get(VacancyInfo.class, vacancyInfo.getId());
+
+    session.remove(readVacancyInfo);
+    session.flush();
+
+    VacancyInfo actualResult = session.get(VacancyInfo.class, vacancyInfo.getId());
+
+    assertThat(actualResult).isNull();
   }
 
   private static VacancyInfo getVacancyInfo(Vacancy vacancy) {

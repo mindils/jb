@@ -1,4 +1,4 @@
-package ru.mindils.jb.service;
+package ru.mindils.jb.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.graph.GraphSemantic;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,10 +21,14 @@ import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyEntityGraphsIT {
+public class VacancyInfoRepositoryIT {
 
   private static SessionFactory sessionFactory;
-  private Session session;
+  private static Session session;
+
+  private VacancyRepository vacancyRepository;
+  private EmployerRepository employerRepository;
+  private VacancyInfoRepository vacancyInfoRepository;
 
   @BeforeAll
   static void setUpAll() {
@@ -40,6 +44,10 @@ public class VacancyEntityGraphsIT {
   void setUp() {
     session = sessionFactory.openSession();
     session.beginTransaction();
+
+    vacancyRepository = new VacancyRepository(session);
+    employerRepository = new EmployerRepository(session);
+    vacancyInfoRepository = new VacancyInfoRepository(session);
   }
 
   @AfterEach
@@ -49,26 +57,77 @@ public class VacancyEntityGraphsIT {
   }
 
   @Test
-  void readVacancyWithEntityGraphs() {
+  public void save() {
     Employer employer = getEmployer();
     Vacancy vacancy = getVacancy(employer);
     VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
-    session.persist(employer);
-    session.persist(vacancy);
-    session.persist(vacancyInfo);
+    employerRepository.save(employer);
+    vacancyRepository.save(vacancy);
+    vacancyInfoRepository.save(vacancyInfo);
+
+    assertThat(vacancyInfo.getId()).isNotNull();
+  }
+
+  @Test
+  public void findById() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    employerRepository.save(employer);
+    vacancyRepository.save(vacancy);
+    vacancyInfoRepository.save(vacancyInfo);
+
     session.flush();
-    session.evict(employer);
-    session.evict(vacancy);
-    session.evict(vacancyInfo);
+    session.clear();
 
-    Map<String, Object> properties = Map.of(
-        GraphSemantic.FETCH.name(), session.getEntityGraph("Vacancy.detail")
-    );
+    Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
 
-    Vacancy actualResult = session.find(Vacancy.class, vacancy.getId(), properties);
+    assertThat(actualResult.isPresent()).isTrue();
+    assertThat(actualResult.get()).isEqualTo(vacancyInfo);
+  }
 
-    assertThat(actualResult).isEqualTo(vacancy);
+
+  @Test
+  public void update() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    employerRepository.save(employer);
+    vacancyRepository.save(vacancy);
+    vacancyInfoRepository.save(vacancyInfo);
+    session.flush();
+
+    vacancyInfo.setAiApproved(BigDecimal.valueOf(0.7777));
+    vacancyInfoRepository.update(vacancyInfo);
+    session.flush();
+    session.clear();
+
+    Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
+
+    assertThat(actualResult.isPresent()).isTrue();
+    assertThat(actualResult.get()).isEqualTo(vacancyInfo);
+  }
+
+  @Test
+  public void delete() {
+    Employer employer = getEmployer();
+    Vacancy vacancy = getVacancy(employer);
+    VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
+
+    employerRepository.save(employer);
+    vacancyRepository.save(vacancy);
+    vacancyInfoRepository.save(vacancyInfo);
+    session.flush();
+
+    vacancyInfoRepository.delete(vacancyInfo);
+    session.flush();
+    session.clear();
+
+    Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
+    assertThat(actualResult.isPresent()).isFalse();
   }
 
   private static VacancyInfo getVacancyInfo(Vacancy vacancy) {

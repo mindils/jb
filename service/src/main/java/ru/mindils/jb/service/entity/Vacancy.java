@@ -46,7 +46,7 @@ import org.hibernate.type.SqlTypes;
 @ToString(exclude = {"vacancyInfo", "employer"})
 @EqualsAndHashCode(exclude = {"vacancyInfo", "employer"})
 @Data
-public class Vacancy {
+public class Vacancy implements BaseEntity<String> {
 
   /**
    * Уникальный ключ из внешней системы. Самостоятельно не генерируется

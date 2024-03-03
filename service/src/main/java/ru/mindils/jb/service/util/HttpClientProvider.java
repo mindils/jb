@@ -14,7 +14,6 @@ public class HttpClientProvider {
   private static final HttpClientProvider INSTANCE = new HttpClientProvider();
   private final HttpClient client;
   private final ObjectMapper mapper;
-  private HttpRequest.Builder requestBuilder;
 
   private HttpClientProvider() {
     this.client = HttpClient.newHttpClient();
@@ -23,13 +22,12 @@ public class HttpClientProvider {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public static HttpClientProvider get(URI uri) {
-    INSTANCE.requestBuilder = HttpRequest.newBuilder().uri(uri);
+  public static HttpClientProvider getInstance() {
     return INSTANCE;
   }
 
-  public <T> T retrieve(Class<T> responseType) throws IOException, InterruptedException {
-    HttpRequest request = requestBuilder.build();
+  public <T> T retrieve(URI uri, Class<T> responseType) throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
     return mapper.readValue(response.body(), responseType);

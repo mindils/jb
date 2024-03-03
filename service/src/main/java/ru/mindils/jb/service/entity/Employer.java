@@ -24,7 +24,7 @@ import lombok.ToString;
 @Data
 @ToString(exclude = {"vacancy", "employerInfo"})
 @EqualsAndHashCode(exclude = {"vacancy", "employerInfo"})
-public class Employer {
+public class Employer implements BaseEntity<String> {
 
   /**
    * Уникальный ключ из внешней системы. Самостоятельно не генерируется

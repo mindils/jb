@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString(exclude = "params")
 @EqualsAndHashCode(exclude = "params")
 @Table(name = "vacancy_filter")
-public class VacancyFilter {
+public class VacancyFilter implements BaseEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
