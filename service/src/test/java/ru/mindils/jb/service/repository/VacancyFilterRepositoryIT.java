@@ -17,109 +17,104 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 
 public class VacancyFilterRepositoryIT {
 
-  private static SessionFactory sessionFactory;
-  private static Session session;
+    private static SessionFactory sessionFactory;
+    private static Session session;
 
-  private VacancyFilterRepository vacancyFilterRepository;
+    private VacancyFilterRepository vacancyFilterRepository;
 
-  @BeforeAll
-  static void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    static void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  static void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    static void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-    vacancyFilterRepository = new VacancyFilterRepository(session);
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+        vacancyFilterRepository = new VacancyFilterRepository(session);
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  public void save() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    vacancyFilterRepository.save(vacancyFilter);
+    @Test
+    public void save() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        vacancyFilterRepository.save(vacancyFilter);
 
-    assertThat(vacancyFilter.getId()).isNotNull();
-  }
+        assertThat(vacancyFilter.getId()).isNotNull();
+    }
 
-  @Test
-  public void findById() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    vacancyFilterRepository.save(vacancyFilter);
-    session.flush();
-    session.clear();
+    @Test
+    public void findById() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        vacancyFilterRepository.save(vacancyFilter);
+        session.flush();
+        session.clear();
 
-    Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
+        Optional<VacancyFilter> actualResult =
+                vacancyFilterRepository.findById(vacancyFilter.getId());
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(vacancyFilter);
-  }
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(vacancyFilter);
+    }
 
+    @Test
+    public void update() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        vacancyFilterRepository.save(vacancyFilter);
+        session.flush();
 
-  @Test
-  public void update() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    vacancyFilterRepository.save(vacancyFilter);
-    session.flush();
+        vacancyFilter.setName("newName");
+        vacancyFilterRepository.update(vacancyFilter);
+        session.flush();
+        session.clear();
 
-    vacancyFilter.setName("newName");
-    vacancyFilterRepository.update(vacancyFilter);
-    session.flush();
-    session.clear();
+        Optional<VacancyFilter> actualResult =
+                vacancyFilterRepository.findById(vacancyFilter.getId());
 
-    Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(vacancyFilter);
+    }
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(vacancyFilter);
-  }
+    @Test
+    public void delete() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        vacancyFilterRepository.save(vacancyFilter);
+        session.flush();
 
-  @Test
-  public void delete() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    vacancyFilterRepository.save(vacancyFilter);
-    session.flush();
+        vacancyFilterRepository.delete(vacancyFilter);
+        session.flush();
+        session.clear();
 
-    vacancyFilterRepository.delete(vacancyFilter);
-    session.flush();
-    session.clear();
+        Optional<VacancyFilter> actualResult =
+                vacancyFilterRepository.findById(vacancyFilter.getId());
+        assertThat(actualResult.isPresent()).isFalse();
+    }
 
-    Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
-    assertThat(actualResult.isPresent()).isFalse();
-  }
+    private static VacancyFilter getVacancyFilter() {
+        VacancyFilter vacancyFilter =
+                VacancyFilter.builder()
+                        .code("default")
+                        .name("Фильтр по умолчанию")
+                        .createdAt(Instant.now())
+                        .modifiedAt(Instant.now())
+                        .build();
 
-  private static VacancyFilter getVacancyFilter() {
-    VacancyFilter vacancyFilter = VacancyFilter.builder()
-        .code("default")
-        .name("Фильтр по умолчанию")
-        .createdAt(Instant.now())
-        .modifiedAt(Instant.now())
-        .build();
+        vacancyFilter.addParam(
+                VacancyFilterParams.builder().paramName("city").paramValue("1").build());
 
-    vacancyFilter.addParam(
-        VacancyFilterParams.builder()
-            .paramName("city")
-            .paramValue("1")
-            .build()
-    );
+        vacancyFilter.addParam(
+                VacancyFilterParams.builder().paramName("text").paramValue("java").build());
 
-    vacancyFilter.addParam(
-        VacancyFilterParams.builder()
-            .paramName("text")
-            .paramValue("java")
-            .build()
-    );
-
-    return vacancyFilter;
-  }
+        return vacancyFilter;
+    }
 }

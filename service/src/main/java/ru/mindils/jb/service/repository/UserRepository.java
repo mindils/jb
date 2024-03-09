@@ -5,7 +5,7 @@ import ru.mindils.jb.service.entity.User;
 
 public class UserRepository extends RepositoryBase<Long, User> {
 
-  public UserRepository(EntityManager entityManager) {
-    super(User.class, entityManager);
-  }
+    public UserRepository(EntityManager entityManager) {
+        super(User.class, entityManager);
+    }
 }

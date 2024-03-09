@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 class UtilityClassTest {
 
-  @Test
-  void transformString() {
-    String input = "Hello, World!";
-    String expected = "HELLO, WORLD!";
-    String result = UtilityClass.transformString(input);
+    @Test
+    void transformString() {
+        String input = "Hello, World!";
+        String expected = "HELLO, WORLD!";
+        String result = UtilityClass.transformString(input);
 
-    assertEquals(expected, result);
-  }
+        assertEquals(expected, result);
+    }
 }

@@ -14,12 +14,15 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Salary {
 
-  @Column(name = "salary_gross")
-  private Boolean gross;
-  @Column(name = "salary_from")
-  private Integer from;
-  @Column(name = "salary_to")
-  private Integer to;
-  @Column(name = "salary_currency")
-  private String currency;
+    @Column(name = "salary_gross")
+    private Boolean gross;
+
+    @Column(name = "salary_from")
+    private Integer from;
+
+    @Column(name = "salary_to")
+    private Integer to;
+
+    @Column(name = "salary_currency")
+    private String currency;
 }

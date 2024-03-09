@@ -5,7 +5,7 @@ import ru.mindils.jb.service.entity.VacancyFilter;
 
 public class VacancyFilterRepository extends RepositoryBase<Long, VacancyFilter> {
 
-  public VacancyFilterRepository(EntityManager entityManager) {
-    super(VacancyFilter.class, entityManager);
-  }
+    public VacancyFilterRepository(EntityManager entityManager) {
+        super(VacancyFilter.class, entityManager);
+    }
 }

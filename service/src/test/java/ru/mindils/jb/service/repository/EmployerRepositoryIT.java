@@ -16,100 +16,98 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 
 public class EmployerRepositoryIT {
 
-  private static SessionFactory sessionFactory;
-  private static Session session;
+    private static SessionFactory sessionFactory;
+    private static Session session;
 
-  private EmployerRepository employerRepository;
+    private EmployerRepository employerRepository;
 
-  @BeforeAll
-  static void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    static void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  static void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    static void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-    employerRepository = new EmployerRepository(session);
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+        employerRepository = new EmployerRepository(session);
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  public void save() {
-    Employer employer = getEmployer();
-    employerRepository.save(employer);
-    session.flush();
+    @Test
+    public void save() {
+        Employer employer = getEmployer();
+        employerRepository.save(employer);
+        session.flush();
 
-    assertThat(employer.getId()).isNotNull();
-  }
+        assertThat(employer.getId()).isNotNull();
+    }
 
-  @Test
-  public void findById() {
-    Employer employer = getEmployer();
-    employerRepository.save(employer);
-    session.flush();
-    session.clear();
+    @Test
+    public void findById() {
+        Employer employer = getEmployer();
+        employerRepository.save(employer);
+        session.flush();
+        session.clear();
 
-    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(employer);
-  }
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(employer);
+    }
 
+    @Test
+    public void update() {
+        Employer employer = getEmployer();
+        employerRepository.save(employer);
+        session.flush();
 
-  @Test
-  public void update() {
-    Employer employer = getEmployer();
-    employerRepository.save(employer);
-    session.flush();
+        employer.setName("ООО Рога и копыта 2");
+        employerRepository.update(employer);
+        session.flush();
+        session.clear();
 
-    employer.setName("ООО Рога и копыта 2");
-    employerRepository.update(employer);
-    session.flush();
-    session.clear();
+        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(employer);
+    }
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(employer);
-  }
+    @Test
+    public void delete() {
+        Employer employer = getEmployer();
+        employerRepository.save(employer);
+        session.flush();
 
-  @Test
-  public void delete() {
-    Employer employer = getEmployer();
-    employerRepository.save(employer);
-    session.flush();
+        employerRepository.delete(employer);
+        session.flush();
+        session.clear();
 
-    employerRepository.delete(employer);
-    session.flush();
-    session.clear();
+        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+        assertThat(actualResult.isPresent()).isFalse();
+    }
 
-    assertThat(actualResult.isPresent()).isFalse();
-  }
-
-  private static Employer getEmployer() {
-    return Employer.builder()
-        .id("employer-id-example")
-        .name("ООО Рога и копыта")
-        .trusted(true)
-        .description("Описание работодателя")
-        .detailed(true)
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
-  }
+    private static Employer getEmployer() {
+        return Employer.builder()
+                .id("employer-id-example")
+                .name("ООО Рога и копыта")
+                .trusted(true)
+                .description("Описание работодателя")
+                .detailed(true)
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 }
-

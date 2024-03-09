@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetailedEmployerDto {
 
-  private String id;
-  private String name;
-  private String description;
+    private String id;
+    private String name;
+    private String description;
 
-  private Boolean detailed = true;
+    private Boolean detailed = true;
 }

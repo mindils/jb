@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "employer_info")
 public class EmployerInfo implements BaseEntity<Long> {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @OneToOne
-  @JoinColumn(name = "employer_id")
-  private Employer employer;
+    @OneToOne
+    @JoinColumn(name = "employer_id")
+    private Employer employer;
 
-  @Enumerated(EnumType.STRING)
-  private EmployerStatusEnum status;
+    @Enumerated(EnumType.STRING)
+    private EmployerStatusEnum status;
 }

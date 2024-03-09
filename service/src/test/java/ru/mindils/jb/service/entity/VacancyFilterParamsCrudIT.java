@@ -17,111 +17,110 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 @TestInstance(PER_CLASS)
 public class VacancyFilterParamsCrudIT {
 
-  private SessionFactory sessionFactory;
-  private Session session;
+    private SessionFactory sessionFactory;
+    private Session session;
 
-  @BeforeAll
-  void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  void createVacancyFilterParams() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
+    @Test
+    void createVacancyFilterParams() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
 
-    session.persist(vacancyFilter);
-    session.persist(vacancyFilterParams);
+        session.persist(vacancyFilter);
+        session.persist(vacancyFilterParams);
 
-    assertThat(vacancyFilterParams.getId()).isNotNull();
-  }
+        assertThat(vacancyFilterParams.getId()).isNotNull();
+    }
 
-  @Test
-  void readVacancyFilterParams() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
+    @Test
+    void readVacancyFilterParams() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
 
-    session.persist(vacancyFilter);
-    session.persist(vacancyFilterParams);
-    session.evict(vacancyFilterParams);
+        session.persist(vacancyFilter);
+        session.persist(vacancyFilterParams);
+        session.evict(vacancyFilterParams);
 
-    VacancyFilterParams actualResult = session.get(VacancyFilterParams.class,
-        vacancyFilterParams.getId());
+        VacancyFilterParams actualResult =
+                session.get(VacancyFilterParams.class, vacancyFilterParams.getId());
 
-    assertThat(actualResult).isEqualTo(vacancyFilterParams);
-  }
+        assertThat(actualResult).isEqualTo(vacancyFilterParams);
+    }
 
-  @Test
-  void updateVacancyFilterParams() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
+    @Test
+    void updateVacancyFilterParams() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
 
-    session.persist(vacancyFilter);
-    session.persist(vacancyFilterParams);
-    session.flush();
-    session.evict(vacancyFilterParams);
+        session.persist(vacancyFilter);
+        session.persist(vacancyFilterParams);
+        session.flush();
+        session.evict(vacancyFilterParams);
 
-    vacancyFilterParams.setParamName("newParamName");
-    session.merge(vacancyFilterParams);
-    session.flush();
+        vacancyFilterParams.setParamName("newParamName");
+        session.merge(vacancyFilterParams);
+        session.flush();
 
-    VacancyFilterParams actualResult = session.get(VacancyFilterParams.class,
-        vacancyFilterParams.getId());
+        VacancyFilterParams actualResult =
+                session.get(VacancyFilterParams.class, vacancyFilterParams.getId());
 
-    assertThat(actualResult).isEqualTo(vacancyFilterParams);
-  }
+        assertThat(actualResult).isEqualTo(vacancyFilterParams);
+    }
 
-  @Test
-  void deleteVacancyFilterParams() {
-    VacancyFilter vacancyFilter = getVacancyFilter();
-    VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
+    @Test
+    void deleteVacancyFilterParams() {
+        VacancyFilter vacancyFilter = getVacancyFilter();
+        VacancyFilterParams vacancyFilterParams = getVacancyFilterParams(vacancyFilter);
 
-    session.persist(vacancyFilter);
-    session.persist(vacancyFilterParams);
-    session.flush();
+        session.persist(vacancyFilter);
+        session.persist(vacancyFilterParams);
+        session.flush();
 
-    session.remove(vacancyFilterParams);
-    session.flush();
-    session.evict(vacancyFilterParams);
+        session.remove(vacancyFilterParams);
+        session.flush();
+        session.evict(vacancyFilterParams);
 
-    VacancyFilterParams actualResult = session.get(VacancyFilterParams.class,
-        vacancyFilterParams.getId());
+        VacancyFilterParams actualResult =
+                session.get(VacancyFilterParams.class, vacancyFilterParams.getId());
 
-    assertThat(actualResult).isNull();
-  }
+        assertThat(actualResult).isNull();
+    }
 
-  private static VacancyFilter getVacancyFilter() {
-    return VacancyFilter.builder()
-        .code("default")
-        .name("Default Filter")
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
+    private static VacancyFilter getVacancyFilter() {
+        return VacancyFilter.builder()
+                .code("default")
+                .name("Default Filter")
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 
-  }
-
-  private static VacancyFilterParams getVacancyFilterParams(VacancyFilter vacancyFilter) {
-    return VacancyFilterParams.builder()
-        .vacancyFilter(vacancyFilter)
-        .paramName("city")
-        .paramValue("1")
-        .build();
-  }
+    private static VacancyFilterParams getVacancyFilterParams(VacancyFilter vacancyFilter) {
+        return VacancyFilterParams.builder()
+                .vacancyFilter(vacancyFilter)
+                .paramName("city")
+                .paramValue("1")
+                .build();
+    }
 }

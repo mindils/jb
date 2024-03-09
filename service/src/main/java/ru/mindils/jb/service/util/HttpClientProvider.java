@@ -11,26 +11,25 @@ import java.net.http.HttpResponse;
 
 public class HttpClientProvider {
 
-  private static final HttpClientProvider INSTANCE = new HttpClientProvider();
-  private final HttpClient client;
-  private final ObjectMapper mapper;
+    private static final HttpClientProvider INSTANCE = new HttpClientProvider();
+    private final HttpClient client;
+    private final ObjectMapper mapper;
 
-  private HttpClientProvider() {
-    this.client = HttpClient.newHttpClient();
-    this.mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-  }
+    private HttpClientProvider() {
+        this.client = HttpClient.newHttpClient();
+        this.mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
-  public static HttpClientProvider getInstance() {
-    return INSTANCE;
-  }
+    public static HttpClientProvider getInstance() {
+        return INSTANCE;
+    }
 
-  public <T> T retrieve(URI uri, Class<T> responseType) throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    public <T> T retrieve(URI uri, Class<T> responseType) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    return mapper.readValue(response.body(), responseType);
-  }
-
+        return mapper.readValue(response.body(), responseType);
+    }
 }

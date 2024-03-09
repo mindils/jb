@@ -16,95 +16,93 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 
 public class UserRepositoryIT {
 
-  private static SessionFactory sessionFactory;
-  private static Session session;
+    private static SessionFactory sessionFactory;
+    private static Session session;
 
-  private UserRepository userRepository;
+    private UserRepository userRepository;
 
-  @BeforeAll
-  static void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    static void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  static void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    static void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-    userRepository = new UserRepository(session);
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+        userRepository = new UserRepository(session);
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  public void save() {
-    User user = getUser();
-    userRepository.save(user);
+    @Test
+    public void save() {
+        User user = getUser();
+        userRepository.save(user);
 
-    assertThat(user.getId()).isNotNull();
-  }
+        assertThat(user.getId()).isNotNull();
+    }
 
-  @Test
-  public void findById() {
-    User user = getUser();
-    userRepository.save(user);
-    session.flush();
-    session.clear();
+    @Test
+    public void findById() {
+        User user = getUser();
+        userRepository.save(user);
+        session.flush();
+        session.clear();
 
-    Optional<User> actualResult = userRepository.findById(user.getId());
+        Optional<User> actualResult = userRepository.findById(user.getId());
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(user);
-  }
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(user);
+    }
 
+    @Test
+    public void update() {
+        User user = getUser();
+        userRepository.save(user);
+        session.flush();
 
-  @Test
-  public void update() {
-    User user = getUser();
-    userRepository.save(user);
-    session.flush();
+        user.setUsername("newUsername");
+        userRepository.update(user);
+        session.flush();
+        session.clear();
 
-    user.setUsername("newUsername");
-    userRepository.update(user);
-    session.flush();
-    session.clear();
+        Optional<User> actualResult = userRepository.findById(user.getId());
 
-    Optional<User> actualResult = userRepository.findById(user.getId());
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(user);
+    }
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(user);
-  }
+    @Test
+    public void delete() {
+        User user = getUser();
+        userRepository.save(user);
+        session.flush();
 
-  @Test
-  public void delete() {
-    User user = getUser();
-    userRepository.save(user);
-    session.flush();
+        userRepository.delete(user);
+        session.flush();
+        session.clear();
 
-    userRepository.delete(user);
-    session.flush();
-    session.clear();
+        Optional<User> actualResult = userRepository.findById(user.getId());
+        assertThat(actualResult.isPresent()).isFalse();
+    }
 
-    Optional<User> actualResult = userRepository.findById(user.getId());
-    assertThat(actualResult.isPresent()).isFalse();
-  }
-
-  private User getUser() {
-    return User.builder()
-        .username("mindils")
-        .role("ADMIN")
-        .password("{noop}pass")
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
-  }
-
+    private User getUser() {
+        return User.builder()
+                .username("mindils")
+                .role("ADMIN")
+                .password("{noop}pass")
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 }

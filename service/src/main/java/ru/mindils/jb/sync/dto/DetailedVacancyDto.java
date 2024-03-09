@@ -16,52 +16,59 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DetailedVacancyDto {
 
-  private String id;
-  private String name;
-  private Boolean premium;
+    private String id;
+    private String name;
+    private Boolean premium;
 
-  private Map<String, ?> department;
+    private Map<String, ?> department;
 
-  @JsonProperty("response_letter_required")
-  private Boolean responseLetterRequired;
-  private AreaDto area;
-  private SalaryDto salary;
-  private KeyValueDto type;
-  //  private String address;
+    @JsonProperty("response_letter_required")
+    private Boolean responseLetterRequired;
 
-  @JsonProperty("response_url")
-  private String responseUrl;
-  //  private String sortPointDistance;
+    private AreaDto area;
+    private SalaryDto salary;
+    private KeyValueDto type;
 
-  @JsonProperty("published_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant publishedAt;
+    //  private String address;
 
-  @JsonProperty("created_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant createdAt;
-  private Boolean archived;
+    @JsonProperty("response_url")
+    private String responseUrl;
 
-  @JsonProperty("apply_alternate_url")
-  private String applyAlternateUrl;
-  //  private String insiderInterview;
-  private String url;
+    //  private String sortPointDistance;
 
-  @JsonProperty("alternate_url")
-  private String alternateUrl;
-  private KeyValueDto schedule;
+    @JsonProperty("published_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+    private Instant publishedAt;
 
-  @JsonProperty("professional_roles")
-  private List<Map<String, ?>> professionalRoles;
-  private KeyValueDto experience;
-  private KeyValueDto employment;
+    @JsonProperty("created_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
+    private Instant createdAt;
 
-  private BriefEmployerDto employer;
+    private Boolean archived;
 
-  private Boolean detailed = true;
+    @JsonProperty("apply_alternate_url")
+    private String applyAlternateUrl;
 
-  private String description;
+    //  private String insiderInterview;
+    private String url;
 
-  @JsonProperty("key_skills")
-  private List<KeySkillDto> keySkills;
+    @JsonProperty("alternate_url")
+    private String alternateUrl;
+
+    private KeyValueDto schedule;
+
+    @JsonProperty("professional_roles")
+    private List<Map<String, ?>> professionalRoles;
+
+    private KeyValueDto experience;
+    private KeyValueDto employment;
+
+    private BriefEmployerDto employer;
+
+    private Boolean detailed = true;
+
+    private String description;
+
+    @JsonProperty("key_skills")
+    private List<KeySkillDto> keySkills;
 }

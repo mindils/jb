@@ -26,35 +26,32 @@ import lombok.ToString;
 @EqualsAndHashCode(exclude = {"vacancy", "employerInfo"})
 public class Employer implements BaseEntity<String> {
 
-  /**
-   * Уникальный ключ из внешней системы. Самостоятельно не генерируется
-   */
-  @Id
-  private String id;
-  private String name;
+    /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
+    @Id private String id;
 
-  @Builder.Default
-  private Boolean trusted = false;
-  private String description;
-  private Boolean detailed;
+    private String name;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "employer")
-  private List<Vacancy> vacancy = new ArrayList<>();
+    @Builder.Default private Boolean trusted = false;
+    private String description;
+    private Boolean detailed;
 
-  @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
-  private EmployerInfo employerInfo;
+    @Builder.Default
+    @OneToMany(mappedBy = "employer")
+    private List<Vacancy> vacancy = new ArrayList<>();
 
-  private Instant createdAt;
-  private Instant modifiedAt;
+    @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
+    private EmployerInfo employerInfo;
 
-  @PrePersist
-  public void prePersist() {
-    createdAt = Instant.now();
-  }
+    private Instant createdAt;
+    private Instant modifiedAt;
 
-  @PreUpdate
-  public void preUpdate() {
-    modifiedAt = Instant.now();
-  }
+    @PrePersist
+    public void prePersist() {
+        createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        modifiedAt = Instant.now();
+    }
 }

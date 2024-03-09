@@ -17,114 +17,108 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 @TestInstance(PER_CLASS)
 public class EmployerInfoCrudIT {
 
-  private SessionFactory sessionFactory;
-  private Session session;
+    private SessionFactory sessionFactory;
+    private Session session;
 
-  @BeforeAll
-  void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  void createEmployerInfo() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
+    @Test
+    void createEmployerInfo() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
 
-    session.persist(employer);
-    session.persist(employerInfo);
-    session.flush();
+        session.persist(employer);
+        session.persist(employerInfo);
+        session.flush();
 
-    assertThat(employerInfo.getId()).isNotNull();
-  }
+        assertThat(employerInfo.getId()).isNotNull();
+    }
 
-  @Test
-  void readEmployerInfo() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
+    @Test
+    void readEmployerInfo() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
 
-    session.persist(employer);
-    session.persist(employerInfo);
-    session.flush();
-    session.evict(employerInfo);
+        session.persist(employer);
+        session.persist(employerInfo);
+        session.flush();
+        session.evict(employerInfo);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+        EmployerInfo actualResult = session.get(EmployerInfo.class, employerInfo.getId());
 
-    assertThat(actualResult).isEqualTo(employerInfo);
-  }
+        assertThat(actualResult).isEqualTo(employerInfo);
+    }
 
-  @Test
-  void updateEmployerInfo() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
+    @Test
+    void updateEmployerInfo() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
 
-    session.persist(employer);
-    session.persist(employerInfo);
-    session.flush();
+        session.persist(employer);
+        session.persist(employerInfo);
+        session.flush();
 
-    employerInfo.setStatus(EmployerStatusEnum.APPROVED);
-    session.merge(employerInfo);
-    session.flush();
-    session.evict(employerInfo);
+        employerInfo.setStatus(EmployerStatusEnum.APPROVED);
+        session.merge(employerInfo);
+        session.flush();
+        session.evict(employerInfo);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+        EmployerInfo actualResult = session.get(EmployerInfo.class, employerInfo.getId());
 
-    assertThat(actualResult).isEqualTo(employerInfo);
-  }
+        assertThat(actualResult).isEqualTo(employerInfo);
+    }
 
-  @Test
-  void deleteEmployerInfo() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
+    @Test
+    void deleteEmployerInfo() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
 
-    session.persist(employer);
-    session.persist(employerInfo);
-    session.flush();
+        session.persist(employer);
+        session.persist(employerInfo);
+        session.flush();
 
-    session.remove(employerInfo);
-    session.flush();
-    session.evict(employerInfo);
+        session.remove(employerInfo);
+        session.flush();
+        session.evict(employerInfo);
 
-    EmployerInfo actualResult = session.get(EmployerInfo.class,
-        employerInfo.getId());
+        EmployerInfo actualResult = session.get(EmployerInfo.class, employerInfo.getId());
 
-    assertThat(actualResult).isNull();
-  }
+        assertThat(actualResult).isNull();
+    }
 
-  private static Employer getEmployer() {
-    return Employer.builder()
-        .id("employer-id-example")
-        .name("ООО Рога и копыта")
-        .trusted(true)
-        .description("Описание работодателя")
-        .detailed(true)
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
-  }
+    private static Employer getEmployer() {
+        return Employer.builder()
+                .id("employer-id-example")
+                .name("ООО Рога и копыта")
+                .trusted(true)
+                .description("Описание работодателя")
+                .detailed(true)
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 
-  private static EmployerInfo getEmployerInfo(Employer employer) {
-    return EmployerInfo.builder()
-        .employer(employer)
-        .status(EmployerStatusEnum.NEW)
-        .build();
-  }
+    private static EmployerInfo getEmployerInfo(Employer employer) {
+        return EmployerInfo.builder().employer(employer).status(EmployerStatusEnum.NEW).build();
+    }
 }

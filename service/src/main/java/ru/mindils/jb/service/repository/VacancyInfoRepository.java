@@ -5,7 +5,7 @@ import ru.mindils.jb.service.entity.VacancyInfo;
 
 public class VacancyInfoRepository extends RepositoryBase<Long, VacancyInfo> {
 
-  public VacancyInfoRepository(EntityManager entityManager) {
-    super(VacancyInfo.class, entityManager);
-  }
+    public VacancyInfoRepository(EntityManager entityManager) {
+        super(VacancyInfo.class, entityManager);
+    }
 }

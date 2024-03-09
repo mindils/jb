@@ -12,34 +12,35 @@ import ru.mindils.jb.service.entity.Vacancy;
 @UtilityClass
 public class VacancyCriteriaApiFilterBuilder {
 
-  public static Predicate[] build(
-      AppVacancyFilterDto filter,
-      CriteriaBuilder cb, Root<Vacancy> root) {
-    List<Predicate> predicates = new ArrayList<>();
+    public static Predicate[] build(
+            AppVacancyFilterDto filter, CriteriaBuilder cb, Root<Vacancy> root) {
+        List<Predicate> predicates = new ArrayList<>();
 
-    if (filter.getAiApproved() != null) {
-      predicates.add(
-          cb.greaterThan(root.get("vacancyInfo").get("aiApproved"), filter.getAiApproved()));
+        if (filter.getAiApproved() != null) {
+            predicates.add(
+                    cb.greaterThan(
+                            root.get("vacancyInfo").get("aiApproved"), filter.getAiApproved()));
+        }
+
+        if (filter.getSalaryFrom() != null) {
+            predicates.add(
+                    cb.or(
+                            cb.isNull(root.get("salary").get("from")),
+                            cb.greaterThan(
+                                    root.get("salary").get("from"), filter.getSalaryFrom())));
+        }
+
+        if (filter.getSalaryTo() != null) {
+            predicates.add(
+                    cb.or(
+                            cb.isNull(root.get("salary").get("to")),
+                            cb.lessThan(root.get("salary").get("to"), filter.getSalaryTo())));
+        }
+
+        if (filter.getStatus() != null) {
+            predicates.add(cb.equal(root.get("vacancyInfo").get("status"), filter.getStatus()));
+        }
+
+        return predicates.toArray(new Predicate[0]);
     }
-
-    if (filter.getSalaryFrom() != null) {
-      predicates.add(cb.or(
-          cb.isNull(root.get("salary").get("from")),
-          cb.greaterThan(root.get("salary").get("from"), filter.getSalaryFrom())
-      ));
-    }
-
-    if (filter.getSalaryTo() != null) {
-      predicates.add(cb.or(
-          cb.isNull(root.get("salary").get("to")),
-          cb.lessThan(root.get("salary").get("to"), filter.getSalaryTo())
-      ));
-    }
-
-    if (filter.getStatus() != null) {
-      predicates.add(cb.equal(root.get("vacancyInfo").get("status"), filter.getStatus()));
-    }
-
-    return predicates.toArray(new Predicate[0]);
-  }
 }

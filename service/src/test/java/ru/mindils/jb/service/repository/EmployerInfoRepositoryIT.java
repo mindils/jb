@@ -18,116 +18,108 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 
 public class EmployerInfoRepositoryIT {
 
-  private static SessionFactory sessionFactory;
-  private static Session session;
+    private static SessionFactory sessionFactory;
+    private static Session session;
 
-  private EmployerInfoRepository employerInfoRepository;
-  private EmployerRepository employerRepository;
+    private EmployerInfoRepository employerInfoRepository;
+    private EmployerRepository employerRepository;
 
+    @BeforeAll
+    static void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @BeforeAll
-  static void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @AfterAll
+    static void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @AfterAll
-  static void tearDownAll() {
-    sessionFactory.close();
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+        employerInfoRepository = new EmployerInfoRepository(session);
+        employerRepository = new EmployerRepository(session);
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-    employerInfoRepository = new EmployerInfoRepository(session);
-    employerRepository = new EmployerRepository(session);
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @Test
+    public void save() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
+        employerRepository.save(employer);
+        employerInfoRepository.save(employerInfo);
+        session.flush();
 
-  @Test
-  public void save() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
-    employerRepository.save(employer);
-    employerInfoRepository.save(employerInfo);
-    session.flush();
+        assertThat(employerInfo.getId()).isNotNull();
+    }
 
-    assertThat(employerInfo.getId()).isNotNull();
-  }
+    @Test
+    public void findById() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
+        employerRepository.save(employer);
+        employerInfoRepository.save(employerInfo);
+        session.flush();
+        session.clear();
 
-  @Test
-  public void findById() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
-    employerRepository.save(employer);
-    employerInfoRepository.save(employerInfo);
-    session.flush();
-    session.clear();
+        Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
 
-    Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
+        assertThat(actualResult.isPresent()).isTrue();
+        assertThat(actualResult.get()).isEqualTo(employerInfo);
+    }
 
-    assertThat(actualResult.isPresent()).isTrue();
-    assertThat(actualResult.get()).isEqualTo(employerInfo);
-  }
+    @Test
+    public void update() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
+        employerRepository.save(employer);
+        employerInfoRepository.save(employerInfo);
+        session.flush();
 
+        employerInfo.setStatus(EmployerStatusEnum.APPROVED);
+        employerInfoRepository.update(employerInfo);
+        session.flush();
+        session.clear();
 
-  @Test
-  public void update() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
-    employerRepository.save(employer);
-    employerInfoRepository.save(employerInfo);
-    session.flush();
+        Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
+        actualResult.ifPresent(e -> assertThat(e).isEqualTo(employerInfo));
+    }
 
-    employerInfo.setStatus(EmployerStatusEnum.APPROVED);
-    employerInfoRepository.update(employerInfo);
-    session.flush();
-    session.clear();
+    @Test
+    public void delete() {
+        Employer employer = getEmployer();
+        EmployerInfo employerInfo = getEmployerInfo(employer);
+        employerRepository.save(employer);
+        employerInfoRepository.save(employerInfo);
+        session.flush();
 
-    Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
-    actualResult.ifPresent(e -> assertThat(e).isEqualTo(employerInfo));
-  }
+        employerInfoRepository.delete(employerInfo);
+        session.flush();
+        session.clear();
 
-  @Test
-  public void delete() {
-    Employer employer = getEmployer();
-    EmployerInfo employerInfo = getEmployerInfo(employer);
-    employerRepository.save(employer);
-    employerInfoRepository.save(employerInfo);
-    session.flush();
+        Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
+        assertThat(actualResult.isPresent()).isFalse();
+    }
 
-    employerInfoRepository.delete(employerInfo);
-    session.flush();
-    session.clear();
+    private static Employer getEmployer() {
+        return Employer.builder()
+                .id("employer-id-example")
+                .name("ООО Рога и копыта")
+                .trusted(true)
+                .description("Описание работодателя")
+                .detailed(true)
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 
-    Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
-    assertThat(actualResult.isPresent()).isFalse();
-  }
-
-
-  private static Employer getEmployer() {
-    return Employer.builder()
-        .id("employer-id-example")
-        .name("ООО Рога и копыта")
-        .trusted(true)
-        .description("Описание работодателя")
-        .detailed(true)
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
-  }
-
-  private static EmployerInfo getEmployerInfo(Employer employer) {
-    return EmployerInfo.builder()
-        .employer(employer)
-        .status(EmployerStatusEnum.NEW)
-        .build();
-  }
-
-
+    private static EmployerInfo getEmployerInfo(Employer employer) {
+        return EmployerInfo.builder().employer(employer).status(EmployerStatusEnum.NEW).build();
+    }
 }

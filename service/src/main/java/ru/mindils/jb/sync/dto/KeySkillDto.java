@@ -11,5 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class KeySkillDto {
 
-  private String name;
+    private String name;
 }

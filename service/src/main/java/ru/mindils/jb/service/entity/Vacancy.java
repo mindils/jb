@@ -1,6 +1,5 @@
 package ru.mindils.jb.service.entity;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -27,19 +26,17 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@NamedEntityGraph(name = "Vacancy.detail",
-    attributeNodes = {
-        @NamedAttributeNode(value = "vacancyInfo"),
-        @NamedAttributeNode(value = "employer", subgraph = "Employer.detail")
-    },
-    subgraphs = {
-        @NamedSubgraph(name = "Employer.detail",
-            attributeNodes = {
-                @NamedAttributeNode(value = "employerInfo")
-            }
-        )
-    }
-)
+@NamedEntityGraph(
+        name = "Vacancy.detail",
+        attributeNodes = {
+            @NamedAttributeNode(value = "vacancyInfo"),
+            @NamedAttributeNode(value = "employer", subgraph = "Employer.detail")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                    name = "Employer.detail",
+                    attributeNodes = {@NamedAttributeNode(value = "employerInfo")})
+        })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -48,69 +45,68 @@ import org.hibernate.type.SqlTypes;
 @Data
 public class Vacancy implements BaseEntity<String> {
 
-  /**
-   * Уникальный ключ из внешней системы. Самостоятельно не генерируется
-   */
-  @Id
-  private String id;
-  private String name;
+    /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
+    @Id private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "employer_id")
-  private Employer employer;
+    private String name;
 
-  private Boolean premium;
-  private String city;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employer_id")
+    private Employer employer;
 
-  @Embedded
-  private Salary salary;
-  private String type;
-  private Instant publishedAt;
-  private Instant createdAt;
-  private Boolean archived;
-  private String applyAlternateUrl;
-  private String url;
-  private String alternateUrl;
-  private String schedule;
-  private String responseUrl;
+    private Boolean premium;
+    private String city;
 
-  @JdbcTypeCode(SqlTypes.JSON)
-  private List<Map<String, ?>> professionalRoles;
+    @Embedded private Salary salary;
+    private String type;
+    private Instant publishedAt;
+    private Instant createdAt;
+    private Boolean archived;
+    private String applyAlternateUrl;
+    private String url;
+    private String alternateUrl;
+    private String schedule;
+    private String responseUrl;
 
-  private String employment;
-  private String description;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<Map<String, ?>> professionalRoles;
 
+    private String employment;
+    private String description;
 
-  /**
-   * Список ключевых навыков, получаемых из внешней системы. Пример формата данных:
-   * <pre>
-   * {
-   *   ... other fields ...
-   *   "key_skills": [
-   *     {"name": "Прием посетителей"},
-   *     {"name": "Первичный документооборот"}
-   *   ]
-   * }
-   * </pre>
-   * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
-   */
-  private String keySkills;
-  private Boolean detailed;
+    /**
+     * Список ключевых навыков, получаемых из внешней системы. Пример формата данных:
+     *
+     * <pre>
+     * {
+     *   ... other fields ...
+     *   "key_skills": [
+     *     {"name": "Прием посетителей"},
+     *     {"name": "Первичный документооборот"}
+     *   ]
+     * }
+     * </pre>
+     *
+     * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
+     */
+    private String keySkills;
 
-  @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private VacancyInfo vacancyInfo;
+    private Boolean detailed;
 
-  // Временные метки сохранения в вашей системе (createdAt занята и приходит из внешней системы)
-  private Instant internalCreatedAt;
-  private Instant internalModifiedAt;
+    @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private VacancyInfo vacancyInfo;
 
-  @PrePersist
-  public void prePersist() {
-    internalCreatedAt = Instant.now();
-  }
+    // Временные метки сохранения в вашей системе (createdAt занята и приходит из внешней системы)
+    private Instant internalCreatedAt;
+    private Instant internalModifiedAt;
 
-  @PreUpdate
-  public void preUpdate() {
-    internalModifiedAt = Instant.now();
-  }
+    @PrePersist
+    public void prePersist() {
+        internalCreatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        internalModifiedAt = Instant.now();
+    }
 }

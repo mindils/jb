@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BriefEmployerDto {
 
-  private String id;
-  private String name;
+    private String id;
+    private String name;
 
-  private Boolean detailed = false;
+    private Boolean detailed = false;
 }

@@ -9,66 +9,65 @@ import ru.mindils.jb.service.util.HibernateUtil;
 
 public class SyncVacancyAIService {
 
-  private static final SyncVacancyAIService INSTANCE = new SyncVacancyAIService();
-  private final VacancyClientService vacancyApiClientService = VacancyClientService.getInstance();
+    private static final SyncVacancyAIService INSTANCE = new SyncVacancyAIService();
+    private final VacancyClientService vacancyApiClientService = VacancyClientService.getInstance();
 
-  private SyncVacancyAIService() {
-  }
+    private SyncVacancyAIService() {}
 
-  public static SyncVacancyAIService getInstance() {
-    return INSTANCE;
-  }
+    public static SyncVacancyAIService getInstance() {
+        return INSTANCE;
+    }
 
+    /**
+     * TODO: переписать, тут надо чтобы мы получали вакансии где нет рейтинга и обновляли его в
+     * данном случае может быть не создана запись в vacancy_info и мы не обновим рейтинг
+     */
+    public void syncVacancyAiRatingsAll() {
+        try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+                Session session = sessionFactory.openSession()) {
 
-  /**
-   * TODO: переписать, тут надо чтобы мы получали вакансии где нет рейтинга и обновляли его
-   *   в данном случае может быть не создана запись в vacancy_info и мы не обновим рейтинг
-   */
-  public void syncVacancyAiRatingsAll() {
-    try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-        Session session = sessionFactory.openSession()) {
+            while (true) {
+                List<VacancyInfo> vacancies =
+                        session.createQuery(
+                                        "select e from VacancyInfo e join e.vacancy where"
+                                                + " e.aiApproved is null",
+                                        VacancyInfo.class)
+                                .setFirstResult(0)
+                                .setMaxResults(100)
+                                .getResultList();
 
-      while (true) {
-        List<VacancyInfo> vacancies = session.createQuery(
-                "select e from VacancyInfo e join e.vacancy where e.aiApproved is null",
-                VacancyInfo.class)
-            .setFirstResult(0)
-            .setMaxResults(100)
-            .getResultList();
+                if (vacancies.isEmpty()) {
+                    break;
+                }
 
-        if (vacancies.isEmpty()) {
-          break;
+                // тут можно без сна, т.к. наш сервер )
+                vacancies.forEach(this::syncVacancyAiRating);
+            }
         }
-
-        // тут можно без сна, т.к. наш сервер )
-        vacancies.forEach(this::syncVacancyAiRating);
-      }
     }
-  }
 
-  public void syncVacancyAiRating(VacancyInfo vacancyInfo) {
-    String sb = vacancyInfo.getVacancy().getName()
-        + " "
-        + vacancyInfo.getVacancy().getKeySkills();
-    String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
+    public void syncVacancyAiRating(VacancyInfo vacancyInfo) {
+        String sb =
+                vacancyInfo.getVacancy().getName() + " " + vacancyInfo.getVacancy().getKeySkills();
+        String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
 
-    SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-    Session session = sessionFactory.openSession();
+        SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
+        Session session = sessionFactory.openSession();
 
-    try {
-      session.beginTransaction();
-      vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
+        try {
+            session.beginTransaction();
+            vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
 
-      session.merge(vacancyInfo);
+            session.merge(vacancyInfo);
 
-      session.getTransaction().commit();
+            session.getTransaction().commit();
 
-    } catch (Exception e) {
-      session.getTransaction().rollback();
-      throw e;
-    } finally {
-      session.close();
-      sessionFactory.close();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
+        } finally {
+            session.close();
+            sessionFactory.close();
+        }
     }
-  }
 }

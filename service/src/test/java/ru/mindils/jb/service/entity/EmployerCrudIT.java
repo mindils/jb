@@ -17,97 +17,97 @@ import ru.mindils.jb.service.util.HibernateTestUtil;
 @TestInstance(PER_CLASS)
 public class EmployerCrudIT {
 
-  private SessionFactory sessionFactory;
-  private Session session;
+    private SessionFactory sessionFactory;
+    private Session session;
 
-  @BeforeAll
-  void setUpAll() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+    @BeforeAll
+    void setUpAll() {
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
+    }
 
-  @AfterAll
-  void tearDownAll() {
-    sessionFactory.close();
-  }
+    @AfterAll
+    void tearDownAll() {
+        sessionFactory.close();
+    }
 
-  @BeforeEach
-  void setUp() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-  }
+    @BeforeEach
+    void setUp() {
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+    }
 
-  @AfterEach
-  void tearDown() {
-    session.getTransaction().rollback();
-    session.close();
-  }
+    @AfterEach
+    void tearDown() {
+        session.getTransaction().rollback();
+        session.close();
+    }
 
-  @Test
-  void createEmployer() {
-    Employer employer = getEmployer();
+    @Test
+    void createEmployer() {
+        Employer employer = getEmployer();
 
-    session.persist(employer);
-    session.flush();
+        session.persist(employer);
+        session.flush();
 
-    assertThat(employer.getId()).isNotNull();
-  }
+        assertThat(employer.getId()).isNotNull();
+    }
 
-  @Test
-  void readEmployer() {
-    Employer employer = getEmployer();
+    @Test
+    void readEmployer() {
+        Employer employer = getEmployer();
 
-    session.persist(employer);
-    session.flush();
-    session.evict(employer);
+        session.persist(employer);
+        session.flush();
+        session.evict(employer);
 
-    Employer actualResult = session.get(Employer.class, employer.getId());
+        Employer actualResult = session.get(Employer.class, employer.getId());
 
-    assertThat(actualResult).isEqualTo(employer);
-  }
+        assertThat(actualResult).isEqualTo(employer);
+    }
 
-  @Test
-  void updateEmployer() {
-    Employer employer = getEmployer();
+    @Test
+    void updateEmployer() {
+        Employer employer = getEmployer();
 
-    session.persist(employer);
-    session.flush();
+        session.persist(employer);
+        session.flush();
 
-    employer.setName("ООО Рога и копыта 2");
-    session.merge(employer);
-    session.flush();
-    session.evict(employer);
+        employer.setName("ООО Рога и копыта 2");
+        session.merge(employer);
+        session.flush();
+        session.evict(employer);
 
-    Employer actualResult = session.get(Employer.class, employer.getId());
+        Employer actualResult = session.get(Employer.class, employer.getId());
 
-    assertThat(actualResult).isEqualTo(employer);
-  }
+        assertThat(actualResult).isEqualTo(employer);
+    }
 
-  @Test
-  void deleteEmployer() {
-    Employer employer = getEmployer();
+    @Test
+    void deleteEmployer() {
+        Employer employer = getEmployer();
 
-    session.persist(employer);
-    session.flush();
+        session.persist(employer);
+        session.flush();
 
-    session.remove(employer);
-    session.flush();
-    session.evict(employer);
+        session.remove(employer);
+        session.flush();
+        session.evict(employer);
 
-    Employer actualResult = session.get(Employer.class, employer.getId());
+        Employer actualResult = session.get(Employer.class, employer.getId());
 
-    assertThat(actualResult).isNull();
-  }
+        assertThat(actualResult).isNull();
+    }
 
-  private static Employer getEmployer() {
-    return Employer.builder()
-        .id("employer-id-example")
-        .name("ООО Рога и копыта")
-        .trusted(true)
-        .description("Описание работодателя")
-        .detailed(true)
-        .modifiedAt(Instant.now())
-        .createdAt(Instant.now())
-        .createdAt(Instant.now())
-        .build();
-  }
+    private static Employer getEmployer() {
+        return Employer.builder()
+                .id("employer-id-example")
+                .name("ООО Рога и копыта")
+                .trusted(true)
+                .description("Описание работодателя")
+                .detailed(true)
+                .modifiedAt(Instant.now())
+                .createdAt(Instant.now())
+                .createdAt(Instant.now())
+                .build();
+    }
 }
