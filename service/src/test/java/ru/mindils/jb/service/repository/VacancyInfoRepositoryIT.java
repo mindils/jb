@@ -7,57 +7,38 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyInfoRepositoryIT {
+public class VacancyInfoRepositoryIT extends BaseRepositoryIT {
 
-    private static SessionFactory sessionFactory;
-    private static Session session;
-
-    private VacancyRepository vacancyRepository;
-    private EmployerRepository employerRepository;
-    private VacancyInfoRepository vacancyInfoRepository;
+    private static VacancyRepository vacancyRepository;
+    private static EmployerRepository employerRepository;
+    private static VacancyInfoRepository vacancyInfoRepository;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-    }
+        init();
 
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-
-        vacancyRepository = new VacancyRepository(session);
-        employerRepository = new EmployerRepository(session);
-        vacancyInfoRepository = new VacancyInfoRepository(session);
+        vacancyRepository = context.getBean(VacancyRepository.class);
+        employerRepository = context.getBean(EmployerRepository.class);
+        vacancyInfoRepository = context.getBean(VacancyInfoRepository.class);
     }
 
     @AfterEach
     void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        entityManager.getTransaction().rollback();
+        entityManager.close();
     }
 
     @Test
-    public void save() {
+    void save() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
         VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
@@ -70,7 +51,7 @@ public class VacancyInfoRepositoryIT {
     }
 
     @Test
-    public void findById() {
+    void findById() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
         VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
@@ -79,8 +60,8 @@ public class VacancyInfoRepositoryIT {
         vacancyRepository.save(vacancy);
         vacancyInfoRepository.save(vacancyInfo);
 
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
 
@@ -89,7 +70,7 @@ public class VacancyInfoRepositoryIT {
     }
 
     @Test
-    public void update() {
+    void update() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
         VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
@@ -97,12 +78,12 @@ public class VacancyInfoRepositoryIT {
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
         vacancyInfoRepository.save(vacancyInfo);
-        session.flush();
+        entityManager.flush();
 
         vacancyInfo.setAiApproved(BigDecimal.valueOf(0.7777));
         vacancyInfoRepository.update(vacancyInfo);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
 
@@ -111,7 +92,7 @@ public class VacancyInfoRepositoryIT {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
         VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
@@ -119,11 +100,11 @@ public class VacancyInfoRepositoryIT {
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
         vacancyInfoRepository.save(vacancyInfo);
-        session.flush();
+        entityManager.flush();
 
         vacancyInfoRepository.delete(vacancyInfo);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
         assertThat(actualResult.isPresent()).isFalse();

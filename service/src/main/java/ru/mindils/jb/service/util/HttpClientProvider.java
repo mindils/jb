@@ -8,10 +8,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.springframework.stereotype.Service;
 
+@Service
 public class HttpClientProvider {
 
-    private static final HttpClientProvider INSTANCE = new HttpClientProvider();
     private final HttpClient client;
     private final ObjectMapper mapper;
 
@@ -20,10 +21,6 @@ public class HttpClientProvider {
         this.mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    public static HttpClientProvider getInstance() {
-        return INSTANCE;
     }
 
     public <T> T retrieve(URI uri, Class<T> responseType) throws IOException, InterruptedException {

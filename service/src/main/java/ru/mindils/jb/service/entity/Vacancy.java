@@ -91,7 +91,7 @@ public class Vacancy implements BaseEntity<String> {
      */
     private String keySkills;
 
-    private Boolean detailed;
+    @Builder.Default private Boolean detailed = false;
 
     @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private VacancyInfo vacancyInfo;

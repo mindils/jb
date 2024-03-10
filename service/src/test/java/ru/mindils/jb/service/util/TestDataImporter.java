@@ -1,5 +1,6 @@
 package ru.mindils.jb.service.util;
 
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -7,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
@@ -29,9 +27,8 @@ public class TestDataImporter {
     private static int employerCounter = 0;
     private static int vacancyCounter = 0;
 
-    public void importData(SessionFactory sessionFactory) {
-        @Cleanup Session session = sessionFactory.openSession();
-        session.beginTransaction();
+    public void importData(EntityManager entityManager) {
+        entityManager.getTransaction().begin();
 
         List<Employer> employers = generateEmployers();
         List<Vacancy> vacancies = new ArrayList<>();
@@ -54,10 +51,13 @@ public class TestDataImporter {
         // 1 отклоненная вакансия без зарплаты с aiApproved > 0.7
         vacancies.addAll(generateVacancies(employers, VacancyStatusEnum.DECLINED, false, 1, true));
 
-        employers.forEach(session::persist);
-        vacancies.forEach(session::persist);
+        entityManager.persist(employers.get(0));
+        entityManager.flush();
+        employers.forEach(entityManager::persist);
+        vacancies.forEach(entityManager::persist);
 
-        session.getTransaction().commit();
+        entityManager.getTransaction().commit();
+        System.out.println();
     }
 
     private static List<Employer> generateEmployers() {

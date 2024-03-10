@@ -4,69 +4,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.EmployerInfo;
 import ru.mindils.jb.service.entity.EmployerStatusEnum;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class EmployerInfoRepositoryIT {
+public class EmployerInfoRepositoryIT extends BaseRepositoryIT {
 
-    private static SessionFactory sessionFactory;
-    private static Session session;
-
-    private EmployerInfoRepository employerInfoRepository;
-    private EmployerRepository employerRepository;
+    private static EmployerInfoRepository employerInfoRepository;
+    private static EmployerRepository employerRepository;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        employerInfoRepository = new EmployerInfoRepository(session);
-        employerRepository = new EmployerRepository(session);
-    }
-
-    @AfterEach
-    void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        init();
+        employerRepository = context.getBean(EmployerRepository.class);
+        employerInfoRepository = context.getBean(EmployerInfoRepository.class);
     }
 
     @Test
-    public void save() {
+    void save() {
         Employer employer = getEmployer();
         EmployerInfo employerInfo = getEmployerInfo(employer);
         employerRepository.save(employer);
         employerInfoRepository.save(employerInfo);
-        session.flush();
+        entityManager.flush();
 
         assertThat(employerInfo.getId()).isNotNull();
     }
 
     @Test
-    public void findById() {
+    void findById() {
         Employer employer = getEmployer();
         EmployerInfo employerInfo = getEmployerInfo(employer);
         employerRepository.save(employer);
         employerInfoRepository.save(employerInfo);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
 
@@ -75,33 +49,33 @@ public class EmployerInfoRepositoryIT {
     }
 
     @Test
-    public void update() {
+    void update() {
         Employer employer = getEmployer();
         EmployerInfo employerInfo = getEmployerInfo(employer);
         employerRepository.save(employer);
         employerInfoRepository.save(employerInfo);
-        session.flush();
+        entityManager.flush();
 
         employerInfo.setStatus(EmployerStatusEnum.APPROVED);
         employerInfoRepository.update(employerInfo);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
         actualResult.ifPresent(e -> assertThat(e).isEqualTo(employerInfo));
     }
 
     @Test
-    public void delete() {
+    void delete() {
         Employer employer = getEmployer();
         EmployerInfo employerInfo = getEmployerInfo(employer);
         employerRepository.save(employer);
         employerInfoRepository.save(employerInfo);
-        session.flush();
+        entityManager.flush();
 
         employerInfoRepository.delete(employerInfo);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<EmployerInfo> actualResult = employerInfoRepository.findById(employerInfo.getId());
         assertThat(actualResult.isPresent()).isFalse();

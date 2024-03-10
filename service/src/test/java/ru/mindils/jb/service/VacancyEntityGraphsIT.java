@@ -2,50 +2,49 @@ package ru.mindils.jb.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.graph.GraphSemantic;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.mindils.jb.service.config.ApplicationConfiguration;
+import ru.mindils.jb.service.config.TestApplicationConfiguration;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
-import ru.mindils.jb.service.util.HibernateTestUtil;
+import ru.mindils.jb.service.util.TestDataImporter;
 
 public class VacancyEntityGraphsIT {
 
-    private static SessionFactory sessionFactory;
-    private Session session;
+    private static EntityManager entityManager;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.getEnvironment().setActiveProfiles("test");
+        context.register(TestApplicationConfiguration.class, ApplicationConfiguration.class);
+        context.refresh();
+        entityManager = context.getBean(EntityManager.class);
+        TestDataImporter.importData(entityManager);
     }
 
     @BeforeEach
     void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
+        entityManager.getTransaction().begin();
     }
 
     @AfterEach
     void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        entityManager.getTransaction().rollback();
+        entityManager.close();
     }
 
     @Test
@@ -54,18 +53,16 @@ public class VacancyEntityGraphsIT {
         Vacancy vacancy = getVacancy(employer);
         VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
-        session.persist(employer);
-        session.persist(vacancy);
-        session.persist(vacancyInfo);
-        session.flush();
-        session.evict(employer);
-        session.evict(vacancy);
-        session.evict(vacancyInfo);
+        entityManager.persist(employer);
+        entityManager.persist(vacancy);
+        entityManager.persist(vacancyInfo);
+        entityManager.flush();
+        entityManager.clear();
 
         Map<String, Object> properties =
-                Map.of(GraphSemantic.FETCH.name(), session.getEntityGraph("Vacancy.detail"));
+                Map.of(GraphSemantic.FETCH.name(), entityManager.getEntityGraph("Vacancy.detail"));
 
-        Vacancy actualResult = session.find(Vacancy.class, vacancy.getId(), properties);
+        Vacancy actualResult = entityManager.find(Vacancy.class, vacancy.getId(), properties);
 
         assertThat(actualResult).isEqualTo(vacancy);
     }

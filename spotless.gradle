@@ -1,0 +1,12 @@
+spotless {
+    java {
+        target 'src/**/*.java'
+        removeUnusedImports()
+        cleanthat()
+        googleJavaFormat()
+                .aosp()
+                .reflowLongStrings();
+
+        formatAnnotations()
+    }
+}

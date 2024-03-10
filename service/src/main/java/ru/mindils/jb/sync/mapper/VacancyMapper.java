@@ -7,16 +7,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.sync.dto.BriefVacancyDto;
 import ru.mindils.jb.sync.dto.DetailedVacancyDto;
 import ru.mindils.jb.sync.dto.KeySkillDto;
 
-@Mapper(uses = {EmployerMapper.class})
+@Mapper(
+        uses = {EmployerMapper.class},
+        componentModel = "spring")
 public interface VacancyMapper {
-
-    VacancyMapper INSTANCE = Mappers.getMapper(VacancyMapper.class);
 
     @Mapping(source = "area.name", target = "city")
     @Mapping(source = "type.id", target = "type")

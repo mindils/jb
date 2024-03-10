@@ -4,49 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.service.entity.VacancyFilter;
 import ru.mindils.jb.service.entity.VacancyFilterParams;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class VacancyFilterRepositoryIT {
+public class VacancyFilterRepositoryIT extends BaseRepositoryIT {
 
-    private static SessionFactory sessionFactory;
-    private static Session session;
-
-    private VacancyFilterRepository vacancyFilterRepository;
+    private static VacancyFilterRepository vacancyFilterRepository;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        vacancyFilterRepository = new VacancyFilterRepository(session);
-    }
-
-    @AfterEach
-    void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        init();
+        vacancyFilterRepository = context.getBean(VacancyFilterRepository.class);
     }
 
     @Test
-    public void save() {
+    void save() {
         VacancyFilter vacancyFilter = getVacancyFilter();
         vacancyFilterRepository.save(vacancyFilter);
 
@@ -54,11 +28,11 @@ public class VacancyFilterRepositoryIT {
     }
 
     @Test
-    public void findById() {
+    void findById() {
         VacancyFilter vacancyFilter = getVacancyFilter();
         vacancyFilterRepository.save(vacancyFilter);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyFilter> actualResult =
                 vacancyFilterRepository.findById(vacancyFilter.getId());
@@ -68,15 +42,15 @@ public class VacancyFilterRepositoryIT {
     }
 
     @Test
-    public void update() {
+    void update() {
         VacancyFilter vacancyFilter = getVacancyFilter();
         vacancyFilterRepository.save(vacancyFilter);
-        session.flush();
+        entityManager.flush();
 
         vacancyFilter.setName("newName");
         vacancyFilterRepository.update(vacancyFilter);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyFilter> actualResult =
                 vacancyFilterRepository.findById(vacancyFilter.getId());
@@ -86,14 +60,14 @@ public class VacancyFilterRepositoryIT {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         VacancyFilter vacancyFilter = getVacancyFilter();
         vacancyFilterRepository.save(vacancyFilter);
-        session.flush();
+        entityManager.flush();
 
         vacancyFilterRepository.delete(vacancyFilter);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<VacancyFilter> actualResult =
                 vacancyFilterRepository.findById(vacancyFilter.getId());

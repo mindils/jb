@@ -2,61 +2,37 @@ package ru.mindils.jb.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 import ru.mindils.jb.service.util.TestDataImporter;
 
-public class VacancyRepositoryIT {
+public class VacancyRepositoryIT extends BaseRepositoryIT {
 
-    private static SessionFactory sessionFactory;
-    private static Session session;
-
-    private VacancyRepository vacancyRepository;
-    private EmployerRepository employerRepository;
+    private static VacancyRepository vacancyRepository;
+    private static EmployerRepository employerRepository;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-        TestDataImporter.importData(sessionFactory);
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        vacancyRepository = new VacancyRepository(session);
-        employerRepository = new EmployerRepository(session);
-    }
-
-    @AfterEach
-    void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        init();
+        var entityManager = context.getBean(EntityManager.class);
+        TestDataImporter.importData(entityManager);
+        vacancyRepository = context.getBean(VacancyRepository.class);
+        employerRepository = context.getBean(EmployerRepository.class);
     }
 
     @Test
-    public void findByFilter() {
+    void findByFilter() {
         AppVacancyFilterDto filter =
                 AppVacancyFilterDto.builder()
                         .aiApproved(BigDecimal.valueOf(0.7))
@@ -82,14 +58,14 @@ public class VacancyRepositoryIT {
     }
 
     @Test
-    public void findById() {
+    void findById() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
 
@@ -98,18 +74,18 @@ public class VacancyRepositoryIT {
     }
 
     @Test
-    public void update() {
+    void update() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        session.flush();
+        entityManager.flush();
 
         vacancy.setName("new Vacancy");
         vacancyRepository.update(vacancy);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
 
@@ -118,17 +94,17 @@ public class VacancyRepositoryIT {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        session.flush();
+        entityManager.flush();
 
         vacancyRepository.delete(vacancy);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
         assertThat(actualResult.isPresent()).isFalse();

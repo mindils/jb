@@ -1,17 +1,14 @@
 package ru.mindils.jb;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import ru.mindils.jb.service.util.HibernateUtil;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.mindils.jb.service.config.ApplicationConfiguration;
 
 public class MainService {
 
     public static void main(String[] args) {
-        try (SessionFactory sessionFactory = HibernateUtil.buildSessionFactory();
-                Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            // Create a new object
-            session.getTransaction().commit();
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.register(ApplicationConfiguration.class);
+            context.refresh();
         }
     }
 }

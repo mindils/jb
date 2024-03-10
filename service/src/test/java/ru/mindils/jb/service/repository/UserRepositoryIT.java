@@ -4,48 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.service.entity.User;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 
-public class UserRepositoryIT {
+public class UserRepositoryIT extends BaseRepositoryIT {
 
-    private static SessionFactory sessionFactory;
-    private static Session session;
-
-    private UserRepository userRepository;
+    private static UserRepository userRepository;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-        userRepository = new UserRepository(session);
-    }
-
-    @AfterEach
-    void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        init();
+        userRepository = context.getBean(UserRepository.class);
     }
 
     @Test
-    public void save() {
+    void save() {
         User user = getUser();
         userRepository.save(user);
 
@@ -53,11 +27,11 @@ public class UserRepositoryIT {
     }
 
     @Test
-    public void findById() {
+    void findById() {
         User user = getUser();
         userRepository.save(user);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<User> actualResult = userRepository.findById(user.getId());
 
@@ -66,15 +40,15 @@ public class UserRepositoryIT {
     }
 
     @Test
-    public void update() {
+    void update() {
         User user = getUser();
         userRepository.save(user);
-        session.flush();
+        entityManager.flush();
 
         user.setUsername("newUsername");
         userRepository.update(user);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<User> actualResult = userRepository.findById(user.getId());
 
@@ -83,14 +57,14 @@ public class UserRepositoryIT {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         User user = getUser();
         userRepository.save(user);
-        session.flush();
+        entityManager.flush();
 
         userRepository.delete(user);
-        session.flush();
-        session.clear();
+        entityManager.flush();
+        entityManager.clear();
 
         Optional<User> actualResult = userRepository.findById(user.getId());
         assertThat(actualResult.isPresent()).isFalse();

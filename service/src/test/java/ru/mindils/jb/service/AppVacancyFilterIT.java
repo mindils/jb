@@ -3,54 +3,51 @@ package ru.mindils.jb.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.mindils.jb.service.config.ApplicationConfiguration;
+import ru.mindils.jb.service.config.TestApplicationConfiguration;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.QVacancy;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.service.util.VacancyCriteriaApiFilterBuilder;
 import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
-import ru.mindils.jb.service.util.HibernateTestUtil;
 import ru.mindils.jb.service.util.TestDataImporter;
 
 public class AppVacancyFilterIT {
 
-    private static SessionFactory sessionFactory;
-    private Session session;
+    private static EntityManager entityManager;
 
     @BeforeAll
     static void setUpAll() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-        TestDataImporter.importData(sessionFactory);
-    }
-
-    @AfterAll
-    static void tearDownAll() {
-        sessionFactory.close();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.getEnvironment().setActiveProfiles("test");
+        context.register(TestApplicationConfiguration.class, ApplicationConfiguration.class);
+        context.refresh();
+        entityManager = context.getBean(EntityManager.class);
+        TestDataImporter.importData(entityManager);
     }
 
     @BeforeEach
     void setUp() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
+        entityManager.getTransaction().begin();
     }
 
     @AfterEach
     void tearDown() {
-        session.getTransaction().rollback();
-        session.close();
+        entityManager.getTransaction().rollback();
+        entityManager.close();
     }
 
     @Test
@@ -63,14 +60,14 @@ public class AppVacancyFilterIT {
                         .salaryTo(300000)
                         .build();
 
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
         Root<Vacancy> vacancy = criteria.from(Vacancy.class);
         vacancy.fetch("vacancyInfo", JoinType.LEFT);
 
         criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
 
-        List<Vacancy> actualResult = session.createQuery(criteria).getResultList();
+        List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
 
         assertThat(actualResult).hasSize(1);
     }
@@ -84,14 +81,14 @@ public class AppVacancyFilterIT {
                         .salaryTo(1000000)
                         .build();
 
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
         Root<Vacancy> vacancy = criteria.from(Vacancy.class);
 
         vacancy.fetch("vacancyInfo", JoinType.LEFT);
         criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
 
-        List<Vacancy> actualResult = session.createQuery(criteria).getResultList();
+        List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
 
         assertThat(actualResult).isEmpty();
     }
@@ -106,7 +103,7 @@ public class AppVacancyFilterIT {
                         .salaryTo(300000)
                         .build();
 
-        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(session);
+        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
 
         List<Vacancy> actualResult =
                 vacancyJPAQuery
@@ -129,7 +126,7 @@ public class AppVacancyFilterIT {
                         .salaryTo(1000000)
                         .build();
 
-        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(session);
+        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
 
         List<Vacancy> actualResult =
                 vacancyJPAQuery
