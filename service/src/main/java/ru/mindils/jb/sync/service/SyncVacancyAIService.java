@@ -5,49 +5,48 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyInfo;
+import ru.mindils.jb.service.entity.VacancyStatusEnum;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SyncVacancyAIService {
 
     private final VacancyClientService vacancyApiClientService;
     private final EntityManager entityManager;
 
-    /**
-     * TODO: переписать, тут надо чтобы мы получали вакансии где нет рейтинга и обновляли его в
-     * данном случае может быть не создана запись в vacancy_info и мы не обновим рейтинг
-     */
-    public void syncVacancyAiRatingsAll() {
+    public boolean syncVacancyAiRatingsBatch() {
+        List<Vacancy> vacancies =
+                entityManager
+                        .createQuery(
+                                "select e from Vacancy e left join e.vacancyInfo i where"
+                                        + " i.aiApproved is null",
+                                Vacancy.class)
+                        .setMaxResults(100)
+                        .getResultList();
 
-        while (true) {
-            List<VacancyInfo> vacancies =
-                    entityManager
-                            .createQuery(
-                                    "select e from VacancyInfo e join e.vacancy where"
-                                            + " e.aiApproved is null",
-                                    VacancyInfo.class)
-                            .setFirstResult(0)
-                            .setMaxResults(100)
-                            .getResultList();
+        vacancies.forEach(this::syncVacancyAiRating);
 
-            if (vacancies.isEmpty()) {
-                break;
-            }
-
-            // тут можно без сна, т.к. наш сервер )
-            vacancies.forEach(this::syncVacancyAiRating);
-        }
+        return !vacancies.isEmpty();
     }
 
-    public void syncVacancyAiRating(VacancyInfo vacancyInfo) {
-        String sb =
-                vacancyInfo.getVacancy().getName() + " " + vacancyInfo.getVacancy().getKeySkills();
+    public void syncVacancyAiRating(Vacancy vacancy) {
+        String sb = vacancy.getName() + " " + vacancy.getKeySkills();
         String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
 
-        entityManager.getTransaction().begin();
+        VacancyInfo vacancyInfo = vacancy.getVacancyInfo();
+
+        if (vacancyInfo == null) {
+            vacancyInfo =
+                    VacancyInfo.builder().vacancy(vacancy).status(VacancyStatusEnum.NEW).build();
+
+            vacancy.setVacancyInfo(vacancyInfo);
+        }
+
         vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
-        entityManager.merge(vacancyInfo);
-        entityManager.getTransaction().commit();
+        entityManager.merge(vacancy);
     }
 }

@@ -41,8 +41,6 @@ public interface EmployerMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "id", source = "id", defaultValue = "0")
-    @Mapping(
-            target = "detailed",
-            expression = "java(entity.getId() == null || entity.getId().equals(\"0\"))")
+    @Mapping(target = "detailed", defaultValue = "true")
     Employer map(DetailedEmployerDto entity, @MappingTarget Employer employer);
 }

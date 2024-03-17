@@ -1,121 +1,110 @@
-package ru.mindils.jb.service.repository;
+package ru.mindils.jb.integration.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mindils.jb.integration.service.ITBase;
+import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
+import ru.mindils.jb.service.repository.EmployerRepository;
+import ru.mindils.jb.service.repository.VacancyRepository;
 
-public class VacancyInfoRepositoryIT extends BaseRepositoryIT {
+@RequiredArgsConstructor
+@Transactional
+public class VacancyRepositoryIT extends ITBase {
 
-    private static VacancyRepository vacancyRepository;
-    private static EmployerRepository employerRepository;
-    private static VacancyInfoRepository vacancyInfoRepository;
+    private final VacancyRepository vacancyRepository;
+    private final EmployerRepository employerRepository;
+    private final EntityManager entityManager;
 
-    @BeforeAll
-    static void setUpAll() {
-        init();
+    @Test
+    void findByFilter() {
+        AppVacancyFilterDto filter =
+                AppVacancyFilterDto.builder()
+                        .aiApproved(BigDecimal.valueOf(0.7))
+                        .status(VacancyStatusEnum.APPROVED)
+                        .salaryFrom(100000)
+                        .salaryTo(300000)
+                        .build();
 
-        vacancyRepository = context.getBean(VacancyRepository.class);
-        employerRepository = context.getBean(EmployerRepository.class);
-        vacancyInfoRepository = context.getBean(VacancyInfoRepository.class);
-    }
+        List<Vacancy> actualResult = vacancyRepository.findByFilter(filter);
 
-    @AfterEach
-    void tearDown() {
-        entityManager.getTransaction().rollback();
-        entityManager.close();
+        assertThat(actualResult).hasSize(1);
     }
 
     @Test
-    void save() {
+    public void save() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
-        VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        vacancyInfoRepository.save(vacancyInfo);
 
-        assertThat(vacancyInfo.getId()).isNotNull();
+        assertThat(vacancy.getId()).isNotNull();
     }
 
     @Test
     void findById() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
-        VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        vacancyInfoRepository.save(vacancyInfo);
-
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
+        Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
 
-        assertThat(actualResult.isPresent()).isTrue();
-        assertThat(actualResult.get()).isEqualTo(vacancyInfo);
+        assertThat(actualResult).isPresent();
+        assertThat(actualResult.get()).isEqualTo(vacancy);
     }
 
     @Test
     void update() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
-        VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        vacancyInfoRepository.save(vacancyInfo);
         entityManager.flush();
 
-        vacancyInfo.setAiApproved(BigDecimal.valueOf(0.7777));
-        vacancyInfoRepository.update(vacancyInfo);
+        vacancy.setName("new Vacancy");
+        vacancyRepository.update(vacancy);
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
+        Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
 
         assertThat(actualResult.isPresent()).isTrue();
-        assertThat(actualResult.get()).isEqualTo(vacancyInfo);
+        assertThat(actualResult.get()).isEqualTo(vacancy);
     }
 
     @Test
     void delete() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
-        VacancyInfo vacancyInfo = getVacancyInfo(vacancy);
 
         employerRepository.save(employer);
         vacancyRepository.save(vacancy);
-        vacancyInfoRepository.save(vacancyInfo);
         entityManager.flush();
 
-        vacancyInfoRepository.delete(vacancyInfo);
+        vacancyRepository.delete(vacancy);
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyInfo> actualResult = vacancyInfoRepository.findById(vacancyInfo.getId());
+        Optional<Vacancy> actualResult = vacancyRepository.findById(vacancy.getId());
         assertThat(actualResult.isPresent()).isFalse();
-    }
-
-    private static VacancyInfo getVacancyInfo(Vacancy vacancy) {
-        return VacancyInfo.builder()
-                .vacancy(vacancy)
-                .aiApproved(BigDecimal.valueOf(0.7532))
-                .status(VacancyStatusEnum.NEW)
-                .build();
     }
 
     private static Employer getEmployer() {

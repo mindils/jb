@@ -1,29 +1,31 @@
 plugins {
-    id 'io.freefair.lombok' version "${lombokPluginVersion}"
-    id "com.diffplug.spotless" version "${spotlessVersion}"
+    id 'io.freefair.lombok'
+    id 'com.diffplug.spotless'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 apply from: '../spotless.gradle'
+apply from: '../version.gradle'
 
 dependencies {
     implementation project(':common')
 
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonDatabindVersion}"
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
 
-    implementation "org.hibernate:hibernate-core:${hibernateCoreVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${versions.jacksonDatabindVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jacksonDatabindVersion}"
+    implementation "org.mapstruct:mapstruct:${versions.mapstructVersion}"
 
     // querydsl
-    implementation "javax.annotation:javax.annotation-api:${javaxAnnotationVersion}"
-    implementation "com.querydsl:querydsl-jpa:${querydslVersion}"
+    implementation "javax.annotation:javax.annotation-api:${versions.javaxAnnotationVersion}"
+    implementation "com.querydsl:querydsl-jpa:${versions.querydslVersion}"
 
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api:${jakartaAnnotationVersion}"
-    annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api:${versions.jakartaAnnotationVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${versions.querydslVersion}"
 
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstructVersion}"
 
-    runtimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
-
-    testImplementation "org.testcontainers:postgresql:${testContainersPostgresVersion}"
+    testImplementation "org.testcontainers:postgresql"
 }

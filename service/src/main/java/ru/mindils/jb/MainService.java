@@ -1,14 +1,12 @@
 package ru.mindils.jb;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.mindils.jb.service.config.ApplicationConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class MainService {
 
     public static void main(String[] args) {
-        try (var context = new AnnotationConfigApplicationContext()) {
-            context.register(ApplicationConfiguration.class);
-            context.refresh();
-        }
+        SpringApplication.run(MainService.class, args);
     }
 }

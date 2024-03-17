@@ -1,21 +1,23 @@
-package ru.mindils.jb.service.repository;
+package ru.mindils.jb.integration.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.entity.Employer;
+import ru.mindils.jb.service.repository.EmployerRepository;
 
-public class EmployerRepositoryIT extends BaseRepositoryIT {
-    private static EmployerRepository employerRepository;
+@RequiredArgsConstructor
+@Transactional
+public class EmployerRepositoryIT extends ITBase {
 
-    @BeforeAll
-    static void setUpAll() {
-        init();
-        employerRepository = context.getBean(EmployerRepository.class);
-    }
+    private final EmployerRepository employerRepository;
+    private final EntityManager entityManager;
 
     @Test
     void save() {

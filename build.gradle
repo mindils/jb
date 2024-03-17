@@ -1,6 +1,11 @@
 plugins {
-    id "com.diffplug.spotless" version "${spotlessVersion}"
+    id "com.diffplug.spotless" version "6.25.0" apply false
+    id 'org.springframework.boot' version '3.2.3' apply false
+    id 'io.freefair.lombok' version "8.6" apply false
+    id "io.spring.dependency-management" version "1.1.4" apply false
 }
+
+apply from: 'version.gradle'
 
 allprojects {
     repositories {
@@ -19,13 +24,10 @@ subprojects {
     targetCompatibility = '17'
 
     dependencies {
-        implementation "org.springframework:spring-core:${springCoreVersion}"
-        implementation "org.springframework:spring-context:${springCoreVersion}"
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.springframework.boot:spring-boot-starter-quartz'
 
-        testImplementation platform("org.junit:junit-bom:${junitVersion}")
-        testImplementation "org.junit.jupiter:junit-jupiter"
-        testImplementation "org.assertj:assertj-core:${assertjCoreVersion}"
-        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 
     jacocoTestReport {

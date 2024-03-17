@@ -1,5 +1,7 @@
 plugins {
-    id "com.diffplug.spotless" version "${spotlessVersion}"
+    id 'com.diffplug.spotless'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
 apply from: '../spotless.gradle'

@@ -13,10 +13,9 @@ public class EmployerUtil {
     public static Employer getEmployerEmpty(String id) {
         return Employer.builder()
                 .id(id)
+                .name("<EMPTY>")
                 .trusted(false)
                 .description("")
-                .vacancy(null)
-                .employerInfo(null)
                 .createdAt(null)
                 .modifiedAt(null)
                 .detailed(true)

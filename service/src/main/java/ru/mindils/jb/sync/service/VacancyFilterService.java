@@ -16,27 +16,20 @@ public class VacancyFilterService {
     private final EntityManager entityManager;
 
     public List<Map<String, String>> getDefaultFilter() {
-        try {
+        List<VacancyFilter> result =
+                entityManager
+                        .createQuery("from VacancyFilter where code = :filter", VacancyFilter.class)
+                        .setParameter("filter", VACANCY_FILTER_DEFAULT)
+                        .getResultList();
 
-            entityManager.getTransaction().begin();
-            List<VacancyFilter> result =
-                    entityManager
-                            .createQuery(
-                                    "from VacancyFilter where code = :filter", VacancyFilter.class)
-                            .setParameter("filter", VACANCY_FILTER_DEFAULT)
-                            .getResultList();
+        VacancyFilter vacancyFilter = result.isEmpty() ? null : result.get(0);
 
-            VacancyFilter vacancyFilter = result.isEmpty() ? null : result.get(0);
-
-            if (vacancyFilter == null) {
-                return Collections.emptyList();
-            } else {
-                return vacancyFilter.getParams().stream()
-                        .map(param -> Map.of(param.getParamName(), param.getParamValue()))
-                        .toList();
-            }
-        } finally {
-            entityManager.getTransaction().commit();
+        if (vacancyFilter == null) {
+            return Collections.emptyList();
+        } else {
+            return vacancyFilter.getParams().stream()
+                    .map(param -> Map.of(param.getParamName(), param.getParamValue()))
+                    .toList();
         }
     }
 }

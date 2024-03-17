@@ -1,7 +1,6 @@
 package ru.mindils.jb.sync.service;
 
 import jakarta.persistence.EntityManager;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +9,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.sync.dto.BriefVacancyDto;
 import ru.mindils.jb.sync.dto.DetailedEmployerDto;
 import ru.mindils.jb.sync.dto.DetailedVacancyDto;
@@ -23,6 +22,7 @@ import ru.mindils.jb.sync.util.EmployerUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SyncVacancyService {
 
     private static final String DEFAULT_FILTER_PERIOD = "30";
@@ -33,126 +33,64 @@ public class SyncVacancyService {
     private final EmployerMapper employerMapper;
     private final EntityManager entityManager;
 
-    @SneakyThrows
-    public void syncEmployerDetailsAll() {
+    public boolean syncEmployerDetailsBatch() {
+        List<Employer> employers =
+                entityManager
+                        .createQuery(
+                                "select e from Employer e where e.detailed = false", Employer.class)
+                        .setMaxResults(10)
+                        .getResultList();
 
-        // вакансий может быть много, поэтому заполняем пачками
-        while (true) {
-            List<Employer> employers =
-                    entityManager
-                            .createQuery(
-                                    "select e from Employer e where e.detailed = false",
-                                    Employer.class)
-                            .setFirstResult(0)
-                            .setMaxResults(10)
-                            .getResultList();
-
-            if (employers.isEmpty()) {
-                break;
-            }
-
-            employers.forEach(
-                    employer -> {
-                        syncEmployerById(employer.getId());
-                    });
-
-            // спим, чтобы не нагружать hh
-            // TODO: попробовать переделать на scheduler когда добавим spring
-            //  employers.forEach(employer -> {
-            //    scheduler.schedule(() -> syncEmployerById(employer), 1, TimeUnit.SECONDS);
-            //  });
-            Thread.sleep(1000);
-        }
+        employers.forEach(
+                employer -> {
+                    syncEmployerById(employer.getId());
+                });
+        entityManager.flush();
+        return !employers.isEmpty();
     }
 
     @SneakyThrows
-    public void syncVacancyDetailsAll() {
+    public boolean syncVacancyDetailsBatch() {
+        List<Vacancy> vacancies =
+                entityManager
+                        .createQuery(
+                                "select e from Vacancy e where e.detailed = false", Vacancy.class)
+                        .setMaxResults(100)
+                        .getResultList();
 
-        while (true) {
-            List<Vacancy> vacancies =
-                    entityManager
-                            .createQuery(
-                                    "select e from Vacancy e where e.detailed = false",
-                                    Vacancy.class)
-                            .setFirstResult(0)
-                            .setMaxResults(100)
-                            .getResultList();
-
-            if (vacancies.isEmpty()) {
-                break;
-            }
-
-            vacancies.forEach(
-                    vacancy -> {
-                        syncVacancyById(vacancy.getId());
-                    });
-
-            // спим, чтобы не нагружать hh
-            // TODO: попробовать переделать на scheduler когда добавим spring
-            //  vacancies.forEach(vacancy -> {
-            //    scheduler.schedule(() -> syncVacancyById(vacancy), 1, TimeUnit.SECONDS);
-            //  });
-            Thread.sleep(1000);
-        }
+        vacancies.forEach(
+                vacancy -> {
+                    syncVacancyById(vacancy.getId());
+                });
+        entityManager.flush();
+        return !vacancies.isEmpty();
     }
 
-    public void syncVacancyByDefaultFilterAll() {
-        syncVacancyByDefaultFilterAll(DEFAULT_FILTER_PERIOD);
+    public void syncVacancyByDefaultFilterBatch() {
+        syncVacancyByDefaultFilterBatch(DEFAULT_FILTER_PERIOD, 0);
     }
 
     @SneakyThrows
-    public void syncVacancyByDefaultFilterAll(String period) {
+    public int syncVacancyByDefaultFilterBatch(String period, int page) {
         List<Map<String, String>> defaultFilter = vacancyFilterService.getDefaultFilter();
 
-        int page = 0;
+        List<Map<String, String>> updatedFilter = new ArrayList<>(defaultFilter);
 
-        VacancyListResponseDto vacancyListResponseDto;
+        updatedFilter.add(Map.of("period", period));
+        updatedFilter.add(Map.of("per_page", DEFAULT_ITEMS_PER_PAGE));
+        updatedFilter.add(Map.of("page", String.valueOf(page)));
 
-        do {
-            List<Map<String, String>> updatedFilter = new ArrayList<>(defaultFilter);
+        var vacancyListResponseDto = syncVacancyFilter(updatedFilter);
+        entityManager.flush();
 
-            updatedFilter.add(Map.of("period", period));
-            updatedFilter.add(Map.of("per_page", DEFAULT_ITEMS_PER_PAGE));
-            updatedFilter.add(Map.of("page", String.valueOf(page)));
-
-            // задержка, чтобы не грузить hh.ru
-            Thread.sleep(1000);
-
-            vacancyListResponseDto = syncVacancyFilter(updatedFilter);
-            page = vacancyListResponseDto.getPage() + 1;
-
-        } while (vacancyListResponseDto.getPage() < vacancyListResponseDto.getPages() - 1);
-    }
-
-    /**
-     * TODO: переписать, тут надо чтобы мы получали вакансии где нет рейтинга и обновляли его в
-     * данном случае может быть не создана запись в vacancy_info и мы не обновим рейтинг
-     */
-    public void syncVacancyAiRatingsAll() {
-        while (true) {
-            List<VacancyInfo> vacancies =
-                    entityManager
-                            .createQuery(
-                                    "select e from VacancyInfo e join e.vacancy where"
-                                            + " e.aiApproved is null",
-                                    VacancyInfo.class)
-                            .setFirstResult(0)
-                            .setMaxResults(100)
-                            .getResultList();
-
-            if (vacancies.isEmpty()) {
-                break;
-            }
-
-            // тут можно без сна, т.к. наш сервер )
-            vacancies.forEach(this::syncVacancyAiRating);
+        if (vacancyListResponseDto.getPage() < vacancyListResponseDto.getPages() - 1) {
+            return vacancyListResponseDto.getPage() + 1;
         }
+        return -1;
     }
 
     public void syncEmployerById(String id) {
         DetailedEmployerDto objects = vacancyApiClientService.loadEmployerById(id);
-
-        entityManager.getTransaction().begin();
 
         if (objects.getId() == null) {
             // если не нашли работодателя, то создаем пустого
@@ -163,14 +101,11 @@ public class SyncVacancyService {
             Employer employerMap = entityManager.merge(employerMapper.map(objects, vacancy));
             entityManager.merge(employerMap);
         }
-
-        entityManager.getTransaction().commit();
     }
 
     public void syncVacancyById(String id) {
         DetailedVacancyDto vacancyDto = vacancyApiClientService.loadVacancyById(id);
 
-        entityManager.getTransaction().begin();
         Vacancy vacancy = entityManager.find(Vacancy.class, id);
 
         // Workaround:
@@ -186,20 +121,6 @@ public class SyncVacancyService {
             entityManager.merge(mapVacancy.getEmployer());
             entityManager.merge(mapVacancy);
         }
-        entityManager.getTransaction().commit();
-    }
-
-    public void syncVacancyAiRating(VacancyInfo vacancyInfo) {
-        String sb =
-                vacancyInfo.getVacancy().getName() + " " + vacancyInfo.getVacancy().getKeySkills();
-        String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
-
-        entityManager.getTransaction().begin();
-        vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
-
-        entityManager.merge(vacancyInfo);
-
-        entityManager.getTransaction().commit();
     }
 
     private VacancyListResponseDto syncVacancyFilter(List<Map<String, String>> defaultFilter) {
@@ -208,8 +129,6 @@ public class SyncVacancyService {
 
         List<String> vacancyIds =
                 vacancyListResponseDto.getItems().stream().map(BriefVacancyDto::getId).toList();
-
-        entityManager.getTransaction().begin();
 
         // Получаем все которые ранее были загружены, чтобы обновить
         Map<String, Vacancy> vacancyMaps =
@@ -239,7 +158,6 @@ public class SyncVacancyService {
                             entityManager.merge(vacancy);
                         });
 
-        entityManager.getTransaction().commit();
         return vacancyListResponseDto;
     }
 }

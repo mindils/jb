@@ -1,23 +1,26 @@
-package ru.mindils.jb.service.repository;
+package ru.mindils.jb.integration.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mindils.jb.integration.service.ITBase;
+import ru.mindils.jb.integration.service.annotation.IT;
 import ru.mindils.jb.service.entity.VacancyFilter;
 import ru.mindils.jb.service.entity.VacancyFilterParams;
+import ru.mindils.jb.service.repository.VacancyFilterRepository;
 
-public class VacancyFilterRepositoryIT extends BaseRepositoryIT {
+@IT
+@RequiredArgsConstructor
+@Transactional
+public class VacancyFilterRepositoryIT extends ITBase {
 
-    private static VacancyFilterRepository vacancyFilterRepository;
-
-    @BeforeAll
-    static void setUpAll() {
-        init();
-        vacancyFilterRepository = context.getBean(VacancyFilterRepository.class);
-    }
+    private final VacancyFilterRepository vacancyFilterRepository;
+    private final EntityManager entityManager;
 
     @Test
     void save() {

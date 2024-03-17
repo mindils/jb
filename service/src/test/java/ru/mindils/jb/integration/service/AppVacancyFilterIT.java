@@ -1,4 +1,4 @@
-package ru.mindils.jb.service;
+package ru.mindils.jb.integration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,45 +10,19 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.mindils.jb.service.config.ApplicationConfiguration;
-import ru.mindils.jb.service.config.TestApplicationConfiguration;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.QVacancy;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.service.util.VacancyCriteriaApiFilterBuilder;
 import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
-import ru.mindils.jb.service.util.TestDataImporter;
 
-public class AppVacancyFilterIT {
+@RequiredArgsConstructor
+public class AppVacancyFilterIT extends ITBase {
 
-    private static EntityManager entityManager;
-
-    @BeforeAll
-    static void setUpAll() {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.getEnvironment().setActiveProfiles("test");
-        context.register(TestApplicationConfiguration.class, ApplicationConfiguration.class);
-        context.refresh();
-        entityManager = context.getBean(EntityManager.class);
-        TestDataImporter.importData(entityManager);
-    }
-
-    @BeforeEach
-    void setUp() {
-        entityManager.getTransaction().begin();
-    }
-
-    @AfterEach
-    void tearDown() {
-        entityManager.getTransaction().rollback();
-        entityManager.close();
-    }
+    private final EntityManager entityManager;
 
     @Test
     void queryCriteriaApiApproved() {
