@@ -1,28 +1,23 @@
 package ru.mindils.jb.service.repository;
 
-import com.querydsl.jpa.impl.JPAQuery;
-import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
-import ru.mindils.jb.service.dto.AppVacancyFilterDto;
-import ru.mindils.jb.service.entity.QVacancy;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 
 @Repository
-public class VacancyRepository extends RepositoryBase<String, Vacancy> {
+public interface VacancyRepository
+        extends JpaRepository<Vacancy, String>, QuerydslPredicateExecutor<Vacancy> {
 
-    public VacancyRepository(EntityManager entityManager) {
-        super(Vacancy.class, entityManager);
-    }
+    Slice<Vacancy> findAllByDetailed(boolean detailed, PageRequest pageable);
 
-    public List<Vacancy> findByFilter(AppVacancyFilterDto filter) {
-        return new JPAQuery<>(getEntityManager())
-                .select(QVacancy.vacancy)
-                .from(QVacancy.vacancy)
-                .leftJoin(QVacancy.vacancy.vacancyInfo)
-                .fetchJoin()
-                .where(VacancyQueryDslFilterBuilder.build(filter))
-                .fetch();
-    }
+    @Query("select e from Vacancy e where e.id in :ids")
+    List<Vacancy> findByIdIn(List<String> ids);
+
+    @Query("select e from Vacancy e left join e.vacancyInfo i where i.aiApproved is null")
+    Slice<Vacancy> findVacanciesWithoutAiApproved(PageRequest pageable);
 }

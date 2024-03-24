@@ -7,13 +7,11 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.entity.User;
 import ru.mindils.jb.service.repository.UserRepository;
 
 @RequiredArgsConstructor
-@Transactional
 public class UserRepositoryIT extends ITBase {
 
     private final UserRepository userRepository;
@@ -47,7 +45,7 @@ public class UserRepositoryIT extends ITBase {
         entityManager.flush();
 
         user.setUsername("newUsername");
-        userRepository.update(user);
+        userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
 

@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,8 @@ import lombok.ToString;
 @Builder
 @Data
 @ToString(exclude = {"vacancy", "employerInfo"})
-@EqualsAndHashCode(exclude = {"vacancy", "employerInfo"})
+@EqualsAndHashCode(exclude = {"vacancy", "employerInfo", "createdAt", "modifiedAt"})
+@Table(name = "jb_employer")
 public class Employer implements BaseEntity<String> {
 
     /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */

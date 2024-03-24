@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
@@ -19,7 +18,6 @@ import ru.mindils.jb.service.repository.VacancyRepository;
 import ru.mindils.jb.sync.service.SyncVacancyAIService;
 
 @RequiredArgsConstructor
-@Transactional
 public class SyncVacancyAIServiceIT extends ITBase {
 
     private final SyncVacancyAIService syncVacancyAIService;
@@ -28,8 +26,7 @@ public class SyncVacancyAIServiceIT extends ITBase {
     private final EntityManager entityManager;
 
     @Test
-    void testSyncVacancyAiRating() {
-
+    void syncVacancyAiRating() {
         Employer employer = getEmployer();
         Vacancy vacancy = getVacancy(employer);
 

@@ -1,17 +1,22 @@
 package ru.mindils.jb.sync.service;
 
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Vacancy;
+import ru.mindils.jb.service.repository.EmployerRepository;
+import ru.mindils.jb.service.repository.VacancyRepository;
 import ru.mindils.jb.sync.dto.BriefVacancyDto;
 import ru.mindils.jb.sync.dto.DetailedEmployerDto;
 import ru.mindils.jb.sync.dto.DetailedVacancyDto;
@@ -31,38 +36,28 @@ public class SyncVacancyService {
     private final VacancyFilterService vacancyFilterService;
     private final VacancyMapper vacancyMapper;
     private final EmployerMapper employerMapper;
-    private final EntityManager entityManager;
+    private final EmployerRepository employerRepository;
+    private final VacancyRepository vacancyRepository;
 
     public boolean syncEmployerDetailsBatch() {
-        List<Employer> employers =
-                entityManager
-                        .createQuery(
-                                "select e from Employer e where e.detailed = false", Employer.class)
-                        .setMaxResults(10)
-                        .getResultList();
+        Slice<Employer> employers =
+                employerRepository.findAllByDetailed(false, PageRequest.of(0, 10));
 
-        employers.forEach(
-                employer -> {
-                    syncEmployerById(employer.getId());
-                });
-        entityManager.flush();
+        employers.forEach(employer -> syncEmployerById(employer.getId()));
+
         return !employers.isEmpty();
     }
 
     @SneakyThrows
     public boolean syncVacancyDetailsBatch() {
-        List<Vacancy> vacancies =
-                entityManager
-                        .createQuery(
-                                "select e from Vacancy e where e.detailed = false", Vacancy.class)
-                        .setMaxResults(100)
-                        .getResultList();
+        Slice<Vacancy> vacancies =
+                vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 100));
 
         vacancies.forEach(
                 vacancy -> {
                     syncVacancyById(vacancy.getId());
                 });
-        entityManager.flush();
+
         return !vacancies.isEmpty();
     }
 
@@ -81,7 +76,6 @@ public class SyncVacancyService {
         updatedFilter.add(Map.of("page", String.valueOf(page)));
 
         var vacancyListResponseDto = syncVacancyFilter(updatedFilter);
-        entityManager.flush();
 
         if (vacancyListResponseDto.getPage() < vacancyListResponseDto.getPages() - 1) {
             return vacancyListResponseDto.getPage() + 1;
@@ -95,31 +89,37 @@ public class SyncVacancyService {
         if (objects.getId() == null) {
             // если не нашли работодателя, то создаем пустого
             Employer employerEmpty = EmployerUtil.getEmployerEmpty(id);
-            entityManager.merge(employerEmpty);
+            employerRepository.save(employerEmpty);
         } else {
-            Employer vacancy = entityManager.find(Employer.class, id);
-            Employer employerMap = entityManager.merge(employerMapper.map(objects, vacancy));
-            entityManager.merge(employerMap);
+            Optional<Employer> optionalEmployer = employerRepository.findById(id);
+            Employer employer =
+                    optionalEmployer.orElseThrow(
+                            () -> new EntityNotFoundException("Employer not found with id: " + id));
+            employerRepository.save(employerMapper.map(objects, employer));
         }
     }
 
     public void syncVacancyById(String id) {
         DetailedVacancyDto vacancyDto = vacancyApiClientService.loadVacancyById(id);
 
-        Vacancy vacancy = entityManager.find(Vacancy.class, id);
+        Optional<Vacancy> optionalVacancy = vacancyRepository.findById(id);
+
+        Vacancy vacancy =
+                optionalVacancy.orElseThrow(
+                        () -> new EntityNotFoundException("Vacancy not found with id: " + id));
 
         // Workaround:
         // если при загрузке деталей вакансии получаем 404 от hh помечаем, что делали загружены
         if (vacancyDto.getId() == null) {
             vacancy.setDetailed(true);
-            entityManager.merge(vacancy);
+            vacancyRepository.save(vacancy);
         } else {
-            Vacancy mapVacancy = entityManager.merge(vacancyMapper.map(vacancyDto, vacancy));
-
             // TODO: тут если работодатель уже загружен с деталями то не нужно его обновлять
             //  затирается поле detailed
-            entityManager.merge(mapVacancy.getEmployer());
-            entityManager.merge(mapVacancy);
+
+            Vacancy newVacancy = vacancyMapper.map(vacancyDto, vacancy);
+            employerRepository.save(newVacancy.getEmployer());
+            vacancyRepository.save(newVacancy);
         }
     }
 
@@ -132,11 +132,7 @@ public class SyncVacancyService {
 
         // Получаем все которые ранее были загружены, чтобы обновить
         Map<String, Vacancy> vacancyMaps =
-                entityManager
-                        .createQuery("select e from Vacancy e where e.id in :ids", Vacancy.class)
-                        .setParameter("ids", vacancyIds)
-                        .getResultList()
-                        .stream()
+                vacancyRepository.findByIdIn(vacancyIds).stream()
                         .collect(Collectors.toMap(Vacancy::getId, Function.identity()));
 
         vacancyListResponseDto
@@ -154,8 +150,8 @@ public class SyncVacancyService {
 
                             // TODO: тут если работодатель уже загружен с деталями то не нужно
                             // его обновлять
-                            entityManager.merge(vacancy.getEmployer());
-                            entityManager.merge(vacancy);
+                            employerRepository.save(vacancy.getEmployer());
+                            vacancyRepository.save(vacancy);
                         });
 
         return vacancyListResponseDto;

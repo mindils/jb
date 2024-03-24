@@ -1,14 +1,15 @@
 package ru.mindils.jb.sync.service;
 
-import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyInfo;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
+import ru.mindils.jb.service.repository.VacancyRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -16,17 +17,11 @@ import ru.mindils.jb.service.entity.VacancyStatusEnum;
 public class SyncVacancyAIService {
 
     private final VacancyClientService vacancyApiClientService;
-    private final EntityManager entityManager;
+    private final VacancyRepository vacancyRepository;
 
     public boolean syncVacancyAiRatingsBatch() {
-        List<Vacancy> vacancies =
-                entityManager
-                        .createQuery(
-                                "select e from Vacancy e left join e.vacancyInfo i where"
-                                        + " i.aiApproved is null",
-                                Vacancy.class)
-                        .setMaxResults(100)
-                        .getResultList();
+        Slice<Vacancy> vacancies =
+                vacancyRepository.findVacanciesWithoutAiApproved(PageRequest.of(0, 100));
 
         vacancies.forEach(this::syncVacancyAiRating);
 
@@ -47,6 +42,6 @@ public class SyncVacancyAIService {
         }
 
         vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
-        entityManager.merge(vacancy);
+        vacancyRepository.save(vacancy);
     }
 }

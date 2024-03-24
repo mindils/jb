@@ -23,7 +23,7 @@ import lombok.ToString;
 @Data
 @ToString(exclude = "params")
 @EqualsAndHashCode(exclude = "params")
-@Table(name = "vacancy_filter")
+@Table(name = "jb_vacancy_filter")
 public class VacancyFilter implements BaseEntity<Long> {
 
     @Id

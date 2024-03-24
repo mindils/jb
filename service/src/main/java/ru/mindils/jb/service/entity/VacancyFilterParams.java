@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "vacancy_filter_params")
+@Table(name = "jb_vacancy_filter_params")
 public class VacancyFilterParams implements BaseEntity<Long> {
 
     @Id

@@ -13,6 +13,7 @@ import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,9 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"vacancyInfo", "employer"})
-@EqualsAndHashCode(exclude = {"vacancyInfo", "employer"})
+@EqualsAndHashCode(exclude = {"vacancyInfo", "employer", "internalCreatedAt", "internalModifiedAt"})
 @Data
+@Table(name = "jb_vacancy")
 public class Vacancy implements BaseEntity<String> {
 
     /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */

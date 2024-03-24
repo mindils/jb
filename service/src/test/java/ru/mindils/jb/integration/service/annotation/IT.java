@@ -7,11 +7,10 @@ import java.lang.annotation.Target;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import ru.mindils.jb.integration.service.TestMainService;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ActiveProfiles("test")
-@SpringBootTest(classes = TestMainService.class)
+@SpringBootTest
 @Transactional
 public @interface IT {}

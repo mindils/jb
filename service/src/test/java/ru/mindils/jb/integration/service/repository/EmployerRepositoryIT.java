@@ -7,13 +7,11 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.repository.EmployerRepository;
 
 @RequiredArgsConstructor
-@Transactional
 public class EmployerRepositoryIT extends ITBase {
 
     private final EmployerRepository employerRepository;
@@ -48,7 +46,7 @@ public class EmployerRepositoryIT extends ITBase {
         entityManager.flush();
 
         employer.setName("ООО Рога и копыта 2");
-        employerRepository.update(employer);
+        employerRepository.save(employer);
         entityManager.flush();
         entityManager.clear();
 

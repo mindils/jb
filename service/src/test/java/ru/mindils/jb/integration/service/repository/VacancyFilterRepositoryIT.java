@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.integration.service.annotation.IT;
 import ru.mindils.jb.service.entity.VacancyFilter;
@@ -16,7 +15,6 @@ import ru.mindils.jb.service.repository.VacancyFilterRepository;
 
 @IT
 @RequiredArgsConstructor
-@Transactional
 public class VacancyFilterRepositoryIT extends ITBase {
 
     private final VacancyFilterRepository vacancyFilterRepository;
@@ -51,7 +49,7 @@ public class VacancyFilterRepositoryIT extends ITBase {
         entityManager.flush();
 
         vacancyFilter.setName("newName");
-        vacancyFilterRepository.update(vacancyFilter);
+        vacancyFilterRepository.save(vacancyFilter);
         entityManager.flush();
         entityManager.clear();
 

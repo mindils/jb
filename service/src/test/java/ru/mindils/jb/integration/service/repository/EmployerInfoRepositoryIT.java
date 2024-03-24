@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.EmployerInfo;
@@ -15,7 +14,6 @@ import ru.mindils.jb.service.entity.EmployerStatusEnum;
 import ru.mindils.jb.service.repository.EmployerInfoRepository;
 import ru.mindils.jb.service.repository.EmployerRepository;
 
-@Transactional
 @RequiredArgsConstructor
 public class EmployerInfoRepositoryIT extends ITBase {
 
@@ -58,7 +56,7 @@ public class EmployerInfoRepositoryIT extends ITBase {
         entityManager.flush();
 
         employerInfo.setStatus(EmployerStatusEnum.APPROVED);
-        employerInfoRepository.update(employerInfo);
+        employerInfoRepository.save(employerInfo);
         entityManager.flush();
         entityManager.clear();
 

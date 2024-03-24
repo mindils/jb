@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import ru.mindils.jb.integration.service.ITBase;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Employer;
@@ -19,9 +20,9 @@ import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.repository.EmployerRepository;
 import ru.mindils.jb.service.repository.VacancyRepository;
+import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 
 @RequiredArgsConstructor
-@Transactional
 public class VacancyRepositoryIT extends ITBase {
 
     private final VacancyRepository vacancyRepository;
@@ -38,7 +39,9 @@ public class VacancyRepositoryIT extends ITBase {
                         .salaryTo(300000)
                         .build();
 
-        List<Vacancy> actualResult = vacancyRepository.findByFilter(filter);
+        Slice<Vacancy> actualResult =
+                vacancyRepository.findAll(
+                        VacancyQueryDslFilterBuilder.build(filter), PageRequest.of(0, 10));
 
         assertThat(actualResult).hasSize(1);
     }
@@ -80,7 +83,7 @@ public class VacancyRepositoryIT extends ITBase {
         entityManager.flush();
 
         vacancy.setName("new Vacancy");
-        vacancyRepository.update(vacancy);
+        vacancyRepository.save(vacancy);
         entityManager.flush();
         entityManager.clear();
 

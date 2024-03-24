@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "employer_info")
+@Table(name = "jb_employer_info")
 public class EmployerInfo implements BaseEntity<Long> {
 
     @Id
