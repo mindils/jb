@@ -13,46 +13,46 @@ import ru.mindils.jb.sync.repository.VacancySyncExecutionRepository;
 @RequiredArgsConstructor
 public class VacancySyncExecutionService {
 
-    private final VacancySyncExecutionRepository vacancySyncExecutionRepository;
+  private final VacancySyncExecutionRepository vacancySyncExecutionRepository;
 
-    public void createNewStepVacancyDetail() {
-        createNewStep(VacancySyncStep.LOAD_VACANCY_DETAIL, null);
-    }
+  public void createNewStepVacancyDetail() {
+    createNewStep(VacancySyncStep.LOAD_VACANCY_DETAIL, null);
+  }
 
-    public void createNewStepVacancies(Map<String, ?> params) {
-        createNewStep(VacancySyncStep.LOAD_VACANCIES, params);
-    }
+  public void createNewStepVacancies(Map<String, ?> params) {
+    createNewStep(VacancySyncStep.LOAD_VACANCIES, params);
+  }
 
-    public void createNewStepEmployerDetail() {
-        createNewStep(VacancySyncStep.LOAD_EMPLOYER_DETAIL, null);
-    }
+  public void createNewStepEmployerDetail() {
+    createNewStep(VacancySyncStep.LOAD_EMPLOYER_DETAIL, null);
+  }
 
-    public void createNewStepVacancyAi() {
-        createNewStep(VacancySyncStep.LOAD_VACANCY_RATING, null);
-    }
+  public void createNewStepVacancyAi() {
+    createNewStep(VacancySyncStep.LOAD_VACANCY_RATING, null);
+  }
 
-    public void createNewStep(VacancySyncStep step, Map<String, ?> params) {
-        var vacancyJobExecution = VacancySyncExecution.builder()
-                .startTime(LocalDateTime.now())
-                .parameters(params)
-                .step(step)
-                .status(VacancySyncStatus.RUNNING)
-                .priority(1)
-                .build();
+  public void createNewStep(VacancySyncStep step, Map<String, ?> params) {
+    var vacancyJobExecution = VacancySyncExecution.builder()
+        .startTime(LocalDateTime.now())
+        .parameters(params)
+        .step(step)
+        .status(VacancySyncStatus.RUNNING)
+        .priority(1)
+        .build();
 
-        vacancySyncExecutionRepository.save(vacancyJobExecution);
-    }
+    vacancySyncExecutionRepository.save(vacancyJobExecution);
+  }
 
-    public void completeJob(VacancySyncExecution runningJob) {
-        runningJob.setEndTime(LocalDateTime.now());
-        runningJob.setStatus(VacancySyncStatus.COMPLETED);
-        vacancySyncExecutionRepository.save(runningJob);
-    }
+  public void completeJob(VacancySyncExecution runningJob) {
+    runningJob.setEndTime(LocalDateTime.now());
+    runningJob.setStatus(VacancySyncStatus.COMPLETED);
+    vacancySyncExecutionRepository.save(runningJob);
+  }
 
-    public void failedJob(VacancySyncExecution runningJob, String errorMessage) {
-        runningJob.setEndTime(LocalDateTime.now());
-        runningJob.setStatus(VacancySyncStatus.FAILED);
-        runningJob.setErrorMessage(errorMessage);
-        vacancySyncExecutionRepository.save(runningJob);
-    }
+  public void failedJob(VacancySyncExecution runningJob, String errorMessage) {
+    runningJob.setEndTime(LocalDateTime.now());
+    runningJob.setStatus(VacancySyncStatus.FAILED);
+    runningJob.setErrorMessage(errorMessage);
+    vacancySyncExecutionRepository.save(runningJob);
+  }
 }

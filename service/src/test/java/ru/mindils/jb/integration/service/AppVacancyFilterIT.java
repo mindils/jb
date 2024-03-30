@@ -22,89 +22,89 @@ import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 @RequiredArgsConstructor
 public class AppVacancyFilterIT extends ITBase {
 
-    private final EntityManager entityManager;
+  private final EntityManager entityManager;
 
-    @Test
-    void queryCriteriaApiApproved() {
-        AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-                .aiApproved(BigDecimal.valueOf(0.7))
-                .status(VacancyStatusEnum.APPROVED)
-                .salaryFrom(100000)
-                .salaryTo(300000)
-                .build();
+  @Test
+  void queryCriteriaApiApproved() {
+    AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
+        .aiApproved(BigDecimal.valueOf(0.7))
+        .status(VacancyStatusEnum.APPROVED)
+        .salaryFrom(100000)
+        .salaryTo(300000)
+        .build();
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
-        Root<Vacancy> vacancy = criteria.from(Vacancy.class);
-        vacancy.fetch("vacancyInfo", JoinType.LEFT);
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
+    Root<Vacancy> vacancy = criteria.from(Vacancy.class);
+    vacancy.fetch("vacancyInfo", JoinType.LEFT);
 
-        criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
+    criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
 
-        List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
+    List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
 
-        assertThat(actualResult).hasSize(1);
-    }
+    assertThat(actualResult).hasSize(1);
+  }
 
-    @Test
-    void queryCriteriaApiNoMatch() {
-        AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-                .status(VacancyStatusEnum.APPROVED)
-                .salaryFrom(500000)
-                .salaryTo(1000000)
-                .build();
+  @Test
+  void queryCriteriaApiNoMatch() {
+    AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
+        .status(VacancyStatusEnum.APPROVED)
+        .salaryFrom(500000)
+        .salaryTo(1000000)
+        .build();
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
-        Root<Vacancy> vacancy = criteria.from(Vacancy.class);
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Vacancy> criteria = cb.createQuery(Vacancy.class);
+    Root<Vacancy> vacancy = criteria.from(Vacancy.class);
 
-        vacancy.fetch("vacancyInfo", JoinType.LEFT);
-        criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
+    vacancy.fetch("vacancyInfo", JoinType.LEFT);
+    criteria.select(vacancy).where(VacancyCriteriaApiFilterBuilder.build(filter, cb, vacancy));
 
-        List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
+    List<Vacancy> actualResult = entityManager.createQuery(criteria).getResultList();
 
-        assertThat(actualResult).isEmpty();
-    }
+    assertThat(actualResult).isEmpty();
+  }
 
-    @Test
-    void queryDsqApproved() {
-        AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-                .aiApproved(BigDecimal.valueOf(0.7))
-                .status(VacancyStatusEnum.APPROVED)
-                .salaryFrom(100000)
-                .salaryTo(300000)
-                .build();
+  @Test
+  void queryDsqApproved() {
+    AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
+        .aiApproved(BigDecimal.valueOf(0.7))
+        .status(VacancyStatusEnum.APPROVED)
+        .salaryFrom(100000)
+        .salaryTo(300000)
+        .build();
 
-        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
+    JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
 
-        List<Vacancy> actualResult = vacancyJPAQuery
-                .select(QVacancy.vacancy)
-                .from(QVacancy.vacancy)
-                .leftJoin(QVacancy.vacancy.vacancyInfo)
-                .fetchJoin()
-                .where(VacancyQueryDslFilterBuilder.build(filter))
-                .fetch();
+    List<Vacancy> actualResult = vacancyJPAQuery
+        .select(QVacancy.vacancy)
+        .from(QVacancy.vacancy)
+        .leftJoin(QVacancy.vacancy.vacancyInfo)
+        .fetchJoin()
+        .where(VacancyQueryDslFilterBuilder.build(filter))
+        .fetch();
 
-        assertThat(actualResult).hasSize(1);
-    }
+    assertThat(actualResult).hasSize(1);
+  }
 
-    @Test
-    void queryDsqNoMatch() {
-        AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-                .status(VacancyStatusEnum.APPROVED)
-                .salaryFrom(500000)
-                .salaryTo(1000000)
-                .build();
+  @Test
+  void queryDsqNoMatch() {
+    AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
+        .status(VacancyStatusEnum.APPROVED)
+        .salaryFrom(500000)
+        .salaryTo(1000000)
+        .build();
 
-        JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
+    JPAQuery<Vacancy> vacancyJPAQuery = new JPAQuery<>(entityManager);
 
-        List<Vacancy> actualResult = vacancyJPAQuery
-                .select(QVacancy.vacancy)
-                .from(QVacancy.vacancy)
-                .leftJoin(QVacancy.vacancy.vacancyInfo)
-                .fetchJoin()
-                .where(VacancyQueryDslFilterBuilder.build(filter))
-                .fetch();
+    List<Vacancy> actualResult = vacancyJPAQuery
+        .select(QVacancy.vacancy)
+        .from(QVacancy.vacancy)
+        .leftJoin(QVacancy.vacancy.vacancyInfo)
+        .fetchJoin()
+        .where(VacancyQueryDslFilterBuilder.build(filter))
+        .fetch();
 
-        assertThat(actualResult).isEmpty();
-    }
+    assertThat(actualResult).isEmpty();
+  }
 }

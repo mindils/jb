@@ -21,14 +21,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "jb_vacancy_filter_params")
 public class VacancyFilterParams implements BaseEntity<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vacancy_filter_id")
-    private VacancyFilter vacancyFilter;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "vacancy_filter_id")
+  private VacancyFilter vacancyFilter;
 
-    private String paramName;
-    private String paramValue;
+  private String paramName;
+  private String paramValue;
 }

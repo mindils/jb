@@ -28,16 +28,16 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @NamedEntityGraph(
-        name = "Vacancy.detail",
-        attributeNodes = {
-            @NamedAttributeNode(value = "vacancyInfo"),
-            @NamedAttributeNode(value = "employer", subgraph = "Employer.detail")
-        },
-        subgraphs = {
-            @NamedSubgraph(
-                    name = "Employer.detail",
-                    attributeNodes = {@NamedAttributeNode(value = "employerInfo")})
-        })
+    name = "Vacancy.detail",
+    attributeNodes = {
+      @NamedAttributeNode(value = "vacancyInfo"),
+      @NamedAttributeNode(value = "employer", subgraph = "Employer.detail")
+    },
+    subgraphs = {
+      @NamedSubgraph(
+          name = "Employer.detail",
+          attributeNodes = {@NamedAttributeNode(value = "employerInfo")})
+    })
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -47,72 +47,72 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "jb_vacancy")
 public class Vacancy implements BaseEntity<String> {
 
-    /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
-    @Id
-    private String id;
+  /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
+  @Id
+  private String id;
 
-    private String name;
+  private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employer_id")
-    private Employer employer;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "employer_id")
+  private Employer employer;
 
-    private Boolean premium;
-    private String city;
+  private Boolean premium;
+  private String city;
 
-    @Embedded
-    private Salary salary;
+  @Embedded
+  private Salary salary;
 
-    private String type;
-    private Instant publishedAt;
-    private Instant createdAt;
-    private Boolean archived;
-    private String applyAlternateUrl;
-    private String url;
-    private String alternateUrl;
-    private String schedule;
-    private String responseUrl;
+  private String type;
+  private Instant publishedAt;
+  private Instant createdAt;
+  private Boolean archived;
+  private String applyAlternateUrl;
+  private String url;
+  private String alternateUrl;
+  private String schedule;
+  private String responseUrl;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<Map<String, ?>> professionalRoles;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<Map<String, ?>> professionalRoles;
 
-    private String employment;
-    private String description;
+  private String employment;
+  private String description;
 
-    /**
-     * Список ключевых навыков, получаемых из внешней системы. Пример формата данных:
-     *
-     * <pre>
-     * {
-     *   ... other fields ...
-     *   "key_skills": [
-     *     {"name": "Прием посетителей"},
-     *     {"name": "Первичный документооборот"}
-     *   ]
-     * }
-     * </pre>
-     *
-     * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
-     */
-    private String keySkills;
+  /**
+   * Список ключевых навыков, получаемых из внешней системы. Пример формата данных:
+   *
+   * <pre>
+   * {
+   *   ... other fields ...
+   *   "key_skills": [
+   *     {"name": "Прием посетителей"},
+   *     {"name": "Первичный документооборот"}
+   *   ]
+   * }
+   * </pre>
+   *
+   * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
+   */
+  private String keySkills;
 
-    @Builder.Default
-    private Boolean detailed = false;
+  @Builder.Default
+  private Boolean detailed = false;
 
-    @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private VacancyInfo vacancyInfo;
+  @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private VacancyInfo vacancyInfo;
 
-    // Временные метки сохранения в вашей системе (createdAt занята и приходит из внешней системы)
-    private Instant internalCreatedAt;
-    private Instant internalModifiedAt;
+  // Временные метки сохранения в вашей системе (createdAt занята и приходит из внешней системы)
+  private Instant internalCreatedAt;
+  private Instant internalModifiedAt;
 
-    @PrePersist
-    public void prePersist() {
-        internalCreatedAt = Instant.now();
-    }
+  @PrePersist
+  public void prePersist() {
+    internalCreatedAt = Instant.now();
+  }
 
-    @PreUpdate
-    public void preUpdate() {
-        internalModifiedAt = Instant.now();
-    }
+  @PreUpdate
+  public void preUpdate() {
+    internalModifiedAt = Instant.now();
+  }
 }

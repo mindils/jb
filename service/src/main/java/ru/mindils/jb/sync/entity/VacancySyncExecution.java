@@ -30,28 +30,28 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class VacancySyncExecution {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.ORDINAL)
-    private VacancySyncStep step;
+  @Enumerated(EnumType.ORDINAL)
+  private VacancySyncStep step;
 
-    @Enumerated(EnumType.STRING)
-    private VacancySyncStatus status;
+  @Enumerated(EnumType.STRING)
+  private VacancySyncStatus status;
 
-    private Integer priority;
+  private Integer priority;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, ?> parameters;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private Map<String, ?> parameters;
 
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String errorMessage;
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
+  private String errorMessage;
 
-    @CreatedDate
-    private Instant createdAt;
+  @CreatedDate
+  private Instant createdAt;
 
-    @LastModifiedDate
-    private Instant updatedAt;
+  @LastModifiedDate
+  private Instant updatedAt;
 }

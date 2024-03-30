@@ -8,5 +8,5 @@ import ru.mindils.jb.service.entity.Employer;
 
 @Repository
 public interface EmployerRepository extends JpaRepository<Employer, String> {
-    Slice<Employer> findAllByDetailed(boolean detailed, Pageable pageable);
+  Slice<Employer> findAllByDetailed(boolean detailed, Pageable pageable);
 }

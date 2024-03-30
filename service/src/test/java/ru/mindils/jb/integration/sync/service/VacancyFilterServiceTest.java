@@ -12,12 +12,12 @@ import ru.mindils.jb.sync.service.VacancyFilterService;
 @RequiredArgsConstructor
 class VacancyFilterServiceTest extends ITBase {
 
-    private final VacancyFilterService vacancyFilterService;
+  private final VacancyFilterService vacancyFilterService;
 
-    @Test
-    void getDefaultFilter() {
-        List<Map<String, String>> actualResult = vacancyFilterService.getDefaultFilter();
+  @Test
+  void getDefaultFilter() {
+    List<Map<String, String>> actualResult = vacancyFilterService.getDefaultFilter();
 
-        assertThat(actualResult).isNotEmpty();
-    }
+    assertThat(actualResult).isNotEmpty();
+  }
 }

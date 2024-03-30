@@ -28,35 +28,35 @@ import lombok.ToString;
 @Table(name = "jb_employer")
 public class Employer implements BaseEntity<String> {
 
-    /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
-    @Id
-    private String id;
+  /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
+  @Id
+  private String id;
 
-    private String name;
+  private String name;
 
-    @Builder.Default
-    private Boolean trusted = false;
+  @Builder.Default
+  private Boolean trusted = false;
 
-    private String description;
-    private Boolean detailed;
+  private String description;
+  private Boolean detailed;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "employer")
-    private List<Vacancy> vacancy = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "employer")
+  private List<Vacancy> vacancy = new ArrayList<>();
 
-    @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
-    private EmployerInfo employerInfo;
+  @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
+  private EmployerInfo employerInfo;
 
-    private Instant createdAt;
-    private Instant modifiedAt;
+  private Instant createdAt;
+  private Instant modifiedAt;
 
-    @PrePersist
-    public void prePersist() {
-        createdAt = Instant.now();
-    }
+  @PrePersist
+  public void prePersist() {
+    createdAt = Instant.now();
+  }
 
-    @PreUpdate
-    public void preUpdate() {
-        modifiedAt = Instant.now();
-    }
+  @PreUpdate
+  public void preUpdate() {
+    modifiedAt = Instant.now();
+  }
 }

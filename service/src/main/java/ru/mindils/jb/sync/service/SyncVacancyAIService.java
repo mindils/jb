@@ -16,33 +16,32 @@ import ru.mindils.jb.service.repository.VacancyRepository;
 @Transactional
 public class SyncVacancyAIService {
 
-    private final VacancyClientService vacancyApiClientService;
-    private final VacancyRepository vacancyRepository;
+  private final VacancyClientService vacancyApiClientService;
+  private final VacancyRepository vacancyRepository;
 
-    public boolean syncVacancyAiRatingsBatch() {
-        Slice<Vacancy> vacancies = vacancyRepository.findVacanciesWithoutAiApproved(PageRequest.of(0, 100));
+  public boolean syncVacancyAiRatingsBatch() {
+    Slice<Vacancy> vacancies =
+        vacancyRepository.findVacanciesWithoutAiApproved(PageRequest.of(0, 100));
 
-        vacancies.forEach(this::syncVacancyAiRating);
+    vacancies.forEach(this::syncVacancyAiRating);
 
-        return !vacancies.isEmpty();
+    return !vacancies.isEmpty();
+  }
+
+  public void syncVacancyAiRating(Vacancy vacancy) {
+    String sb = vacancy.getName() + " " + vacancy.getKeySkills();
+    String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
+
+    VacancyInfo vacancyInfo = vacancy.getVacancyInfo();
+
+    if (vacancyInfo == null) {
+      vacancyInfo =
+          VacancyInfo.builder().vacancy(vacancy).status(VacancyStatusEnum.NEW).build();
+
+      vacancy.setVacancyInfo(vacancyInfo);
     }
 
-    public void syncVacancyAiRating(Vacancy vacancy) {
-        String sb = vacancy.getName() + " " + vacancy.getKeySkills();
-        String ratingAi = vacancyApiClientService.loadAIRatingByText(sb);
-
-        VacancyInfo vacancyInfo = vacancy.getVacancyInfo();
-
-        if (vacancyInfo == null) {
-            vacancyInfo = VacancyInfo.builder()
-                    .vacancy(vacancy)
-                    .status(VacancyStatusEnum.NEW)
-                    .build();
-
-            vacancy.setVacancyInfo(vacancyInfo);
-        }
-
-        vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
-        vacancyRepository.save(vacancy);
-    }
+    vacancyInfo.setAiApproved(new BigDecimal(ratingAi));
+    vacancyRepository.save(vacancy);
+  }
 }

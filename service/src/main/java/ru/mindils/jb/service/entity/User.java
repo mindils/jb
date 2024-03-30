@@ -19,13 +19,13 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class User implements BaseEntity<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String username;
-    private String password;
-    private String role;
-    private Instant createdAt;
-    private Instant modifiedAt;
+  private String username;
+  private String password;
+  private String role;
+  private Instant createdAt;
+  private Instant modifiedAt;
 }

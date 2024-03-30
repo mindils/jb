@@ -9,8 +9,8 @@ import ru.mindils.jb.service.entity.VacancyStatusEnum;
 @Builder
 public class AppVacancyFilterDto {
 
-    BigDecimal aiApproved;
-    Integer salaryFrom;
-    Integer salaryTo;
-    VacancyStatusEnum status;
+  BigDecimal aiApproved;
+  Integer salaryFrom;
+  Integer salaryTo;
+  VacancyStatusEnum status;
 }

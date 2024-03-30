@@ -26,22 +26,22 @@ import lombok.ToString;
 @Table(name = "jb_vacancy_filter")
 public class VacancyFilter implements BaseEntity<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String code;
-    private String name;
+  private String code;
+  private String name;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "vacancyFilter")
-    private List<VacancyFilterParams> params = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "vacancyFilter")
+  private List<VacancyFilterParams> params = new ArrayList<>();
 
-    private Instant createdAt;
-    private Instant modifiedAt;
+  private Instant createdAt;
+  private Instant modifiedAt;
 
-    public void addParam(VacancyFilterParams param) {
-        params.add(param);
-        param.setVacancyFilter(this);
-    }
+  public void addParam(VacancyFilterParams param) {
+    params.add(param);
+    param.setVacancyFilter(this);
+  }
 }

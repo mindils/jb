@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.mindils.jb.sync.entity.VacancySyncExecution;
 
 public interface VacancySyncExecutionRepository extends JpaRepository<VacancySyncExecution, Long> {
-    @Query("select e from VacancySyncExecution e where e.status = 'RUNNING' order by e.priority," + " e.step limit 1")
-    Optional<VacancySyncExecution> findRunningJob();
+  @Query("select e from VacancySyncExecution e where e.status = 'RUNNING' order by e.priority,"
+      + " e.step limit 1")
+  Optional<VacancySyncExecution> findRunningJob();
 }

@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class VacancyListResponseDto {
 
-    private List<BriefVacancyDto> items;
-    private Long found;
-    private Long pages;
-    private Long perPage;
-    private Integer page;
+  private List<BriefVacancyDto> items;
+  private Long found;
+  private Long pages;
+  private Long perPage;
+  private Integer page;
 }

@@ -14,73 +14,73 @@ import ru.mindils.jb.service.repository.EmployerRepository;
 @RequiredArgsConstructor
 public class EmployerRepositoryIT extends ITBase {
 
-    private final EmployerRepository employerRepository;
-    private final EntityManager entityManager;
+  private final EmployerRepository employerRepository;
+  private final EntityManager entityManager;
 
-    @Test
-    void save() {
-        Employer employer = getEmployer();
-        employerRepository.save(employer);
-        entityManager.flush();
+  @Test
+  void save() {
+    Employer employer = getEmployer();
+    employerRepository.save(employer);
+    entityManager.flush();
 
-        assertThat(employer.getId()).isNotNull();
-    }
+    assertThat(employer.getId()).isNotNull();
+  }
 
-    @Test
-    void findById() {
-        Employer employer = getEmployer();
-        employerRepository.save(employer);
-        entityManager.flush();
-        entityManager.clear();
+  @Test
+  void findById() {
+    Employer employer = getEmployer();
+    employerRepository.save(employer);
+    entityManager.flush();
+    entityManager.clear();
 
-        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-        assertThat(actualResult.isPresent()).isTrue();
-        assertThat(actualResult.get()).isEqualTo(employer);
-    }
+    assertThat(actualResult.isPresent()).isTrue();
+    assertThat(actualResult.get()).isEqualTo(employer);
+  }
 
-    @Test
-    void update() {
-        Employer employer = getEmployer();
-        employerRepository.save(employer);
-        entityManager.flush();
+  @Test
+  void update() {
+    Employer employer = getEmployer();
+    employerRepository.save(employer);
+    entityManager.flush();
 
-        employer.setName("ООО Рога и копыта 2");
-        employerRepository.save(employer);
-        entityManager.flush();
-        entityManager.clear();
+    employer.setName("ООО Рога и копыта 2");
+    employerRepository.save(employer);
+    entityManager.flush();
+    entityManager.clear();
 
-        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-        assertThat(actualResult.isPresent()).isTrue();
-        assertThat(actualResult.get()).isEqualTo(employer);
-    }
+    assertThat(actualResult.isPresent()).isTrue();
+    assertThat(actualResult.get()).isEqualTo(employer);
+  }
 
-    @Test
-    void delete() {
-        Employer employer = getEmployer();
-        employerRepository.save(employer);
-        entityManager.flush();
+  @Test
+  void delete() {
+    Employer employer = getEmployer();
+    employerRepository.save(employer);
+    entityManager.flush();
 
-        employerRepository.delete(employer);
-        entityManager.flush();
-        entityManager.clear();
+    employerRepository.delete(employer);
+    entityManager.flush();
+    entityManager.clear();
 
-        Optional<Employer> actualResult = employerRepository.findById(employer.getId());
+    Optional<Employer> actualResult = employerRepository.findById(employer.getId());
 
-        assertThat(actualResult.isPresent()).isFalse();
-    }
+    assertThat(actualResult.isPresent()).isFalse();
+  }
 
-    private static Employer getEmployer() {
-        return Employer.builder()
-                .id("employer-id-example")
-                .name("ООО Рога и копыта")
-                .trusted(true)
-                .description("Описание работодателя")
-                .detailed(true)
-                .modifiedAt(Instant.now())
-                .createdAt(Instant.now())
-                .createdAt(Instant.now())
-                .build();
-    }
+  private static Employer getEmployer() {
+    return Employer.builder()
+        .id("employer-id-example")
+        .name("ООО Рога и копыта")
+        .trusted(true)
+        .description("Описание работодателя")
+        .detailed(true)
+        .modifiedAt(Instant.now())
+        .createdAt(Instant.now())
+        .createdAt(Instant.now())
+        .build();
+  }
 }

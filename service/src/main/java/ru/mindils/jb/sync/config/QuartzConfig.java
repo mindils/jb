@@ -12,23 +12,21 @@ import ru.mindils.jb.sync.job.VacancySyncJob;
 @Configuration
 public class QuartzConfig {
 
-    @Bean
-    public JobDetail vacancySyncJobDetail() {
-        return JobBuilder.newJob(VacancySyncJob.class)
-                .withIdentity("vacancySyncJob", "vacancySync")
-                .storeDurably()
-                .build();
-    }
+  @Bean
+  public JobDetail vacancySyncJobDetail() {
+    return JobBuilder.newJob(VacancySyncJob.class)
+        .withIdentity("vacancySyncJob", "vacancySync")
+        .storeDurably()
+        .build();
+  }
 
-    @Bean
-    public Trigger vacancySyncTrigger(JobDetail vacancySyncJobDetail) {
-        return TriggerBuilder.newTrigger()
-                .forJob(vacancySyncJobDetail)
-                .withIdentity("vacancySyncTrigger", "vacancySync")
-                .withSchedule(
-                        SimpleScheduleBuilder.simpleSchedule()
-                                .withIntervalInSeconds(1)
-                                .repeatForever())
-                .build();
-    }
+  @Bean
+  public Trigger vacancySyncTrigger(JobDetail vacancySyncJobDetail) {
+    return TriggerBuilder.newTrigger()
+        .forJob(vacancySyncJobDetail)
+        .withIdentity("vacancySyncTrigger", "vacancySync")
+        .withSchedule(
+            SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1).repeatForever())
+        .build();
+  }
 }

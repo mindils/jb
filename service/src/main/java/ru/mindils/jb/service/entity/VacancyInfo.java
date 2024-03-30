@@ -24,31 +24,31 @@ import lombok.NoArgsConstructor;
 @Table(name = "jb_vacancy_info")
 public class VacancyInfo implements BaseEntity<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "vacancy_id")
-    private Vacancy vacancy;
+  @OneToOne
+  @JoinColumn(name = "vacancy_id")
+  private Vacancy vacancy;
 
-    /**
-     * Вероятность того, что вакансия подходит кандидату, по оценке AI.
-     *
-     * <p>Значение представляет собой десятичное число от 0 до 1, где:
-     *
-     * <ul>
-     *   <li>0 означает абсолютное несоответствие требованиям вакансии;
-     *   <li>1 означает полное соответствие требованиям вакансии.
-     * </ul>
-     *
-     * Пример значения: 0.7532.
-     */
-    @Column(precision = 10, scale = 4)
-    private BigDecimal aiApproved;
+  /**
+   * Вероятность того, что вакансия подходит кандидату, по оценке AI.
+   *
+   * <p>Значение представляет собой десятичное число от 0 до 1, где:
+   *
+   * <ul>
+   *   <li>0 означает абсолютное несоответствие требованиям вакансии;
+   *   <li>1 означает полное соответствие требованиям вакансии.
+   * </ul>
+   *
+   * Пример значения: 0.7532.
+   */
+  @Column(precision = 10, scale = 4)
+  private BigDecimal aiApproved;
 
-    private Boolean approved;
+  private Boolean approved;
 
-    @Enumerated(EnumType.STRING)
-    private VacancyStatusEnum status;
+  @Enumerated(EnumType.STRING)
+  private VacancyStatusEnum status;
 }
