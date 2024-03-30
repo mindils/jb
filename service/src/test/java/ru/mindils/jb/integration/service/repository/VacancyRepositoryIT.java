@@ -31,17 +31,15 @@ public class VacancyRepositoryIT extends ITBase {
 
     @Test
     void findByFilter() {
-        AppVacancyFilterDto filter =
-                AppVacancyFilterDto.builder()
-                        .aiApproved(BigDecimal.valueOf(0.7))
-                        .status(VacancyStatusEnum.APPROVED)
-                        .salaryFrom(100000)
-                        .salaryTo(300000)
-                        .build();
+        AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
+                .aiApproved(BigDecimal.valueOf(0.7))
+                .status(VacancyStatusEnum.APPROVED)
+                .salaryFrom(100000)
+                .salaryTo(300000)
+                .build();
 
         Slice<Vacancy> actualResult =
-                vacancyRepository.findAll(
-                        VacancyQueryDslFilterBuilder.build(filter), PageRequest.of(0, 10));
+                vacancyRepository.findAll(VacancyQueryDslFilterBuilder.build(filter), PageRequest.of(0, 10));
 
         assertThat(actualResult).hasSize(1);
     }
@@ -128,13 +126,12 @@ public class VacancyRepositoryIT extends ITBase {
                 .employer(employer)
                 .premium(false)
                 .city("Москва")
-                .salary(
-                        Salary.builder()
-                                .from(100000)
-                                .to(150000)
-                                .currency("RUR")
-                                .gross(true)
-                                .build())
+                .salary(Salary.builder()
+                        .from(100000)
+                        .to(150000)
+                        .currency("RUR")
+                        .gross(true)
+                        .build())
                 .type("open")
                 .publishedAt(Instant.now())
                 .createdAt(Instant.now())

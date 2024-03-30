@@ -93,6 +93,9 @@ public class EmployerInfoRepositoryIT extends ITBase {
     }
 
     private static EmployerInfo getEmployerInfo(Employer employer) {
-        return EmployerInfo.builder().employer(employer).status(EmployerStatusEnum.NEW).build();
+        return EmployerInfo.builder()
+                .employer(employer)
+                .status(EmployerStatusEnum.NEW)
+                .build();
     }
 }

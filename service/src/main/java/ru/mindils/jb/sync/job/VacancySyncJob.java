@@ -24,8 +24,7 @@ public class VacancySyncJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        Optional<VacancySyncExecution> maybeRunningJob =
-                vacancyJobExecutionRepository.findRunningJob();
+        Optional<VacancySyncExecution> maybeRunningJob = vacancyJobExecutionRepository.findRunningJob();
 
         // если нет запущенных задач, ставим на паузу
         // тк точно знаем, что это одна задача и в следующей раз запустим ее через 3 часа
@@ -43,18 +42,10 @@ public class VacancySyncJob implements Job {
         // разбиваем задачу на несколько шагов
         try {
             switch (runningJob.getStep()) {
-                case LOAD_VACANCIES:
-                    loadVacancies(runningJob);
-                    break;
-                case LOAD_VACANCY_DETAIL:
-                    loadVacancyDetail();
-                    break;
-                case LOAD_EMPLOYER_DETAIL:
-                    loadEmployerDetail();
-                    break;
-                case LOAD_VACANCY_RATING:
-                    loadVacancyRating();
-                    break;
+                case LOAD_VACANCIES -> loadVacancies(runningJob);
+                case LOAD_VACANCY_DETAIL -> loadVacancyDetail();
+                case LOAD_EMPLOYER_DETAIL -> loadEmployerDetail();
+                case LOAD_VACANCY_RATING -> loadVacancyRating();
             }
 
             vacancyJobExecutionService.completeJob(runningJob);
@@ -98,8 +89,7 @@ public class VacancySyncJob implements Job {
         int nextPage = syncVacancyService.syncVacancyByDefaultFilterBatch(period, currentPage);
 
         if (nextPage > 0) {
-            vacancyJobExecutionService.createNewStepVacancies(
-                    Map.of("currentPage", nextPage, "period", period));
+            vacancyJobExecutionService.createNewStepVacancies(Map.of("currentPage", nextPage, "period", period));
         } else {
             vacancyJobExecutionService.createNewStepVacancyDetail();
         }

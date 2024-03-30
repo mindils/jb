@@ -32,14 +32,13 @@ public class VacancySyncExecutionService {
     }
 
     public void createNewStep(VacancySyncStep step, Map<String, ?> params) {
-        var vacancyJobExecution =
-                VacancySyncExecution.builder()
-                        .startTime(LocalDateTime.now())
-                        .parameters(params)
-                        .step(step)
-                        .status(VacancySyncStatus.RUNNING)
-                        .priority(1)
-                        .build();
+        var vacancyJobExecution = VacancySyncExecution.builder()
+                .startTime(LocalDateTime.now())
+                .parameters(params)
+                .step(step)
+                .status(VacancySyncStatus.RUNNING)
+                .priority(1)
+                .build();
 
         vacancySyncExecutionRepository.save(vacancyJobExecution);
     }

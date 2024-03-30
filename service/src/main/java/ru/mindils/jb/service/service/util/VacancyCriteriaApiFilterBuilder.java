@@ -12,29 +12,23 @@ import ru.mindils.jb.service.entity.Vacancy;
 @UtilityClass
 public class VacancyCriteriaApiFilterBuilder {
 
-    public static Predicate[] build(
-            AppVacancyFilterDto filter, CriteriaBuilder cb, Root<Vacancy> root) {
+    public static Predicate[] build(AppVacancyFilterDto filter, CriteriaBuilder cb, Root<Vacancy> root) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filter.getAiApproved() != null) {
-            predicates.add(
-                    cb.greaterThan(
-                            root.get("vacancyInfo").get("aiApproved"), filter.getAiApproved()));
+            predicates.add(cb.greaterThan(root.get("vacancyInfo").get("aiApproved"), filter.getAiApproved()));
         }
 
         if (filter.getSalaryFrom() != null) {
-            predicates.add(
-                    cb.or(
-                            cb.isNull(root.get("salary").get("from")),
-                            cb.greaterThan(
-                                    root.get("salary").get("from"), filter.getSalaryFrom())));
+            predicates.add(cb.or(
+                    cb.isNull(root.get("salary").get("from")),
+                    cb.greaterThan(root.get("salary").get("from"), filter.getSalaryFrom())));
         }
 
         if (filter.getSalaryTo() != null) {
-            predicates.add(
-                    cb.or(
-                            cb.isNull(root.get("salary").get("to")),
-                            cb.lessThan(root.get("salary").get("to"), filter.getSalaryTo())));
+            predicates.add(cb.or(
+                    cb.isNull(root.get("salary").get("to")),
+                    cb.lessThan(root.get("salary").get("to"), filter.getSalaryTo())));
         }
 
         if (filter.getStatus() != null) {

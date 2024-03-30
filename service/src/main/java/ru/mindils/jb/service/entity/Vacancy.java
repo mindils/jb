@@ -48,7 +48,8 @@ import org.hibernate.type.SqlTypes;
 public class Vacancy implements BaseEntity<String> {
 
     /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
-    @Id private String id;
+    @Id
+    private String id;
 
     private String name;
 
@@ -59,7 +60,9 @@ public class Vacancy implements BaseEntity<String> {
     private Boolean premium;
     private String city;
 
-    @Embedded private Salary salary;
+    @Embedded
+    private Salary salary;
+
     private String type;
     private Instant publishedAt;
     private Instant createdAt;
@@ -93,7 +96,8 @@ public class Vacancy implements BaseEntity<String> {
      */
     private String keySkills;
 
-    @Builder.Default private Boolean detailed = false;
+    @Builder.Default
+    private Boolean detailed = false;
 
     @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private VacancyInfo vacancyInfo;

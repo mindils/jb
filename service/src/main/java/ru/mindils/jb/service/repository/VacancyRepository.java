@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import ru.mindils.jb.service.entity.Vacancy;
 
 @Repository
-public interface VacancyRepository
-        extends JpaRepository<Vacancy, String>, QuerydslPredicateExecutor<Vacancy> {
+public interface VacancyRepository extends JpaRepository<Vacancy, String>, QuerydslPredicateExecutor<Vacancy> {
 
     Slice<Vacancy> findAllByDetailed(boolean detailed, PageRequest pageable);
 

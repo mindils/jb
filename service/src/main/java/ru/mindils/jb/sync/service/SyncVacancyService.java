@@ -40,8 +40,7 @@ public class SyncVacancyService {
     private final VacancyRepository vacancyRepository;
 
     public boolean syncEmployerDetailsBatch() {
-        Slice<Employer> employers =
-                employerRepository.findAllByDetailed(false, PageRequest.of(0, 10));
+        Slice<Employer> employers = employerRepository.findAllByDetailed(false, PageRequest.of(0, 10));
 
         employers.forEach(employer -> syncEmployerById(employer.getId()));
 
@@ -50,13 +49,11 @@ public class SyncVacancyService {
 
     @SneakyThrows
     public boolean syncVacancyDetailsBatch() {
-        Slice<Vacancy> vacancies =
-                vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 100));
+        Slice<Vacancy> vacancies = vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 100));
 
-        vacancies.forEach(
-                vacancy -> {
-                    syncVacancyById(vacancy.getId());
-                });
+        vacancies.forEach(vacancy -> {
+            syncVacancyById(vacancy.getId());
+        });
 
         return !vacancies.isEmpty();
     }
@@ -92,9 +89,8 @@ public class SyncVacancyService {
             employerRepository.save(employerEmpty);
         } else {
             Optional<Employer> optionalEmployer = employerRepository.findById(id);
-            Employer employer =
-                    optionalEmployer.orElseThrow(
-                            () -> new EntityNotFoundException("Employer not found with id: " + id));
+            Employer employer = optionalEmployer.orElseThrow(
+                    () -> new EntityNotFoundException("Employer not found with id: " + id));
             employerRepository.save(employerMapper.map(objects, employer));
         }
     }
@@ -105,8 +101,7 @@ public class SyncVacancyService {
         Optional<Vacancy> optionalVacancy = vacancyRepository.findById(id);
 
         Vacancy vacancy =
-                optionalVacancy.orElseThrow(
-                        () -> new EntityNotFoundException("Vacancy not found with id: " + id));
+                optionalVacancy.orElseThrow(() -> new EntityNotFoundException("Vacancy not found with id: " + id));
 
         // Workaround:
         // если при загрузке деталей вакансии получаем 404 от hh помечаем, что делали загружены
@@ -124,35 +119,29 @@ public class SyncVacancyService {
     }
 
     private VacancyListResponseDto syncVacancyFilter(List<Map<String, String>> defaultFilter) {
-        VacancyListResponseDto vacancyListResponseDto =
-                vacancyApiClientService.loadVacancies(defaultFilter);
+        VacancyListResponseDto vacancyListResponseDto = vacancyApiClientService.loadVacancies(defaultFilter);
 
-        List<String> vacancyIds =
-                vacancyListResponseDto.getItems().stream().map(BriefVacancyDto::getId).toList();
+        List<String> vacancyIds = vacancyListResponseDto.getItems().stream()
+                .map(BriefVacancyDto::getId)
+                .toList();
 
         // Получаем все которые ранее были загружены, чтобы обновить
-        Map<String, Vacancy> vacancyMaps =
-                vacancyRepository.findByIdIn(vacancyIds).stream()
-                        .collect(Collectors.toMap(Vacancy::getId, Function.identity()));
+        Map<String, Vacancy> vacancyMaps = vacancyRepository.findByIdIn(vacancyIds).stream()
+                .collect(Collectors.toMap(Vacancy::getId, Function.identity()));
 
-        vacancyListResponseDto
-                .getItems()
-                .forEach(
-                        vacancyDto -> {
-                            Vacancy vacancy;
-                            if (vacancyMaps.containsKey(vacancyDto.getId())) {
-                                vacancy =
-                                        vacancyMapper.map(
-                                                vacancyDto, vacancyMaps.get(vacancyDto.getId()));
-                            } else {
-                                vacancy = vacancyMapper.map(vacancyDto);
-                            }
+        vacancyListResponseDto.getItems().forEach(vacancyDto -> {
+            Vacancy vacancy;
+            if (vacancyMaps.containsKey(vacancyDto.getId())) {
+                vacancy = vacancyMapper.map(vacancyDto, vacancyMaps.get(vacancyDto.getId()));
+            } else {
+                vacancy = vacancyMapper.map(vacancyDto);
+            }
 
-                            // TODO: тут если работодатель уже загружен с деталями то не нужно
-                            // его обновлять
-                            employerRepository.save(vacancy.getEmployer());
-                            vacancyRepository.save(vacancy);
-                        });
+            // TODO: тут если работодатель уже загружен с деталями то не нужно
+            // его обновлять
+            employerRepository.save(vacancy.getEmployer());
+            vacancyRepository.save(vacancy);
+        });
 
         return vacancyListResponseDto;
     }

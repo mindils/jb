@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.mindils.jb.service.entity.VacancyFilter;
 
 @Repository
-public interface VacancyFilterRepository extends JpaRepository<VacancyFilter, Long> {}
+public interface VacancyFilterRepository extends JpaRepository<VacancyFilter, Long> {
+}

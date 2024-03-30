@@ -20,8 +20,7 @@ public class SyncVacancyAIService {
     private final VacancyRepository vacancyRepository;
 
     public boolean syncVacancyAiRatingsBatch() {
-        Slice<Vacancy> vacancies =
-                vacancyRepository.findVacanciesWithoutAiApproved(PageRequest.of(0, 100));
+        Slice<Vacancy> vacancies = vacancyRepository.findVacanciesWithoutAiApproved(PageRequest.of(0, 100));
 
         vacancies.forEach(this::syncVacancyAiRating);
 
@@ -35,8 +34,10 @@ public class SyncVacancyAIService {
         VacancyInfo vacancyInfo = vacancy.getVacancyInfo();
 
         if (vacancyInfo == null) {
-            vacancyInfo =
-                    VacancyInfo.builder().vacancy(vacancy).status(VacancyStatusEnum.NEW).build();
+            vacancyInfo = VacancyInfo.builder()
+                    .vacancy(vacancy)
+                    .status(VacancyStatusEnum.NEW)
+                    .build();
 
             vacancy.setVacancyInfo(vacancyInfo);
         }

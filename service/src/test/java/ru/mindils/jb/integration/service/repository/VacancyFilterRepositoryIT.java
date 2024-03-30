@@ -35,8 +35,7 @@ public class VacancyFilterRepositoryIT extends ITBase {
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyFilter> actualResult =
-                vacancyFilterRepository.findById(vacancyFilter.getId());
+        Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
 
         assertThat(actualResult.isPresent()).isTrue();
         assertThat(actualResult.get()).isEqualTo(vacancyFilter);
@@ -53,8 +52,7 @@ public class VacancyFilterRepositoryIT extends ITBase {
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyFilter> actualResult =
-                vacancyFilterRepository.findById(vacancyFilter.getId());
+        Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
 
         assertThat(actualResult.isPresent()).isTrue();
         assertThat(actualResult.get()).isEqualTo(vacancyFilter);
@@ -70,25 +68,25 @@ public class VacancyFilterRepositoryIT extends ITBase {
         entityManager.flush();
         entityManager.clear();
 
-        Optional<VacancyFilter> actualResult =
-                vacancyFilterRepository.findById(vacancyFilter.getId());
+        Optional<VacancyFilter> actualResult = vacancyFilterRepository.findById(vacancyFilter.getId());
         assertThat(actualResult.isPresent()).isFalse();
     }
 
     private static VacancyFilter getVacancyFilter() {
-        VacancyFilter vacancyFilter =
-                VacancyFilter.builder()
-                        .code("default")
-                        .name("Фильтр по умолчанию")
-                        .createdAt(Instant.now())
-                        .modifiedAt(Instant.now())
-                        .build();
+        VacancyFilter vacancyFilter = VacancyFilter.builder()
+                .code("default")
+                .name("Фильтр по умолчанию")
+                .createdAt(Instant.now())
+                .modifiedAt(Instant.now())
+                .build();
 
         vacancyFilter.addParam(
                 VacancyFilterParams.builder().paramName("city").paramValue("1").build());
 
-        vacancyFilter.addParam(
-                VacancyFilterParams.builder().paramName("text").paramValue("java").build());
+        vacancyFilter.addParam(VacancyFilterParams.builder()
+                .paramName("text")
+                .paramValue("java")
+                .build());
 
         return vacancyFilter;
     }

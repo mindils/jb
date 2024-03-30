@@ -17,9 +17,7 @@ public interface EmployerMapper {
     @Mapping(target = "employerInfo", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
-    @Mapping(
-            target = "detailed",
-            expression = "java(dto.getId() == null || dto.getId().equals(\"0\"))")
+    @Mapping(target = "detailed", expression = "java(dto.getId() == null || dto.getId().equals(\"0\"))")
     Employer map(BriefEmployerDto dto);
 
     @Mapping(target = "trusted", ignore = true)
@@ -29,9 +27,7 @@ public interface EmployerMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "id", source = "id", defaultValue = "0")
-    @Mapping(
-            target = "detailed",
-            expression = "java(entity.getId() == null || entity.getId().equals(\"0\"))")
+    @Mapping(target = "detailed", expression = "java(entity.getId() == null || entity.getId().equals(\"0\"))")
     Employer map(BriefEmployerDto entity, @MappingTarget Employer employer);
 
     @Mapping(target = "trusted", ignore = true)

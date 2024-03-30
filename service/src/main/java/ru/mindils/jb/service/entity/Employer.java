@@ -29,11 +29,14 @@ import lombok.ToString;
 public class Employer implements BaseEntity<String> {
 
     /** Уникальный ключ из внешней системы. Самостоятельно не генерируется */
-    @Id private String id;
+    @Id
+    private String id;
 
     private String name;
 
-    @Builder.Default private Boolean trusted = false;
+    @Builder.Default
+    private Boolean trusted = false;
+
     private String description;
     private Boolean detailed;
 

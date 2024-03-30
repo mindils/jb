@@ -12,11 +12,11 @@ import ru.mindils.jb.integration.service.annotation.IT;
 @Sql({"classpath:sql/dataset.sql"})
 public abstract class ITBase {
 
-    private static final PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.2"))
-                    .withDatabaseName("test")
-                    .withUsername("test")
-                    .withPassword("test");
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+                    DockerImageName.parse("postgres:16.2"))
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test");
 
     @BeforeAll
     static void initPostgres() {

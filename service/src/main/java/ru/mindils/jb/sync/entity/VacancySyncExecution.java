@@ -49,7 +49,9 @@ public class VacancySyncExecution {
     private LocalDateTime endTime;
     private String errorMessage;
 
-    @CreatedDate private Instant createdAt;
+    @CreatedDate
+    private Instant createdAt;
 
-    @LastModifiedDate private Instant updatedAt;
+    @LastModifiedDate
+    private Instant updatedAt;
 }

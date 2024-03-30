@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.mindils.jb.service.entity.VacancyInfo;
 
 @Repository
-public interface VacancyInfoRepository extends JpaRepository<VacancyInfo, Long> {}
+public interface VacancyInfoRepository extends JpaRepository<VacancyInfo, Long> {
+}

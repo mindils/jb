@@ -16,11 +16,10 @@ public class VacancyFilterService {
     private final EntityManager entityManager;
 
     public List<Map<String, String>> getDefaultFilter() {
-        List<VacancyFilter> result =
-                entityManager
-                        .createQuery("from VacancyFilter where code = :filter", VacancyFilter.class)
-                        .setParameter("filter", VACANCY_FILTER_DEFAULT)
-                        .getResultList();
+        List<VacancyFilter> result = entityManager
+                .createQuery("from VacancyFilter where code = :filter", VacancyFilter.class)
+                .setParameter("filter", VACANCY_FILTER_DEFAULT)
+                .getResultList();
 
         VacancyFilter vacancyFilter = result.isEmpty() ? null : result.get(0);
 

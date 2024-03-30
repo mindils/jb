@@ -35,28 +35,24 @@ public class VacancyClientService {
 
     @SneakyThrows
     public DetailedVacancyDto loadVacancyById(String id) {
-        return httpClientProvider.retrieve(
-                URI.create(VACANCY_API_URL + "/" + id), DetailedVacancyDto.class);
+        return httpClientProvider.retrieve(URI.create(VACANCY_API_URL + "/" + id), DetailedVacancyDto.class);
     }
 
     @SneakyThrows
     public DetailedEmployerDto loadEmployerById(String id) {
-        return httpClientProvider.retrieve(
-                URI.create(EMPLOYER_API_URL + "/" + id), DetailedEmployerDto.class);
+        return httpClientProvider.retrieve(URI.create(EMPLOYER_API_URL + "/" + id), DetailedEmployerDto.class);
     }
 
     @SneakyThrows
     public VacancyListResponseDto loadVacancies(List<Map<String, String>> params) {
-        return httpClientProvider.retrieve(
-                buildURIWithParams(VACANCY_API_URL, params), VacancyListResponseDto.class);
+        return httpClientProvider.retrieve(buildURIWithParams(VACANCY_API_URL, params), VacancyListResponseDto.class);
     }
 
     private URI buildURIWithParams(String uri, List<Map<String, String>> params) {
-        return URI.create(
-                uri
-                        + params.stream()
-                                .flatMap(map -> map.entrySet().stream())
-                                .map(entry -> entry.getKey() + "=" + entry.getValue())
-                                .collect(joining("&", "?", "")));
+        return URI.create(uri
+                + params.stream()
+                        .flatMap(map -> map.entrySet().stream())
+                        .map(entry -> entry.getKey() + "=" + entry.getValue())
+                        .collect(joining("&", "?", "")));
     }
 }
