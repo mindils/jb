@@ -1,7 +1,7 @@
 package ru.mindils.jb.sync.entity;
 
 public enum VacancySyncStatus {
-  RUNNING,
+  NEW,
   COMPLETED,
   FAILED
 }

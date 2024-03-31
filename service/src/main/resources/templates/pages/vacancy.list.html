@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title layout:fragment="title">Vacancy list</title>
+</head>
+<th:block layout:fragment="content">
+  <div class="content">
+    <h2 class="filter-title">Фильтр</h2>
+    <form class="filters">
+      <div class="filter">
+        <label for="salary-range-from">Диапазон зарплат:</label>
+        <input type="text" id="salary-range-from" placeholder="От" class="salary-input"
+               name="salaryFrom"
+               th:value="${filter.getSalaryFrom()}"
+        >
+        <span>-</span>
+        <input type="text" placeholder="До" class="salary-input" name="salaryTo"
+               th:value="${filter.getSalaryTo()}"
+        >
+      </div>
+      <!--      <div class="filter">-->
+      <!--        <label for="suitable-jobs">Только подходящие вакансии:</label>-->
+      <!--        <input type="checkbox" id="suitable-jobs" class="checkbox-input">-->
+      <!--      </div>-->
+      <input type="hidden" name="aiApproved" th:value="0.7">
+      <div class="filter">
+        <label for="job-preference">Предпочтения:</label>
+        <select id="job-preference" class="select-input" name="status" th:field="*{filter.status}">
+          <option value="">Все</option>
+          <option value="NEW">Новые</option>
+          <option value="IN_PROGRESS">Избранные</option>
+          <option value="ARCHIVED">В архиве</option>
+          <option value="DECLINED">Не нравятся</option>
+          <option value="APPROVED">Нравятся</option>
+        </select>
+      </div>
+      <button type="submit" class="filter-btn">Применить</button>
+    </form>
+
+    <!-- Сортировка -->
+    <div class="sorting">
+      <span>Сортировать:</span>
+      <a th:href="@{|${baseSortUrl}sort=salary.from,${salaryFromOrder}|}">По зарплате</a>
+      <a th:href="@{|${baseSortUrl}sort=createdAt,${createdAtOrder}|}">По дате</a>
+    </div>
+
+    <div class="job-list">
+      <div th:each="vacancy : ${vacancies}" class="job-item">
+        <h3>
+          <a th:href="@{|/vacancies/${vacancy.id}|}" th:text="${vacancy.name}">Заголовок
+            вакансии</a>
+        </h3>
+        <p class="job-meta">
+          <a th:href="@{|/employers/${vacancy.employer.id}|}" th:text="${vacancy.employer.name}"/>
+          <span class="job-location" th:text="${vacancy.city}">(Москва)</span>
+          <span class="job-posted-date">Создано в системе: <span
+              th:text="${#temporals.format(vacancy.internalCreatedAt, 'dd.MM.yyyy HH:mm')}"
+          ></span>
+          </span>
+          <span class="job-created-date">
+            Обновлено в hh: <span
+              th:text="${#temporals.format(vacancy.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+          </span>
+        </p>
+        <p class="job-salary" th:if="${vacancy.salary != null}">
+          <span>Зарплата:</span>
+          <span class="salary-from" th:text="|от ${vacancy.salary.from}|"
+                th:if="${vacancy.salary.from != null}"/>
+          <span class="salary-to" th:text="|до ${vacancy.salary.to}|"
+                th:if="${vacancy.salary.to != null}"/>
+        </p>
+        <p class="job-description" th:utext="${vacancy.description}">Краткое описание
+          вакансии...</p>
+        <div class="job-actions">
+          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
+            <input name="status" type="hidden" value="APPROVED">
+            <button class="job-action">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </button>
+          </form>
+          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
+            <input name="status" type="hidden" value="DECLINED">
+            <button class="job-action">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </button>
+          </form>
+          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
+            <input name="status" type="hidden" value="IN_PROGRESS">
+            <button class="job-action">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination" th:if="${totalPages} > 1">
+      <a th:href="@{|${basePaginationUrl}page=${currentPage > 1 ? currentPage - 1 : 1}|}"
+         class="pagination-link">« Пред.</a>
+
+      <th:block th:each="i : ${#numbers.sequence(1, 2)}">
+        <a th:href="@{|${basePaginationUrl}page=${i}|}"
+           th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+      </th:block>
+
+      <span th:if="${currentPage > 4}" class="pagination-link">...</span>
+
+      <th:block th:each="i : ${#numbers.sequence(currentPage - 1, currentPage + 1)}"
+                th:if="${i > 2 and i < totalPages - 1}">
+        <a th:href="@{|${basePaginationUrl}page=${i}|}"
+           th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+      </th:block>
+
+      <span th:if="${totalPages - currentPage > 3}" class="pagination-link">...</span>
+
+      <th:block th:each="i : ${#numbers.sequence(totalPages - 1, totalPages)}">
+        <a th:href="@{|${basePaginationUrl}page=${i}|}"
+           th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+      </th:block>
+
+      <a th:href="@{|${basePaginationUrl}page=${currentPage < totalPages ? currentPage + 1 : totalPages}|}"
+         class="pagination-link">След. »</a>
+    </div>
+
+  </div>
+</th:block>
+</html>

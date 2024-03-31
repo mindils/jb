@@ -1,12 +1,16 @@
 spotless {
-    java {
-        target 'src/**/*.java'
-        removeUnusedImports()
-        cleanthat()
-        googleJavaFormat()
-                .aosp()
-                .reflowLongStrings();
+  java {
+    target 'src/**/*.java'
+    removeUnusedImports()
+    cleanthat()
+    palantirJavaFormat("2.41.0")
+        .style("GOOGLE")
+        .formatJavadoc(true)
 
-        formatAnnotations()
+
+
+    custom 'Empty class/interface braces on new line', {
+      it.replaceAll(/(public\s+(?:interface|class)\s+\w+(?:\s+extends\s+\w+<\w+,\s+\w+>)?)\s*\{\s*\}/, '$1 {\n}')
     }
+  }
 }

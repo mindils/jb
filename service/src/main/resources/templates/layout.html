@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<th:block layout:insert="~{fragments/head}"/>
+<body x-data="setup()" :class="{'dark-mode': darkMode}">
+<div class="container">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="navbar-left">
+        <button @click="sidebarOpen = !sidebarOpen" class="navbar-toggle">
+          <svg class="icon" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+      <div class="navbar-right">
+        <button @click="darkMode = !darkMode" class="theme-toggle">
+          <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-2.828 4.243a1 1 0 00-1.415-1.414 5 5 0 01-7.072 0 1 1 0 00-1.415 1.414 7 7 0 009.9 0z"/>
+          </svg>
+          <svg x-show="darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+          </svg>
+        </button>
+        <div class="user-menu" x-data="{ open: false }">
+          <button @click="open = !open" class="user-menu-toggle">
+            <img class="user-avatar" src="https://via.placeholder.com/150" alt="">
+            <span class="user-name">Иван Иванов</span>
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" @click.away="open = false" class="user-menu-dropdown">
+            <a href="#" class="user-menu-item">Профиль</a>
+            <a href="#" class="user-menu-item">Настройки</a>
+            <a href="#" class="user-menu-item">Выход</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div :class="{'sidebar-open': sidebarOpen}" class="sidebar-overlay"
+         @click="sidebarOpen = false"></div>
+
+    <div :class="{'sidebar-open': sidebarOpen}" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span class="logo-text">JB</span>
+        </div>
+      </div>
+      <th:block layout:replace="~{fragments/navigation}"/>
+
+    </div>
+
+    <main class="main-content">
+      <div class="content-wrapper">
+        <th:block layout:fragment="content"/>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const setup = () => {
+    return {
+      darkMode: false,
+      sidebarOpen: false,
+    }
+  };
+</script>
+</body>
+</html>
