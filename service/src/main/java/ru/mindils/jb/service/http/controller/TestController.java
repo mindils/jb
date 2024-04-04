@@ -18,7 +18,7 @@ import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.service.VacancyService;
 import ru.mindils.jb.service.util.ControllerUtils;
-
+// https://stackoverflow.com/questions/25143756/thymeleaf-modelattribute-list
 @Controller
 @RequestMapping("/test")
 @RequiredArgsConstructor
