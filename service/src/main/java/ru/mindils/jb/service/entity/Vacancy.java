@@ -1,5 +1,6 @@
 package ru.mindils.jb.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -55,6 +56,7 @@ public class Vacancy implements BaseEntity<String> {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "employer_id")
+  @JsonManagedReference
   private Employer employer;
 
   private Boolean premium;

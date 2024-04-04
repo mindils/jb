@@ -52,10 +52,4 @@ public class VacancyController extends BaseController {
     model.addAttribute("vacancy", vacancyService.findById(id));
     return "pages/vacancy.detail";
   }
-
-  @PostMapping("/{id}")
-  public String updateStatus(@PathVariable String id, @RequestParam VacancyStatusEnum status) {
-    vacancyService.updateStatus(id, status);
-    return "redirect:/vacancies";
-  }
 }

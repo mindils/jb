@@ -7,10 +7,7 @@ spotless {
         .style("GOOGLE")
         .formatJavadoc(true)
 
-
-
     custom 'Empty class/interface braces on new line', {
-      it.replaceAll(/(public\s+(?:interface|class)\s+\w+(?:\s+extends\s+\w+<\w+,\s+\w+>)?)\s*\{\s*\}/, '$1 {\n}')
-    }
+      it.replaceAll(/(public\s+(?:interface|class|record)\s+\w+(?:<\w+(?:,\s*\w+)*>)?\s*(?:\([^)]*\))?(?:\s+extends\s+\w+(?:<\w+(?:,\s+\w+)>)?)?(?:\s+implements\s+\w+(?:<\w+(?:,\s+\w+)>)?(?:,\s*\w+(?:<\w+(?:,\s+\w+)>)?)*)?)\s*\{\s*\}/, '$1 {\n}')    }
   }
 }

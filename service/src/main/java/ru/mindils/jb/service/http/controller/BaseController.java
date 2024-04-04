@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import ru.mindils.jb.service.util.ControllerUtils;
 
-@Controller
 public abstract class BaseController {
 
   @ModelAttribute("activePage")

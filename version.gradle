@@ -1,6 +1,7 @@
 ext {
   versions = [
       'thymeleafLayoutDialectVersion': '3.3.0',
+      'springdoc'                    : '2.4.0',
       'spotlessVersion'              : '6.25.0',
       'junitVersion'                 : '5.9.1',
       'assertjCoreVersion'           : '3.24.2',

@@ -4,6 +4,30 @@
       layout:decorate="~{layout}">
 <head>
   <title layout:fragment="title">Vacancy list</title>
+  <script>
+    function updateVacancyStatus(event) {
+      const button = event.target.closest('button');
+      const vacancyId = button.getAttribute('data-vacancy-id');
+      const status = button.getAttribute('data-status');
+
+      fetch(`/api/v1/vacancies/${vacancyId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({status}),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        console.log('Vacancy status updated successfully');
+      })
+      .catch(error => {
+        console.error('There was a problem updating vacancy status:', error);
+      });
+    }
+  </script>
 </head>
 <th:block layout:fragment="content">
   <div class="content">
@@ -49,11 +73,67 @@
     <div class="job-list">
       <div th:each="vacancy : ${vacancies}" class="job-item">
         <h3>
-          <a th:href="@{|/vacancies/${vacancy.id}|}" th:text="${vacancy.name}">Заголовок
-            вакансии</a>
+          <a th:href="@{|/vacancies/${vacancy.id}|}">
+             <span class="job-status-action">
+              <th:block th:switch="${vacancy.vacancyInfo.status.name}">
+                <svg color="#007BFF" th:case="'NEW'" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <svg color="#FFA500" th:case="'ARCHIVED'" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                  <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                  <rect x="1" y="3" width="22" height="5"></rect>
+                  <line x1="10" y1="12" x2="14" y2="12"></line>
+                </svg>
+                <svg color="#28A745" th:case="'APPROVED'" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <svg color="#DC3545" th:case="'DECLINED'" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <svg color="#6C757D" th:case="'IN_PROGRESS'" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                  <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+
+                 <svg color="#007BFF" th:case="*" xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </th:block>
+            </span>
+            <span th:text="${vacancy.name}">Заголовок вакансии</span>
+          </a>
         </h3>
         <p class="job-meta">
-          <a th:href="@{|/employers/${vacancy.employer.id}|}" th:text="${vacancy.employer.name}"/>
+          <a th:href="@{|/employers/${vacancy.employer.id}|}">
+
+            <span th:text="${vacancy.employer.name}">Название компании</span>
+          </a>
           <span class="job-location" th:text="${vacancy.city}">(Москва)</span>
           <span class="job-posted-date">Создано в системе: <span
               th:text="${#temporals.format(vacancy.internalCreatedAt, 'dd.MM.yyyy HH:mm')}"
@@ -74,40 +154,34 @@
         <p class="job-description" th:utext="${vacancy.description}">Краткое описание
           вакансии...</p>
         <div class="job-actions">
-          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
-            <input name="status" type="hidden" value="APPROVED">
-            <button class="job-action">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                   stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </button>
-          </form>
-          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
-            <input name="status" type="hidden" value="DECLINED">
-            <button class="job-action">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                   stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="15" y1="9" x2="9" y2="15"></line>
-                <line x1="9" y1="9" x2="15" y2="15"></line>
-              </svg>
-            </button>
-          </form>
-          <form th:action="@{|/vacancies/${vacancy.id}|}" method="post">
-            <input name="status" type="hidden" value="IN_PROGRESS">
-            <button class="job-action">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                   stroke-linejoin="round">
-                <path
-                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </button>
-          </form>
+          <button class="job-action" @click="updateVacancyStatus($event)"
+                  th:data-vacancy-id="${vacancy.id}" data-status="APPROVED">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </button>
+          <button class="job-action" @click="updateVacancyStatus($event)"
+                  th:data-vacancy-id="${vacancy.id}" data-status="DECLINED">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </button>
+          <button class="job-action" @click="updateVacancyStatus($event)"
+                  th:data-vacancy-id="${vacancy.id}" data-status="IN_PROGRESS">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </div>
       </div>
     </div>

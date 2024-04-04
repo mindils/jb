@@ -1,5 +1,7 @@
 package ru.mindils.jb.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -42,6 +44,7 @@ public class Employer implements BaseEntity<String> {
 
   @Builder.Default
   @OneToMany(mappedBy = "employer")
+  @JsonBackReference
   private List<Vacancy> vacancy = new ArrayList<>();
 
   @OneToOne(mappedBy = "employer", fetch = FetchType.LAZY)
