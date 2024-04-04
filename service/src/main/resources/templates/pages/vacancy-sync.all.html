@@ -3,11 +3,144 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title">Vacancy sync</title>
+    <title layout:fragment="title">Vacancy sync</title>
+    <style>
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .sync-settings {
+            margin-bottom: 10px;
+        }
+
+        .sync-period-label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .sync-period-input {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .sync-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sync-info {
+            margin-top: 20px;
+        }
+
+        .sync-step {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sync-details {
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #007bff;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+            background-size: 40px 40px;
+            animation: progress-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-stripes {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 40px 0;
+            }
+        }
+
+        .last-sync {
+            margin-top: 20px;
+        }
+
+        .last-sync-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .last-sync-time {
+            font-size: 14px;
+        }
+    </style>
 </head>
 <th:block layout:fragment="content">
-  <div class="content">
-    <h1>Vacancy Sync </h1>
-  </div>
+    <div class="content">
+        <h1 class="page-title">Синхронизация вакансий</h1>
+
+        <div class="last-sync">
+            <span class="last-sync-label">Последняя синхронизация:</span>
+            <span class="last-sync-time" th:text="${#temporals.format(lastSyncTime, 'dd.MM.yyyy HH:mm')}"></span>
+        </div>
+
+        <form method="post">
+            <div class="sync-settings">
+                <label for="syncPeriod" class="sync-period-label">Период синхронизации:</label>
+                <input type="number" name="syncPeriod" id="syncPeriod" class="sync-period-input" min="1" max="365"
+                       value="1">
+            </div>
+
+            <button class="sync-button" type="submit">Запустить обновление вакансий</button>
+        </form>
+
+        <div th:if="${isSyncRunning}">
+            <div class="sync-info">
+                <span class="sync-step">Шаг 1: Подготовка</span>
+                <span class="sync-details">Собираем данные для синхронизации(доделать отображение загрузки)</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress" style="width: 100%;"></div>
+                <div class="progress-overlay"></div>
+            </div>
+        </div>
+
+    </div>
 </th:block>
 </html>

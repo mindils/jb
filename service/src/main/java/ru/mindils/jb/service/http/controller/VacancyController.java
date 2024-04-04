@@ -9,12 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.service.VacancyService;
 import ru.mindils.jb.service.util.ControllerUtils;
 

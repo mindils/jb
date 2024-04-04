@@ -2,6 +2,7 @@ package ru.mindils.jb.sync.service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.mindils.jb.sync.entity.VacancySyncExecution;
@@ -17,6 +18,10 @@ public class VacancySyncExecutionService {
 
   public void createNewStep(VacancySyncStep step) {
     createNewStep(step, null);
+  }
+
+  public Optional<VacancySyncExecution> getRunningJob() {
+    return vacancySyncExecutionRepository.findRunningJob();
   }
 
   public void createNewStep(VacancySyncStep step, Map<String, ?> params) {

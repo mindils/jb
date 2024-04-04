@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.mindils.jb.service.entity.Employer;
-import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.service.EmployerService;
 
 @Controller

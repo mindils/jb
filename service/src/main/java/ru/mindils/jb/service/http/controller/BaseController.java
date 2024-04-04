@@ -2,7 +2,6 @@ package ru.mindils.jb.service.http.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import ru.mindils.jb.service.util.ControllerUtils;
 

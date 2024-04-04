@@ -14,7 +14,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import ru.mindils.jb.sync.entity.VacancySyncExecution;
-import ru.mindils.jb.sync.repository.VacancySyncExecutionRepository;
 import ru.mindils.jb.sync.service.SyncVacancyAIService;
 import ru.mindils.jb.sync.service.SyncVacancyService;
 import ru.mindils.jb.sync.service.VacancySyncExecutionService;
@@ -23,14 +22,13 @@ import ru.mindils.jb.sync.service.VacancySyncExecutionService;
 @DisallowConcurrentExecution
 public class VacancySyncJob implements Job {
 
-  private final VacancySyncExecutionRepository vacancyJobExecutionRepository;
   private final SyncVacancyService syncVacancyService;
   private final SyncVacancyAIService syncVacancyAiService;
   private final VacancySyncExecutionService vacancyJobExecutionService;
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
-    Optional<VacancySyncExecution> maybeRunningJob = vacancyJobExecutionRepository.findRunningJob();
+    Optional<VacancySyncExecution> maybeRunningJob = vacancyJobExecutionService.getRunningJob();
 
     if (maybeRunningJob.isEmpty()) {
       try {
