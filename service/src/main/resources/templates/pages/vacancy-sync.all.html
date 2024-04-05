@@ -111,7 +111,28 @@
     </style>
 </head>
 <th:block layout:fragment="content">
-    <div class="content">
+    <div class="content" x-data="{
+          isSyncRunning: false,
+          syncStatus: { statusText: '', progress: 0, step: 0 },
+          intervalId: null,
+          async fetchSyncStatus() {
+            const response = await fetch('/api/v1/vacancies-sync/status');
+            const data = await response.json();
+            this.isSyncRunning = data.isSyncRunning;
+            this.syncStatus = data;
+            if (!this.isSyncRunning && this.intervalId) {
+              clearInterval(this.intervalId);
+            }
+          },
+          startPolling() {
+            this.fetchSyncStatus();
+            this.intervalId = setInterval(() => {
+              if (this.isSyncRunning) {
+                this.fetchSyncStatus();
+              }
+            }, 1000);
+          }
+        }" x-init="startPolling">
         <h1 class="page-title">Синхронизация вакансий</h1>
 
         <div class="last-sync">
@@ -129,18 +150,17 @@
             <button class="sync-button" type="submit">Запустить обновление вакансий</button>
         </form>
 
-        <div th:if="${isSyncRunning}">
+        <div x-show="isSyncRunning">
             <div class="sync-info">
-                <span class="sync-step">Шаг 1: Подготовка</span>
-                <span class="sync-details">Собираем данные для синхронизации(доделать отображение загрузки)</span>
+                <span class="sync-step" x-text="'Шаг ' + (syncStatus.step + 1) + ': ' + syncStatus.statusText"></span>
+                <span class="sync-details" x-text="syncStatus.statusText"></span>
             </div>
 
             <div class="progress-bar">
-                <div class="progress" style="width: 100%;"></div>
+                <div class="progress" :style="'width: ' + syncStatus.progress + '%;'"></div>
                 <div class="progress-overlay"></div>
             </div>
         </div>
-
     </div>
 </th:block>
 </html>
