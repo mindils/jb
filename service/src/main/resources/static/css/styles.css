@@ -534,6 +534,19 @@ body {
   height: 1.25rem;
 }
 
+.job-status-action {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.job-status-action svg {
+  width: 1em;
+  height: 1rem;
+}
+
 .job-posted-date {
   display: block;
 }

@@ -51,3 +51,14 @@ VALUES
     ('vacancy-id-6', 0.65, false, 'NEW'),
     ('vacancy-id-7', 0.60, false, 'NEW'),
     ('vacancy-id-8', 0.76, false, 'DECLINED');
+
+
+-- Вставка данных user
+INSERT INTO users (id, username, role, password)
+VALUES
+    (1, 'admin', 'ADMIN', '{noop}1'),
+    (2, 'user1', 'USER', '{noop}2'),
+    (3, 'user2', 'USER', '{noop}3');
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users) + 1);
+
+

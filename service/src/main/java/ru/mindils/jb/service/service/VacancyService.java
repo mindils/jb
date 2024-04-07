@@ -1,12 +1,14 @@
 package ru.mindils.jb.service.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
+import ru.mindils.jb.service.dto.UpdateStatusVacancyDto;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyStatusEnum;
+import ru.mindils.jb.service.mapper.VacancyMapper;
 import ru.mindils.jb.service.repository.VacancyRepository;
 import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 
@@ -15,6 +17,7 @@ import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 public class VacancyService {
 
   private final VacancyRepository vacancyRepository;
+  private final VacancyMapper vacancyMapper;
 
   public Page<Vacancy> findAll(AppVacancyFilterDto filter, Pageable pageable) {
     return vacancyRepository.findAll(VacancyQueryDslFilterBuilder.build(filter), pageable);
@@ -24,10 +27,14 @@ public class VacancyService {
     return vacancyRepository.findById(id).orElseThrow();
   }
 
-  public void updateStatus(String id, VacancyStatusEnum status) {
-    vacancyRepository.findById(id).ifPresent(vacancy -> {
-      vacancy.getVacancyInfo().setStatus(status);
-      vacancyRepository.save(vacancy);
-    });
+  public Optional<UpdateStatusVacancyDto> updateStatus(String id, UpdateStatusVacancyDto dto) {
+    return vacancyRepository
+        .findById(id)
+        .map(entity -> {
+          entity.getVacancyInfo().setStatus(dto.status());
+          return entity;
+        })
+        .map(vacancyRepository::saveAndFlush)
+        .map(vacancyMapper::map);
   }
 }

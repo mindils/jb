@@ -9,12 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Vacancy;
-import ru.mindils.jb.service.entity.VacancyStatusEnum;
 import ru.mindils.jb.service.service.VacancyService;
 import ru.mindils.jb.service.util.ControllerUtils;
 
@@ -51,11 +48,5 @@ public class VacancyController extends BaseController {
   public String findById(Model model, @PathVariable String id) {
     model.addAttribute("vacancy", vacancyService.findById(id));
     return "pages/vacancy.detail";
-  }
-
-  @PostMapping("/{id}")
-  public String updateStatus(@PathVariable String id, @RequestParam VacancyStatusEnum status) {
-    vacancyService.updateStatus(id, status);
-    return "redirect:/vacancies";
   }
 }
