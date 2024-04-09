@@ -1,8 +1,12 @@
 package ru.mindils.jb.service.repository;
 
+import com.querydsl.core.types.Predicate;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -12,6 +16,9 @@ import ru.mindils.jb.service.entity.Vacancy;
 @Repository
 public interface VacancyRepository
     extends JpaRepository<Vacancy, String>, QuerydslPredicateExecutor<Vacancy> {
+
+  @EntityGraph(attributePaths = {"employer"})
+  Page<Vacancy> findAll(Predicate predicate, Pageable pageable);
 
   Slice<Vacancy> findAllByDetailed(boolean detailed, PageRequest pageable);
 

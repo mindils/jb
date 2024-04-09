@@ -28,4 +28,10 @@ public abstract class BaseController {
     Map<String, String[]> parameterMap = request.getParameterMap();
     return ControllerUtils.createQueryStringForParams(parameterMap, "page", "sort");
   }
+
+  @ModelAttribute("currentSort")
+  public String currentSort(HttpServletRequest request) {
+    String currentSort = request.getParameter("sort");
+    return currentSort != null ? currentSort : "";
+  }
 }

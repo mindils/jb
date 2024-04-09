@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.dto.UpdateStatusVacancyDto;
+import ru.mindils.jb.service.dto.VacancyReadDto;
 import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.mapper.VacancyMapper;
+import ru.mindils.jb.service.mapper.VacancyReadMapper;
 import ru.mindils.jb.service.repository.VacancyRepository;
 import ru.mindils.jb.service.service.util.VacancyQueryDslFilterBuilder;
 
@@ -18,9 +20,12 @@ public class VacancyService {
 
   private final VacancyRepository vacancyRepository;
   private final VacancyMapper vacancyMapper;
+  private final VacancyReadMapper vacancyReadMapper;
 
-  public Page<Vacancy> findAll(AppVacancyFilterDto filter, Pageable pageable) {
-    return vacancyRepository.findAll(VacancyQueryDslFilterBuilder.build(filter), pageable);
+
+  public Page<VacancyReadDto> findAll(AppVacancyFilterDto filter, Pageable pageable) {
+    return vacancyRepository.findAll(VacancyQueryDslFilterBuilder.build(filter), pageable)
+        .map(vacancyReadMapper::map);
   }
 
   public Vacancy findById(String id) {

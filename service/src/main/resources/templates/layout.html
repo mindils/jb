@@ -16,7 +16,7 @@
         </button>
       </div>
       <div class="navbar-right">
-        <button @click="darkMode = !darkMode" class="theme-toggle">
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);" class="theme-toggle">
           <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-2.828 4.243a1 1 0 00-1.415-1.414 5 5 0 01-7.072 0 1 1 0 00-1.415 1.414 7 7 0 009.9 0z"/>
@@ -69,7 +69,7 @@
 <script>
   const setup = () => {
     return {
-      darkMode: false,
+      darkMode: localStorage.getItem('darkMode') === 'true',
       sidebarOpen: false,
     }
   };

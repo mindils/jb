@@ -465,6 +465,10 @@ body {
   text-align: left;
 }
 
+.sorting-order {
+  font-size: 12px;
+}
+
 .sorting a {
   margin-right: 1rem;
   color: var(--primary-color);
@@ -495,6 +499,19 @@ body {
 .job-item h3 a {
   color: var(--primary-color);
   text-decoration: none;
+}
+
+.job-item h3 a:hover .job-link {
+  text-decoration: underline;
+}
+
+.job-hh-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.job-hh-link:hover {
+  opacity: .7;
 }
 
 .job-meta {
@@ -529,6 +546,10 @@ body {
   padding: 0.25rem;
 }
 
+.job-action:hover {
+  opacity: .5;
+}
+
 .job-action svg {
   width: 1.25rem;
   height: 1.25rem;
@@ -547,7 +568,7 @@ body {
   height: 1rem;
 }
 
-.job-posted-date {
+.job-properties {
   display: block;
 }
 
@@ -578,4 +599,108 @@ body {
   background-color: var(--primary-color);
   color: #fff;
   cursor: default;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.sync-settings {
+  margin-bottom: 10px;
+}
+
+.sync-period-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.sync-period-input {
+  width: 100px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sync-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sync-info {
+  margin-top: 20px;
+}
+
+.sync-step {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.sync-details {
+  font-size: 14px;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #007bff;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+  animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+.last-sync {
+  margin-top: 20px;
+}
+
+.last-sync-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.last-sync-time {
+  font-size: 14px;
 }
