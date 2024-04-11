@@ -92,14 +92,18 @@ public class Vacancy implements BaseEntity<String> {
    * }
    * </pre>
    *
-   * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
+   * <p>Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
    */
   private String keySkills;
 
   @Builder.Default
   private Boolean detailed = false;
 
-  @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToOne(
+      mappedBy = "vacancy",
+      fetch = FetchType.LAZY,
+      cascade = CascadeType.ALL,
+      optional = true)
   private VacancyInfo vacancyInfo;
 
   // Временные метки сохранения в вашей системе (createdAt занята и приходит из внешней системы)

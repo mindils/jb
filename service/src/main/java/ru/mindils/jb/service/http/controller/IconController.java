@@ -15,4 +15,10 @@ public class IconController {
     model.addAttribute("status", status);
     return "fragments/vacancy-status :: vacancy-status-icon";
   }
+
+  @GetMapping("/employer-status")
+  public String getIconEmployer(@RequestParam("status") String status, Model model) {
+    model.addAttribute("status", status);
+    return "fragments/employer-status :: employer-status-icon";
+  }
 }

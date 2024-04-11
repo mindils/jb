@@ -1,13 +1,131 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title" th:text="${employer.name}">Организации</title>
+  <title layout:fragment="title" th:text="|Employer Detail - ${employer.name}|">Employer
+    Detail</title>
+  <style>
+    .employer-details {
+      background-color: var(--bg-secondary-color);
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .employer-details p {
+      margin-bottom: 1rem;
+    }
+
+    .employer-details strong {
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    .employer-details a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    .employer-details a:hover {
+      text-decoration: underline;
+    }
+
+    .employer-details .card-status-action {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    .employer-details .card-status-action svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .employer-description {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: var(--bg-color);
+      border-radius: 0.5rem;
+    }
+
+    .employer-description h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+    }
+
+    .employer-description p {
+      line-height: 1.6;
+    }
+  </style>
 </head>
 <th:block layout:fragment="content">
-  <div class="content">
-    <h1 th:text="${employer.name}"></h1>
+  <div class="content card-item">
+    <h1>
+        <span class="card-status-action card-status-action-big">
+          <span
+              th:replace="~{fragments/employer-status:: employer-status-icon(status=${employer.employerInfo?.status?.name ?: null})}">
+          </span>
+        </span>
+      <span th:text="${employer.name}"/>
+    </h1>
+    <div class="employer-details">
+      <p>
+        <strong>сайт на hh.ru:</strong>
+        <a th:href="${employer.alternateUrl}" target="_blank"
+           th:text="${employer.alternateUrl}">Alternate URL</a>
+      </p>
+      <p>
+        <strong>Город:</strong>
+        <span th:text="${employer.areaName}">Area Name</span>
+      </p>
+      <p>
+        <strong>IT аккредитация:</strong>
+        <span
+            th:text="${employer.accreditedItEmployer ? 'Да' : 'Нет'}">Accredited IT Employer</span>
+      </p>
+      <p>
+        <strong>Веб сайт:</strong>
+        <a th:href="${employer.siteUrl}" th:text="${employer.siteUrl}">
+          Website URL</a>
+      </p>
+      <p>
+        <strong>Тип Компании:</strong>
+        <span th:text="${employer.type}">Company Type</span>
+      </p>
+      <p>
+        <strong>Направление компании:</strong>
+        <span th:each="industry : ${employer.industries}">
+          <span th:text="|${industry.name} (${industry.id})|">Industry</span>
+        </span>
+      </p>
+      <div>
+        <strong>Description:</strong>
+        <div th:utext="${employer.description}">Description</div>
+      </div>
+      <div class="card-actions">
+        <button class="card-action card-action-big" @click="updateEmployerStatus($event)"
+                th:data-employer-id="${employer.id}" data-employer-status="APPROVED">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </button>
+        <button class="card-action card-action-big" @click="updateEmployerStatus($event)"
+                th:data-employer-id="${employer.id}" data-employer-status="DECLINED">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </th:block>
 </html>

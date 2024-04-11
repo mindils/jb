@@ -7,7 +7,7 @@ import java.util.Map;
 public record VacancyReadDto(
     String id,
     String name,
-    EmployerDto employer,
+    EmployerReadDto employer,
     Boolean premium,
     String city,
     SalaryDto salary,

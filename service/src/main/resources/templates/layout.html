@@ -45,14 +45,12 @@
   </nav>
 
   <div class="main-container">
-    <div :class="{'sidebar-open': sidebarOpen}" class="sidebar-overlay"
+    <div :class="{'sidebar-open': sidebarOpen}"
          @click="sidebarOpen = false"></div>
 
     <div :class="{'sidebar-open': sidebarOpen}" class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">
           <span class="logo-text">JB</span>
-        </div>
       </div>
       <th:block layout:replace="~{fragments/navigation}"/>
 

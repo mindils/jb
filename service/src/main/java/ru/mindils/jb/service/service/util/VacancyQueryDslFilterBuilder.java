@@ -5,20 +5,24 @@ import java.math.BigDecimal;
 import lombok.experimental.UtilityClass;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.dto.SystemVacancyFilterDto;
+import ru.mindils.jb.service.entity.EmployerStatusEnum;
 import ru.mindils.jb.service.entity.QVacancy;
-import ru.mindils.jb.service.entity.VacancyStatusEnum;
 
 @UtilityClass
 public class VacancyQueryDslFilterBuilder {
 
   public static Predicate build(AppVacancyFilterDto filter) {
-    SystemVacancyFilterDto systemFilter = SystemVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
-//        .status(VacancyStatusEnum.ARCHIVED)
-        .build();
+    SystemVacancyFilterDto systemFilter =
+        SystemVacancyFilterDto.builder().aiApproved(BigDecimal.valueOf(0.7)).build();
+
     return QPredicate.builder()
         .add(systemFilter.getAiApproved(), QVacancy.vacancy.vacancyInfo.aiApproved::gt)
-//        .add(systemFilter.getStatus(), QVacancy.vacancy.vacancyInfo.status::ne)
+        .add(EmployerStatusEnum.DECLINED, status -> QVacancy.vacancy
+            .employer
+            .employerInfo
+            .status
+            .ne(status)
+            .or(QVacancy.vacancy.employer.employerInfo.status.isNull()))
         .add(filter.getSalaryFrom(), salaryFrom -> QVacancy.vacancy
             .salary
             .from

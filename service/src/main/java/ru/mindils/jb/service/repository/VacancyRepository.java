@@ -15,9 +15,11 @@ import ru.mindils.jb.service.entity.Vacancy;
 
 @Repository
 public interface VacancyRepository
-    extends JpaRepository<Vacancy, String>, QuerydslPredicateExecutor<Vacancy> {
+    extends JpaRepository<Vacancy, String>,
+        QuerydslPredicateExecutor<Vacancy>,
+        FilterVacancyRepository {
 
-  @EntityGraph(attributePaths = {"employer"})
+  @EntityGraph(attributePaths = {"employer", "employer.employerInfo", "vacancyInfo"})
   Page<Vacancy> findAll(Predicate predicate, Pageable pageable);
 
   Slice<Vacancy> findAllByDetailed(boolean detailed, PageRequest pageable);

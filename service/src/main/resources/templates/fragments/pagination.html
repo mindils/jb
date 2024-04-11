@@ -1,0 +1,30 @@
+<div th:fragment="pagination" class="pagination" th:if="${totalPages} > 1">
+  <a th:if="${currentPage > 1}"
+     th:href="@{|${basePaginationUrl}page=${currentPage > 1 ? currentPage - 1 : 1}|}"
+     class="pagination-link">« Пред.</a>
+
+
+  <th:block th:each="i : ${#numbers.sequence(1, 2)}">
+    <a th:href="@{|${basePaginationUrl}page=${i}|}"
+       th:class="${currentPage == i || (currentPage == 0 && i == 1)} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+  </th:block>
+
+  <span th:if="${currentPage > 4}" class="pagination-link">...</span>
+
+  <th:block th:each="i : ${#numbers.sequence(currentPage - 1, currentPage + 1)}"
+            th:if="${i > 2 and i < totalPages - 1}">
+    <a th:href="@{|${basePaginationUrl}page=${i}|}"
+       th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+  </th:block>
+
+  <span th:if="${totalPages - currentPage > 3}" class="pagination-link">...</span>
+
+  <th:block th:each="i : ${#numbers.sequence(totalPages - 1, totalPages)}">
+    <a th:href="@{|${basePaginationUrl}page=${i}|}"
+       th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
+  </th:block>
+
+  <a th:if="${currentPage < totalPages}"
+     th:href="@{|${basePaginationUrl}page=${currentPage < totalPages ? (currentPage == 0 ? 2 : currentPage + 1) : totalPages}|}"
+     class="pagination-link">След. »</a>
+</div>

@@ -22,9 +22,8 @@ public class VacancyService {
   private final VacancyMapper vacancyMapper;
   private final VacancyReadMapper vacancyReadMapper;
 
-
   public Page<VacancyReadDto> findAll(AppVacancyFilterDto filter, Pageable pageable) {
-    return vacancyRepository.findAll(VacancyQueryDslFilterBuilder.build(filter), pageable)
+    return vacancyRepository.findAllByFilter(VacancyQueryDslFilterBuilder.build(filter), pageable)
         .map(vacancyReadMapper::map);
   }
 

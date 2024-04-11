@@ -23,8 +23,8 @@
         }
         console.log('Vacancy status updated successfully');
         // Обновление иконки статуса вакансии
-        const iconElement = event.target.closest('.job-item').querySelector(
-            '.job-status-action svg');
+        const iconElement = event.target.closest('.card-item').querySelector(
+            '.card-status-action svg');
         updateIcon(iconElement, status);
       })
       .catch(error => {
@@ -59,13 +59,9 @@
                th:value="${filter.getSalaryTo()}"
         >
       </div>
-      <!--      <div class="filter">-->
-      <!--        <label for="suitable-jobs">Только подходящие вакансии:</label>-->
-      <!--        <input type="checkbox" id="suitable-jobs" class="checkbox-input">-->
-      <!--      </div>-->
       <div class="filter">
-        <label for="job-preference">Предпочтения:</label>
-        <select id="job-preference" class="select-input" name="status" th:field="*{filter.status}">
+        <label for="card-preference">Предпочтения:</label>
+        <select id="card-preference" class="select-input" name="status" th:field="*{filter.status}">
           <option value="">Все</option>
           <option value="NEW">Новые</option>
           <option value="IN_PROGRESS">Избранные</option>
@@ -94,17 +90,17 @@
       </div>
     </div>
 
-    <div class="job-list">
-      <div th:each="vacancy : ${vacancies}" class="job-item">
+    <div class="card-list">
+      <div th:each="vacancy : ${vacancies}" class="card-item">
         <h3>
           <a th:href="@{|/vacancies/${vacancy.id}|}">
-            <span class="job-status-action">
+            <span class="card-status-action">
               <span
                   th:replace="~{fragments/vacancy-status :: vacancy-status-icon(status=${vacancy.vacancyInfo.status.name})}"></span>
             </span>
-            <span th:text="${vacancy.name}" class="job-link">Заголовок вакансии</span>
+            <span th:text="${vacancy.name}" class="card-link">Заголовок вакансии</span>
           </a>
-          <a th:href="${vacancy.alternateUrl}" target="_blank" class="job-hh-link" title="Открыть на hh.ru">
+          <a th:href="${vacancy.alternateUrl}" target="_blank" class="card-hh-link" title="Открыть на hh.ru">
             <svg color="#007BFF" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -114,35 +110,35 @@
             </svg>
           </a>
         </h3>
-        <p class="job-meta">
+        <p class="card-meta">
           <a th:href="@{|/employers/${vacancy.employer.id}|}">
             <span th:text="${vacancy.employer.name}">Название компании</span>
           </a>
-          <span class="job-location" th:text="${vacancy.city}">(Москва)</span>
-          <span class="job-properties">Создано в системе: <span
+          <span class="card-location" th:text="${vacancy.city}">(Москва)</span>
+          <span class="card-property">Создано в системе: <span
               th:text="${#temporals.format(vacancy.internalCreatedAt, 'dd.MM.yyyy HH:mm')}"
           ></span>
           </span>
-          <span class="job-created-date">
+          <span class="card-created-date">
             Обновлено в hh: <span
               th:text="${#temporals.format(vacancy.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
           </span>
-          <span class="job-properties">
+          <span class="card-property">
             Рейтинг AI: <span
               th:text="${vacancy.vacancyInfo.aiApproved}"></span>
           </span>
         </p>
-        <p class="job-salary" th:if="${vacancy.salary != null}">
+        <p class="card-salary" th:if="${vacancy.salary != null}">
           <span>Зарплата:</span>
           <span class="salary-from" th:text="|от ${vacancy.salary.from}|"
                 th:if="${vacancy.salary.from != null}"/>
           <span class="salary-to" th:text="|до ${vacancy.salary.to}|"
                 th:if="${vacancy.salary.to != null}"/>
         </p>
-        <p class="job-description" th:utext="${vacancy.description}">Краткое описание
+        <p class="card-description" th:utext="${vacancy.description}">Краткое описание
           вакансии...</p>
-        <div class="job-actions">
-          <button class="job-action" @click="updateVacancyStatus($event)"
+        <div class="card-actions">
+          <button class="card-action" @click="updateVacancyStatus($event)"
                   th:data-vacancy-id="${vacancy.id}" data-status="APPROVED">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -151,7 +147,7 @@
               <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </button>
-          <button class="job-action" @click="updateVacancyStatus($event)"
+          <button class="card-action" @click="updateVacancyStatus($event)"
                   th:data-vacancy-id="${vacancy.id}" data-status="DECLINED">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -161,7 +157,7 @@
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
           </button>
-          <button class="job-action" @click="updateVacancyStatus($event)"
+          <button class="card-action" @click="updateVacancyStatus($event)"
                   th:data-vacancy-id="${vacancy.id}" data-status="IN_PROGRESS">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"

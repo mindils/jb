@@ -27,7 +27,7 @@ public class AppVacancyFilterIT extends ITBase {
   @Test
   void queryCriteriaApiApproved() {
     AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
+//        .aiApproved(BigDecimal.valueOf(0.7))
         .status(VacancyStatusEnum.APPROVED)
         .salaryFrom(100000)
         .salaryTo(300000)
@@ -68,7 +68,6 @@ public class AppVacancyFilterIT extends ITBase {
   @Test
   void queryDsqApproved() {
     AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
         .status(VacancyStatusEnum.APPROVED)
         .salaryFrom(100000)
         .salaryTo(300000)

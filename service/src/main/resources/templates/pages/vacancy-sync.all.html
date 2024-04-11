@@ -45,6 +45,15 @@
             <button class="sync-button" type="submit">Запустить обновление вакансий</button>
         </form>
 
+        <h3>Синхронизировать только компании</h3>
+        <form method="post" action="/vacancies-sync/employer">
+            <div class="sync-settings">
+                <label for="syncDate" class="sync-period-label">Дата последнего обновления:</label>
+                <input type="date" name="syncDate" id="syncDate" class="sync-period-input">
+            </div>
+            <button class="sync-button" type="submit">Запустить обновление вакансий</button>
+        </form>
+
         <div x-show="isSyncRunning">
             <div class="sync-info">
                 <span class="sync-step" x-text="'Шаг ' + (syncStatus.step + 1) + ': ' + syncStatus.statusText"></span>

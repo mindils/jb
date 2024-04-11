@@ -26,7 +26,7 @@ public class EmployerInfo implements BaseEntity<Long> {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne
+  @OneToOne(optional = true)
   @JoinColumn(name = "employer_id")
   private Employer employer;
 
