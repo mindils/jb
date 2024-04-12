@@ -6,13 +6,14 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import ru.mindils.jb.integration.service.ITBase;
-import ru.mindils.jb.service.dto.UserCreateDto;
+import ru.mindils.jb.service.dto.RegistrationDto;
 import ru.mindils.jb.service.dto.UserReadDto;
 import ru.mindils.jb.service.dto.UserUpdateDto;
 import ru.mindils.jb.service.service.UserService;
 
 @RequiredArgsConstructor
 class UserServiceTest extends ITBase {
+
   private static final Long USER_ID_1 = 2L;
   private static final Long ADMIN_ID_1 = 2L;
   private final UserService userService;
@@ -44,8 +45,14 @@ class UserServiceTest extends ITBase {
     assertThat(userService.delete(10000000L)).isFalse();
   }
 
-  private UserCreateDto getUserCreateDto() {
-    return new UserCreateDto("john", "USER", "{nood}123");
+  private RegistrationDto getUserCreateDto() {
+    return RegistrationDto.builder()
+        .email("example@mail.com")
+        .firstname("john")
+        .password("123")
+        .confirmPassword("123")
+        .username("john")
+        .build();
   }
 
   private UserUpdateDto getUserUpdateDto() {

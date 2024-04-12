@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <title>Регистрация</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script defer src="/js/alpinejs3-cdn.min.js"></script>
+  <script defer src="/js/script.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .form-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-wrapper {
+      background-color: var(--bg-secondary-color);
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-color);
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body x-data="setup()" :class="{'dark-mode': darkMode}">
+<div class="form-container">
+  <form class="form-wrapper" th:action="@{/registration}" th:object="${registrationDto}"
+        method="post">
+    <h2>Регистрация</h2>
+    <div class="form-group">
+      <label for="username" class="form-label">Логин:</label>
+      <input th:field="*{username}" type="text" id="username" class="form-input">
+      <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+    </div>
+    <div class="form-group">
+      <label for="firstname" class="form-label">Имя:</label>
+      <input th:field="*{firstname}"
+             type="text"
+             id="firstname"
+             class="form-input"
+      >
+    </div>
+    <div class="form-group">
+      <label for="email" class="form-label">Электронная почта:</label>
+      <input th:field="*{email}"
+             type="text"
+             id="email"
+             class="form-input"
+      >
+    </div>
+    <div class="form-group">
+      <label for="password" class="form-label">Пароль:</label>
+      <input th:field="*{password}" type="password" id="password" class="form-input">
+    </div>
+    <div class="form-group">
+      <label for="confirm-password" class="form-label">Подтвердите пароль:</label>
+      <input th:field="*{confirmPassword}" type="password" id="confirm-password"
+             class="form-input">
+    </div>
+    <button type="submit" class="form-button">Зарегистрироваться</button>
+    <a href="/login" class="login-link">Уже есть аккаунт? Войти</a>
+  </form>
+  <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);"
+          class="theme-toggle">
+    <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-2.828 4.243a1 1 0 00-1.415-1.414 5 5 0 01-7.072 0 1 1 0 00-1.415 1.414 7 7 0 009.9 0z"/>
+    </svg>
+    <svg x-show="darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+    </svg>
+  </button>
+</div>
+<script>
+  const setup = () => {
+    return {darkMode: localStorage.getItem('darkMode') === 'true',}
+  };
+</script>
+</body>
+</html>

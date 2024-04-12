@@ -40,5 +40,4 @@ public class VacancyService {
         })
         .map(vacancyRepository::saveAndFlush)
         .map(vacancyMapper::map);
-  }
-}
+  } }

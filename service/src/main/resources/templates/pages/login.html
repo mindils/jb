@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <title>Вход в систему</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script defer src="/js/alpinejs3-cdn.min.js"></script>
+  <script defer src="/js/script.js"></script>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <style>
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .login-form {
+      background-color: var(--bg-secondary-color);
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+    }
+
+    .form-button {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .registration-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-color);
+    }
+
+  </style>
+</head>
+<body x-data="setup()" :class="{'dark-mode': darkMode}">
+<div class="login-container">
+  <form class="login-form" th:action="@{/login}" method="post">
+    <h2>Вход в систему</h2>
+    <div th:if="${param.registration}">
+      <div class="success-message">Вы успешно зарегистрированы, после активации учетной записи вы
+        сможете войти в систему
+      </div>
+    </div>
+    <div th:if="${param.disabled}">
+      <div class="error-message">
+        Ваша учетная запись еще не активирована. Пожалуйста, дождитесь активации.
+      </div>
+    </div>
+    <div th:if="${param.invalid}">
+      <div class="error-message">
+        Неверное имя пользователя или пароль.
+      </div>
+    </div>
+    <div th:if="${param.error}">
+      <div class="error-message">
+        Ошибка аутентификации.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="username" class="form-label">Email:</label>
+      <input
+          name="username"
+          type="text"
+          id="username"
+          class="form-input"
+          required
+      >
+    </div>
+    <div class="form-group">
+      <label for="password" class="form-label">Пароль:</label>
+      <input name="password" type="password" id="password" class="form-input" required>
+    </div>
+    <button type="submit" class="form-button">Войти</button>
+    <a href="/registration" class="registration-link">Зарегистрироваться</a></form>
+  </form>
+  <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);"
+          class="theme-toggle">
+    <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-2.828 4.243a1 1 0 00-1.415-1.414 5 5 0 01-7.072 0 1 1 0 00-1.415 1.414 7 7 0 009.9 0z"/>
+    </svg>
+    <svg x-show="darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+    </svg>
+  </button>
+</div>
+<script> const setup = () => {
+  return {darkMode: localStorage.getItem('darkMode') === 'true',}
+}; </script>
+</body>
+</html>
