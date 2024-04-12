@@ -49,7 +49,7 @@ public class SyncVacancyService {
 
   @SneakyThrows
   public boolean syncVacancyDetailsBatch() {
-    Slice<Vacancy> vacancies = vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 100));
+    Slice<Vacancy> vacancies = vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 10));
 
     vacancies.forEach(vacancy -> {
       syncVacancyById(vacancy.getId());

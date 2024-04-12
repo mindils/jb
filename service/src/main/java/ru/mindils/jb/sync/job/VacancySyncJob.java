@@ -45,7 +45,7 @@ public class VacancySyncJob implements Job {
       switch (runningJob.getStep()) {
         case LOAD_VACANCIES -> loadVacancies(runningJob);
         case LOAD_VACANCY_DETAIL -> loadVacancyDetail();
-        case LOAD_EMPLOYER_DETAIL -> loadEmployerDetail();
+        case LOAD_EMPLOYER_DETAIL -> loadEmployerDetail(runningJob);
         case LOAD_VACANCY_RATING -> loadVacancyRating();
       }
       vacancyJobExecutionService.completeJob(runningJob.getId());
@@ -61,11 +61,12 @@ public class VacancySyncJob implements Job {
     }
   }
 
-  private void loadEmployerDetail() {
+  private void loadEmployerDetail(VacancySyncExecution runningJob) {
     boolean isNextEmployer = syncVacancyService.syncEmployerDetailsBatch();
+    var onlyThisStep = (Boolean) runningJob.getParameters().get("onlyThisStep");
     if (isNextEmployer) {
-      vacancyJobExecutionService.createNewStep(LOAD_EMPLOYER_DETAIL);
-    } else {
+      vacancyJobExecutionService.createNewStep(LOAD_EMPLOYER_DETAIL, runningJob.getParameters());
+    } else if (onlyThisStep == null || !onlyThisStep) {
       vacancyJobExecutionService.createNewStep(LOAD_VACANCY_RATING);
     }
   }
@@ -82,11 +83,13 @@ public class VacancySyncJob implements Job {
   private void loadVacancies(VacancySyncExecution runningJob) {
     var currentPage = (Integer) runningJob.getParameters().get("currentPage");
     var period = (String) runningJob.getParameters().get("period");
+    var onlyThisStep = (Boolean) runningJob.getParameters().get("onlyThisStep");
+
     int nextPage = syncVacancyService.syncVacancyByDefaultFilterBatch(period, currentPage);
     if (nextPage > 0) {
       vacancyJobExecutionService.createNewStep(
           LOAD_VACANCIES, Map.of("currentPage", nextPage, "period", period));
-    } else {
+    } else if (onlyThisStep == null || !onlyThisStep) {
       vacancyJobExecutionService.createNewStep(LOAD_VACANCY_DETAIL);
     }
   }

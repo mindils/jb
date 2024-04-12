@@ -32,9 +32,48 @@ body {
   min-height: 100vh;
 }
 
+.error {
+  color: #ff0000;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.success-message {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  color: #155724;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  text-align: center;
+}
+.error-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.dark-mode input,
+.dark-mode select {
+  background-color: var(--bg-secondary-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode input:focus,
+.dark-mode select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
 .navbar {
   background-color: var(--primary-color);
-  padding: 1rem;
 }
 
 .navbar-inner {
@@ -43,10 +82,8 @@ body {
   align-items: center;
 }
 
-.navbar-left,
 .navbar-right {
   display: flex;
-  align-items: center;
 }
 
 .navbar-toggle,
@@ -64,37 +101,61 @@ body {
 }
 
 .user-menu {
+  position: relative;
   margin-left: 1rem;
+}
+
+.user-menu-toggle {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.5rem;
 }
 
 .user-avatar {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.user-name {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 150px;
+  background-color: var(--bg-secondary-color);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  z-index: 1000;
+}
+
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.user-menu-item:hover {
+  background-color: var(--bg-color);
 }
 
 .main-container {
   display: flex;
   flex: 1;
   overflow: hidden;
-}
-
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.sidebar-overlay.sidebar-open {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .sidebar {
@@ -194,10 +255,6 @@ body {
     display: none;
   }
 
-  .sidebar-overlay {
-    display: none;
-  }
-
   .main-container {
     flex-direction: row;
   }
@@ -206,62 +263,8 @@ body {
     position: static;
     transform: none;
   }
-
 }
 
-.user-menu {
-  position: relative;
-  margin-left: 1rem;
-}
-
-.user-menu-toggle {
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.user-avatar {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-}
-
-.user-name {
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  min-width: 150px;
-  background-color: var(--bg-secondary-color);
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem 0;
-  z-index: 1000;
-}
-
-.user-menu-item {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  color: var(--text-color);
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-.user-menu-item:hover {
-  background-color: var(--bg-color);
-}
-
-/* filter */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -283,29 +286,6 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 0.25rem;
   width: 100px;
-}
-
-.checkbox-input {
-  margin: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
-}
-
-.checkbox-input:checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.checkbox-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 .select-input {
@@ -347,122 +327,13 @@ body {
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-
-.job-card {
-  border-bottom: 1px solid var(--border-color);
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.job-title a {
-  font-weight: bold;
-  color: var(--primary-color);
-  text-decoration: none;
-}
-
-.job-company {
-  color: var(--text-secondary-color);
-  margin-bottom: 0.5rem;
-}
-
-.job-description {
-  margin-bottom: 0.5rem;
-}
-
-.job-details {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-secondary-color);
-}
-
-.job-suitability {
-  margin-bottom: 0.5rem;
-}
-
-.job-rating {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.job-like-btn,
-.job-dislike-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.pagination-link {
-  padding: 0.5rem 1rem;
-  margin: 0 0.25rem;
-  text-decoration: none;
-  color: var(--text-color);
-  background-color: var(--bg-secondary-color);
-  border-radius: 0.25rem;
-  transition: background-color 0.3s ease;
-}
-
-.pagination-link:hover,
-.pagination-link.active {
-  background-color: var(--primary-color);
-  color: #fff;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background-color: var(--bg-secondary-color);
-  border-radius: 0.5rem;
-}
-
-.filter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.salary-input {
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
-  width: 100px;
-}
-
-.checkbox-input {
-  margin: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.select-input {
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
-}
-
-.filter-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  background-color: var(--primary-color);
-  color: #fff;
-  cursor: pointer;
-}
-
-/* Сортировка */
 .sorting {
   margin-bottom: 1rem;
   text-align: left;
+}
+
+.sorting-order {
+  font-size: 12px;
 }
 
 .sorting a {
@@ -475,53 +346,74 @@ body {
   text-decoration: underline;
 }
 
-/* Список вакансий */
-.job-list {
+.card-list {
   display: grid;
   gap: 1rem;
 }
 
-.job-item {
+.card-item {
   background-color: var(--bg-secondary-color);
   padding: 1rem;
   border-bottom: 1px solid var(--border-color);
   text-align: left;
 }
 
-.job-item h3 {
+.card-item h3 {
   margin-top: 0;
 }
 
-.job-item h3 a {
+.card-item h3 a {
+  text-decoration: none;
+}
+
+.card-link {
   color: var(--primary-color);
   text-decoration: none;
 }
 
-.job-meta {
+.card-link:hover {
+  text-decoration: underline;
+}
+
+.card-hh-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.card-hh-link img {
+  width: 14px;
+  height: 14px;
+}
+
+.card-hh-link:hover {
+  opacity: .7;
+}
+
+.card-meta {
   color: var(--text-secondary-color);
   font-size: 0.9rem;
 }
 
-.job-meta a {
+.card-meta a {
   color: var(--primary-color);
   text-decoration: none;
 }
 
-.job-salary {
+.card-salary {
   margin-top: 0.5rem;
 }
 
-.job-description {
+.card-description {
   margin-top: 0.5rem;
 }
 
-.job-actions {
+.card-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
 }
 
-.job-action {
+.card-action {
   background: none;
   border: none;
   color: var(--primary-color);
@@ -529,12 +421,21 @@ body {
   padding: 0.25rem;
 }
 
-.job-action svg {
+.card-action:hover {
+  opacity: .5;
+}
+
+.card-action svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.job-status-action {
+.card-action-big svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.card-status-action {
   background: none;
   border: none;
   color: red;
@@ -542,16 +443,20 @@ body {
   padding: 0.25rem;
 }
 
-.job-status-action svg {
+.card-status-action svg {
   width: 1em;
   height: 1rem;
 }
 
-.job-posted-date {
+.card-status-action-big svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.card-property {
   display: block;
 }
 
-/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -578,4 +483,129 @@ body {
   background-color: var(--primary-color);
   color: #fff;
   cursor: default;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.sync-settings {
+  margin-bottom: 10px;
+}
+
+.sync-period-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.sync-period-input {
+  width: 100px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sync-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sync-info {
+  margin-top: 20px;
+}
+
+.sync-step {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.sync-details {
+  font-size: 14px;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #007bff;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+  animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
+
+.last-sync {
+  margin-top: 20px;
+}
+
+.last-sync-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.last-sync-time {
+  font-size: 14px;
+}
+
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+}
+
+.form-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
 }

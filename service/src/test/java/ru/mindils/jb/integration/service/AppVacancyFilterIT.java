@@ -8,7 +8,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,6 @@ public class AppVacancyFilterIT extends ITBase {
   @Test
   void queryCriteriaApiApproved() {
     AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
         .status(VacancyStatusEnum.APPROVED)
         .salaryFrom(100000)
         .salaryTo(300000)
@@ -68,7 +66,6 @@ public class AppVacancyFilterIT extends ITBase {
   @Test
   void queryDsqApproved() {
     AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
         .status(VacancyStatusEnum.APPROVED)
         .salaryFrom(100000)
         .salaryTo(300000)

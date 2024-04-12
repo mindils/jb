@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <th:block layout:insert="~{fragments/head}"/>
 <body x-data="setup()" :class="{'dark-mode': darkMode}">
@@ -16,7 +17,7 @@
         </button>
       </div>
       <div class="navbar-right">
-        <button @click="darkMode = !darkMode" class="theme-toggle">
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);" class="theme-toggle">
           <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-2.828 4.243a1 1 0 00-1.415-1.414 5 5 0 01-7.072 0 1 1 0 00-1.415 1.414 7 7 0 009.9 0z"/>
@@ -28,16 +29,19 @@
         <div class="user-menu" x-data="{ open: false }">
           <button @click="open = !open" class="user-menu-toggle">
             <img class="user-avatar" src="/img/avatar1.png" alt="">
-            <span class="user-name">Иван Иванов</span>
+            <span class="user-name" sec:authentication="principal.username">>Иван Иванов</span>
             <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 9l-7 7-7-7"/>
             </svg>
           </button>
           <div x-show="open" @click.away="open = false" class="user-menu-dropdown">
-            <a href="#" class="user-menu-item">Профиль</a>
+            <a href="/user/profile" class="user-menu-item">Профиль</a>
             <a href="#" class="user-menu-item">Настройки</a>
-            <a href="#" class="user-menu-item">Выход</a>
+            <a href="javascript: document.logoutForm.submit()" class="user-menu-item">Выход</a>
+            <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+              <input hidden type="submit" value="Sign Out" />
+            </form>
           </div>
         </div>
       </div>
@@ -45,14 +49,12 @@
   </nav>
 
   <div class="main-container">
-    <div :class="{'sidebar-open': sidebarOpen}" class="sidebar-overlay"
+    <div :class="{'sidebar-open': sidebarOpen}"
          @click="sidebarOpen = false"></div>
 
     <div :class="{'sidebar-open': sidebarOpen}" class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">
           <span class="logo-text">JB</span>
-        </div>
       </div>
       <th:block layout:replace="~{fragments/navigation}"/>
 
@@ -69,7 +71,7 @@
 <script>
   const setup = () => {
     return {
-      darkMode: false,
+      darkMode: localStorage.getItem('darkMode') === 'true',
       sidebarOpen: false,
     }
   };

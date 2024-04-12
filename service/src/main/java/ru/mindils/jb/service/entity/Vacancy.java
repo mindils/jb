@@ -79,21 +79,6 @@ public class Vacancy implements BaseEntity<String> {
   private String employment;
   private String description;
 
-  /**
-   * Список ключевых навыков, получаемых из внешней системы. Пример формата данных:
-   *
-   * <pre>
-   * {
-   *   ... other fields ...
-   *   "key_skills": [
-   *     {"name": "Прием посетителей"},
-   *     {"name": "Первичный документооборот"}
-   *   ]
-   * }
-   * </pre>
-   *
-   * Для упрощения хранения в базе данных, данные преобразуются в строку с помощью mapper.
-   */
   private String keySkills;
 
   @Builder.Default

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.mindils.jb.service.dto.UserCreateDto;
+import ru.mindils.jb.service.dto.RegistrationDto;
 import ru.mindils.jb.service.dto.UserReadDto;
 import ru.mindils.jb.service.dto.UserUpdateDto;
 import ru.mindils.jb.service.service.UserService;
@@ -34,7 +34,7 @@ public class UserRestController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public UserReadDto create(@RequestBody UserCreateDto userDto) {
+  public UserReadDto create(@RequestBody RegistrationDto userDto) {
     return userService.create(userDto);
   }
 

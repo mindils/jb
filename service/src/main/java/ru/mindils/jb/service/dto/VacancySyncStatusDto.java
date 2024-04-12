@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class VacancySyncStatusDto {
-  private Boolean isSyncRunning;
+  private Boolean syncRunning;
   private String statusText;
   private Integer progress;
   private Integer step;

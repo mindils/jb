@@ -11,12 +11,15 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @NoArgsConstructor
@@ -49,6 +52,15 @@ public class Employer implements BaseEntity<String> {
 
   private Instant createdAt;
   private Instant modifiedAt;
+  private Boolean accreditedItEmployer;
+  private String type;
+  private String siteUrl;
+  private String alternateUrl;
+  private String logoUrlsOriginal;
+  private String areaName;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  private List<Map<String, ?>> industries;
 
   @PrePersist
   public void prePersist() {

@@ -1,5 +1,6 @@
 package ru.mindils.jb.service.http.controller;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,12 @@ public class VacancySyncController extends BaseController {
   @PostMapping
   public String syncAllPost(@RequestParam String syncPeriod) {
     vacancySyncService.startAllSync(syncPeriod);
+    return "redirect:/vacancies-sync";
+  }
+
+  @PostMapping("/employer")
+  public String syncEmployer(@RequestParam LocalDate syncDate) {
+    vacancySyncService.startEmployerSync(syncDate);
     return "redirect:/vacancies-sync";
   }
 }
