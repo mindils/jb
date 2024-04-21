@@ -17,6 +17,7 @@ import ru.mindils.jb.service.entity.Vacancy;
 
 @RequiredArgsConstructor
 public class FilterVacancyRepositoryImpl implements FilterVacancyRepository {
+
   private final EntityManager entityManager;
 
   @Override
@@ -26,6 +27,12 @@ public class FilterVacancyRepositoryImpl implements FilterVacancyRepository {
     List<Vacancy> vacancies = fetchVacancies(query, pageable);
     long totalCount = fetchTotalCount(predicate);
     return new PageImpl<>(vacancies, pageable, totalCount);
+  }
+
+  @Override
+  public List<Vacancy> findAllByFilter(Predicate predicate) {
+    JPAQuery<Vacancy> query = createBaseQuery(predicate);
+    return query.fetch();
   }
 
   private JPAQuery<Vacancy> createBaseQuery(Predicate predicate) {
@@ -60,11 +67,8 @@ public class FilterVacancyRepositoryImpl implements FilterVacancyRepository {
         .select(QVacancy.vacancy)
         .from(QVacancy.vacancy)
         .leftJoin(QVacancy.vacancy.vacancyInfo)
-        .fetchJoin()
         .leftJoin(QVacancy.vacancy.employer)
-        .fetchJoin()
         .leftJoin(QEmployer.employer.employerInfo)
-        .fetchJoin()
         .where(predicate)
         .fetchCount();
   }

@@ -22,5 +22,6 @@ public interface UserMapper {
   @Mapping(target = "password", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "modifiedAt", ignore = true)
+  @Mapping(target = "image", ignore = true)
   User map(UserUpdateDto dto, @MappingTarget User entity);
 }

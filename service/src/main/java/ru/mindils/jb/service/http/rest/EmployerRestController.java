@@ -16,9 +16,10 @@ import ru.mindils.jb.service.service.EmployerService;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/employers")
 public class EmployerRestController {
+
   private final EmployerService employerService;
 
-  @PatchMapping("/{id}")
+  @PatchMapping("/{id}/status")
   public EmployerReadDto updateStatus(
       @PathVariable String id, @RequestBody EmployerUpdateStatusDto dto) {
     return employerService

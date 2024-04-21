@@ -6,6 +6,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.mindils.jb.sync.entity.VacancySyncExecution;
+import ru.mindils.jb.sync.entity.VacancySyncProgress;
 import ru.mindils.jb.sync.entity.VacancySyncStatus;
 import ru.mindils.jb.sync.entity.VacancySyncStep;
 import ru.mindils.jb.sync.repository.VacancySyncExecutionRepository;
@@ -25,9 +26,15 @@ public class VacancySyncExecutionService {
   }
 
   public void createNewStep(VacancySyncStep step, Map<String, ?> params) {
+    createNewStep(step, params, VacancySyncProgress.builder().build());
+  }
+
+  public void createNewStep(
+      VacancySyncStep step, Map<String, ?> params, VacancySyncProgress progress) {
     var vacancyJobExecution = VacancySyncExecution.builder()
         .startTime(LocalDateTime.now())
         .parameters(params)
+        .progress(progress)
         .step(step)
         .status(VacancySyncStatus.NEW)
         .priority(1)

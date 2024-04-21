@@ -18,6 +18,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versions.springdoc}"
+  implementation 'com.google.code.gson:gson:2.8.9'
 
   implementation 'org.liquibase:liquibase-core'
   runtimeOnly 'org.postgresql:postgresql'
@@ -39,4 +40,5 @@ dependencies {
   annotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapstructVersion}"
 
   testImplementation "org.testcontainers:postgresql"
+  testImplementation 'org.springframework.security:spring-security-test'
 }

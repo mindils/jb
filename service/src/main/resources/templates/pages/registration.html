@@ -47,14 +47,14 @@
 <div class="form-container">
   <form class="form-wrapper" th:action="@{/registration}" th:object="${registrationDto}"
         method="post">
-    <h2>Регистрация</h2>
+    <h2 th:text="#{ru.mindils.jb.service.http.controller/RegistrationController.registration}"/>
     <div class="form-group">
-      <label for="username" class="form-label">Логин:</label>
+      <label for="username" class="form-label">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.login}]]</label>
       <input th:field="*{username}" type="text" id="username" class="form-input">
       <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
     </div>
     <div class="form-group">
-      <label for="firstname" class="form-label">Имя:</label>
+      <label for="firstname" class="form-label">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.firstname}]]:</label>
       <input th:field="*{firstname}"
              type="text"
              id="firstname"
@@ -62,7 +62,7 @@
       >
     </div>
     <div class="form-group">
-      <label for="email" class="form-label">Электронная почта:</label>
+      <label for="email" class="form-label">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.email}]]:</label>
       <input th:field="*{email}"
              type="text"
              id="email"
@@ -70,16 +70,16 @@
       >
     </div>
     <div class="form-group">
-      <label for="password" class="form-label">Пароль:</label>
+      <label for="password" class="form-label">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.password}]]:</label>
       <input th:field="*{password}" type="password" id="password" class="form-input">
     </div>
     <div class="form-group">
-      <label for="confirm-password" class="form-label">Подтвердите пароль:</label>
+      <label for="confirm-password" class="form-label">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.confirmPassword}]]:</label>
       <input th:field="*{confirmPassword}" type="password" id="confirm-password"
              class="form-input">
     </div>
-    <button type="submit" class="form-button">Зарегистрироваться</button>
-    <a href="/login" class="login-link">Уже есть аккаунт? Войти</a>
+    <button type="submit" class="form-button">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.registration}]]</button>
+    <a href="/login" class="login-link">[[#{ru.mindils.jb.service.http.controller/RegistrationController.registration.loginLing}]]</a>
   </form>
   <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);"
           class="theme-toggle">

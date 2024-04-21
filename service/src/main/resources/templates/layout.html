@@ -17,6 +17,10 @@
         </button>
       </div>
       <div class="navbar-right">
+        <select name="lang" id="language" class="language-select" @change="changeLanguage($event)">
+          <option value="ru" th:selected="${currentLang == 'ru'}">Русский</option>
+          <option value="en" th:selected="${currentLang == 'en'}">English</option>
+        </select>
         <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode);" class="theme-toggle">
           <svg x-show="!darkMode" class="icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -73,6 +77,10 @@
     return {
       darkMode: localStorage.getItem('darkMode') === 'true',
       sidebarOpen: false,
+      changeLanguage(event) {
+        const selectedLanguage = event.target.value;
+        window.location.href = `?lang=${selectedLanguage}`;
+      }
     }
   };
 </script>

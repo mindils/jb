@@ -1,19 +1,16 @@
 package ru.mindils.jb.sync.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class DetailedVacancyDto {
 
   private String id;
@@ -34,22 +31,17 @@ public class DetailedVacancyDto {
   @JsonProperty("response_url")
   private String responseUrl;
 
-  //  private String sortPointDistance;
-
   @JsonProperty("published_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant publishedAt;
+  private ZonedDateTime publishedAt;
 
   @JsonProperty("created_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant createdAt;
+  private ZonedDateTime createdAt;
 
   private Boolean archived;
 
   @JsonProperty("apply_alternate_url")
   private String applyAlternateUrl;
 
-  //  private String insiderInterview;
   private String url;
 
   @JsonProperty("alternate_url")

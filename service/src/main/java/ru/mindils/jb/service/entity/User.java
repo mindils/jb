@@ -18,7 +18,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Builder
@@ -27,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-public class User implements BaseEntity<Long>, UserDetails {
+public class User implements BaseEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +38,7 @@ public class User implements BaseEntity<Long>, UserDetails {
   private String firstname;
   private String email;
   private Boolean enabled;
+  private String image;
 
   @CreatedDate
   private Instant createdAt;
@@ -46,27 +46,22 @@ public class User implements BaseEntity<Long>, UserDetails {
   @LastModifiedDate
   private Instant modifiedAt;
 
-  @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(role));
   }
 
-  @Override
   public boolean isAccountNonExpired() {
     return true;
   }
 
-  @Override
   public boolean isAccountNonLocked() {
     return true;
   }
 
-  @Override
   public boolean isCredentialsNonExpired() {
     return true;
   }
 
-  @Override
   public boolean isEnabled() {
     return enabled;
   }

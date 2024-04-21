@@ -27,15 +27,15 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http, RequestService requestBuilder)
       throws Exception {
-    http.authorizeHttpRequests(request -> request
-            .requestMatchers("/registration**", "/login**", "/css/**", "/js/**")
+    http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+        .authorizeHttpRequests(request -> request
+            .requestMatchers("/registration**", "/login**", "/css/**", "/js/**", "/logout")
             .permitAll()
             .anyRequest()
             .authenticated())
         .formLogin(form -> form.failureHandler(authenticationFailureHandler)
             .defaultSuccessUrl("/", true)
-            .loginPage("/login")
-            .permitAll())
+            .loginPage("/login"))
         .logout(logout ->
             logout.logoutUrl("/logout").logoutSuccessUrl("/login").invalidateHttpSession(true));
 

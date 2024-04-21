@@ -1,8 +1,7 @@
 package ru.mindils.jb.sync.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
@@ -26,12 +25,10 @@ public class BriefVacancyDto {
   private String responseUrl;
 
   @JsonProperty("published_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant publishedAt;
+  private ZonedDateTime publishedAt;
 
   @JsonProperty("created_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX")
-  private Instant createdAt;
+  private ZonedDateTime createdAt;
 
   private Boolean archived;
 

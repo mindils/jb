@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ru.mindils.jb.service.util.HttpClientProvider;
 import ru.mindils.jb.sync.dto.DetailedEmployerDto;
 import ru.mindils.jb.sync.dto.DetailedVacancyDto;
+import ru.mindils.jb.sync.dto.ResponseWrapperSync;
 import ru.mindils.jb.sync.dto.VacancyListResponseDto;
 
 @Service
@@ -26,7 +27,7 @@ public class VacancyClientService {
   private final HttpClientProvider httpClientProvider;
 
   @SneakyThrows
-  public String loadAIRatingByText(String queryParam) {
+  public ResponseWrapperSync<String> loadAIRatingByText(String queryParam) {
     String encodedQueryParam = URLEncoder.encode(queryParam, UTF_8);
     String fullUrl = String.format("%s?text=%s", AI_RATING_API_URL, encodedQueryParam);
 
@@ -34,19 +35,20 @@ public class VacancyClientService {
   }
 
   @SneakyThrows
-  public DetailedVacancyDto loadVacancyById(String id) {
+  public ResponseWrapperSync<DetailedVacancyDto> loadVacancyById(String id) {
     return httpClientProvider.retrieve(
         URI.create(VACANCY_API_URL + "/" + id), DetailedVacancyDto.class);
   }
 
   @SneakyThrows
-  public DetailedEmployerDto loadEmployerById(String id) {
+  public ResponseWrapperSync<DetailedEmployerDto> loadEmployerById(String id) {
     return httpClientProvider.retrieve(
         URI.create(EMPLOYER_API_URL + "/" + id), DetailedEmployerDto.class);
   }
 
   @SneakyThrows
-  public VacancyListResponseDto loadVacancies(List<Map<String, String>> params) {
+  public ResponseWrapperSync<VacancyListResponseDto> loadVacancies(
+      List<Map<String, String>> params) {
     return httpClientProvider.retrieve(
         buildURIWithParams(VACANCY_API_URL, params), VacancyListResponseDto.class);
   }

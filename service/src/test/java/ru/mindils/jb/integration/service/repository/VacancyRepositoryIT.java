@@ -3,7 +3,6 @@ package ru.mindils.jb.integration.service.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import ru.mindils.jb.integration.service.ITBase;
+import ru.mindils.jb.integration.ITBase;
 import ru.mindils.jb.service.dto.AppVacancyFilterDto;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
@@ -32,13 +31,12 @@ public class VacancyRepositoryIT extends ITBase {
   @Test
   void findByFilter() {
     AppVacancyFilterDto filter = AppVacancyFilterDto.builder()
-        .aiApproved(BigDecimal.valueOf(0.7))
         .status(VacancyStatusEnum.APPROVED)
         .salaryFrom(100000)
         .salaryTo(300000)
         .build();
 
-    Slice<Vacancy> actualResult = vacancyRepository.findAll(
+    Slice<Vacancy> actualResult = vacancyRepository.findAllByFilter(
         VacancyQueryDslFilterBuilder.build(filter), PageRequest.of(0, 10));
 
     assertThat(actualResult).hasSize(1);

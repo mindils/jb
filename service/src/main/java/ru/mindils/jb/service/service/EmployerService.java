@@ -16,7 +16,7 @@ import ru.mindils.jb.service.repository.EmployerRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class EmployerService {
 
   private final EmployerRepository employerRepository;

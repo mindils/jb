@@ -14,7 +14,7 @@ import ru.mindils.jb.service.service.EmployerService;
 @Controller
 @RequestMapping("/employers")
 @RequiredArgsConstructor
-public class EmployerController extends BaseController {
+public class EmployerController extends PageableBaseController {
 
   private final EmployerService employerService;
 
@@ -24,6 +24,7 @@ public class EmployerController extends BaseController {
     model.addAttribute("employers", employers);
     model.addAttribute("currentPage", employers.getNumber());
     model.addAttribute("totalPages", employers.getTotalPages());
+    model.addAttribute("totalElements", employers.getTotalElements());
     return "pages/employer.list";
   }
 

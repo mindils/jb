@@ -4,61 +4,6 @@
 <head>
   <title layout:fragment="title" th:text="|Employer Detail - ${employer.name}|">Employer
     Detail</title>
-  <style>
-    .employer-details {
-      background-color: var(--bg-secondary-color);
-      padding: 2rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      text-align: left;
-    }
-
-    .employer-details p {
-      margin-bottom: 1rem;
-    }
-
-    .employer-details strong {
-      font-weight: bold;
-      color: var(--text-color);
-    }
-
-    .employer-details a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
-    .employer-details a:hover {
-      text-decoration: underline;
-    }
-
-    .employer-details .card-status-action {
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 0.5rem;
-    }
-
-    .employer-details .card-status-action svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    .employer-description {
-      margin-top: 2rem;
-      padding: 1rem;
-      background-color: var(--bg-color);
-      border-radius: 0.5rem;
-    }
-
-    .employer-description h3 {
-      margin-top: 0;
-      margin-bottom: 1rem;
-      color: var(--text-color);
-    }
-
-    .employer-description p {
-      line-height: 1.6;
-    }
-  </style>
 </head>
 <th:block layout:fragment="content">
   <div class="content card-item">
@@ -70,7 +15,7 @@
         </span>
       <span th:text="${employer.name}"/>
     </h1>
-    <div class="employer-details">
+    <div class="card-details">
       <p>
         <strong>сайт на hh.ru:</strong>
         <a th:href="${employer.alternateUrl}" target="_blank"
@@ -83,7 +28,7 @@
       <p>
         <strong>IT аккредитация:</strong>
         <span
-            th:text="${employer.accreditedItEmployer ? 'Да' : 'Нет'}">Accredited IT Employer</span>
+            th:text="${employer.accreditedItEmployer != null ? (employer.accreditedItEmployer ? 'Да' : 'Нет') : 'Нет данных'}">Accredited IT Employer</span>
       </p>
       <p>
         <strong>Веб сайт:</strong>

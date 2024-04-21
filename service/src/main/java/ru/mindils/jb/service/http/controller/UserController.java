@@ -14,7 +14,7 @@ import ru.mindils.jb.service.service.UserService;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController {
 
   private final UserService userService;
 

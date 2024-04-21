@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import ru.mindils.jb.integration.service.ITBase;
+import ru.mindils.jb.integration.ITBase;
 import ru.mindils.jb.sync.service.VacancyFilterService;
 
 @RequiredArgsConstructor

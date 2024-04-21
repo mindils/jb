@@ -15,6 +15,7 @@ import ru.mindils.jb.service.service.VacancyService;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/vacancies")
 public class VacancyRestController {
+
   private final VacancyService vacancyService;
 
   @PatchMapping("/{id}")

@@ -11,4 +11,5 @@ public class SystemVacancyFilterDto {
 
   BigDecimal aiApproved;
   VacancyStatusEnum status;
+  boolean archived;
 }

@@ -9,5 +9,15 @@ spotless {
 
     custom 'Empty class/interface braces on new line', {
       it.replaceAll(/(public\s+(?:interface|class|record)\s+\w+(?:<\w+(?:,\s*\w+)*>)?\s*(?:\([^)]*\))?(?:\s+extends\s+\w+(?:<\w+(?:,\s+\w+)>)?)?(?:\s+implements\s+\w+(?:<\w+(?:,\s+\w+)>)?(?:,\s*\w+(?:<\w+(?:,\s+\w+)>)?)*)?)\s*\{\s*\}/, '$1 {\n}')    }
+
+    custom 'Remove blank lines after class/interface opening brace', {
+      it.replaceAll(/((?:interface|class)\s+\w+(?:<\w+(?:,\s*\w+)*>)?\s*(?:\([^)]*\))?(?:\s+extends\s+\w+(?:<\w+(?:,\s+\w+)>)?)?(?:\s+implements\s+\w+(?:<\w+(?:,\s+\w+)>)?(?:,\s*\w+(?:<\w+(?:,\s+\w+)>)?)*)?)\s*\{\n\s*\n/, '$1 {\n')
+    }
+    custom 'Add single blank line after class/interface opening brace', {
+      it.replaceAll(/((?:interface|class)\s+\w+(?:<\w+(?:,\s*\w+)*>)?\s*(?:\([^)]*\))?(?:\s+extends\s+\w+(?:<\w+(?:,\s+\w+)>)?)?(?:\s+implements\s+\w+(?:<\w+(?:,\s+\w+)>)?(?:,\s*\w+(?:<\w+(?:,\s+\w+)>)?)*)?)\s*\{\n(\s*)(@\w+|\w+)/, '$1 {\n\n$2$3')
+    }
+    custom 'Remove extra spaces before opening brace', {
+      it.replaceAll(/(\w+)\s+\{/, '$1 {')
+    }
   }
 }

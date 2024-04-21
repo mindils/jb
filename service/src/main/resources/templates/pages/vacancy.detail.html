@@ -1,13 +1,93 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-  <title layout:fragment="title" th:text="${vacancy.name}">Вакансия</title>
+  <title layout:fragment="title" th:text="|Employer Detail - ${vacancy.name}|">Vacancy
+    Detail</title>
 </head>
 <th:block layout:fragment="content">
-  <div class="content">
-    <h1 th:text="${vacancy.name}"></h1>
+  <div class="content card-item">
+    <h1>
+        <span class="card-status-action card-status-action-big">
+          <span
+              th:replace="~{fragments/vacancy-status:: vacancy-status-icon(status=${vacancy.vacancyInfo?.status?.name ?: null})}">
+          </span>
+        </span>
+      <span th:text="${vacancy.name}"/>
+    </h1>
+    <div class="card-details">
+      <p>
+        <strong>В архиве hh:</strong>
+        <span th:text="${vacancy.archived ? 'Да' : 'НЕТ'}">Area Name</span>
+      </p>
+      <p>
+        <strong>сайт на hh.ru:</strong>
+        <a th:href="${vacancy.alternateUrl}" target="_blank"
+           th:text="${vacancy.alternateUrl}">Alternate URL</a>
+      </p>
+      <p>
+        <strong>Город:</strong>
+        <span th:text="${vacancy.city}">Area Name</span>
+      </p>
+      <p>
+        <strong>Компания:</strong>
+        <a th:href="@{|/employers/${vacancy?.employer?.id}|}" th:text="${vacancy?.employer?.name}">Company</a>
+      </p>
+      <p>
+        <strong>Направление компании:</strong>
+        <span th:each="professionalRole: ${vacancy.professionalRoles}">
+          <span
+              th:text="|(${professionalRole.id}) ${professionalRole.name}|">Professional role</span>
+        </span>
+      </p>
+      <p>
+        <strong>Создано в системе:</strong>
+        <span th:text="${#temporals.format(vacancy.internalCreatedAt, 'dd.MM.yyyy HH:mm')}">
+        </span>
+      </p>
+      <p>
+        <strong> Обновлено в hh:</strong>
+        <span th:text="${#temporals.format(vacancy.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+      </p>
+      <p>
+        <strong>Рейтинг IA:</strong>
+        <span th:text="${vacancy?.vacancyInfo?.aiApproved}"></span>
+      </p>
+      <div>
+        <strong>Description:</strong>
+        <div th:utext="${vacancy.description}">Description</div>
+      </div>
+      <div class="card-actions">
+        <button class="card-action" @click="updateVacancyStatus($event)"
+                th:data-vacancy-id="${vacancy.id}" data-vacancy-status="APPROVED">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </button>
+        <button class="card-action" @click="updateVacancyStatus($event)"
+                th:data-vacancy-id="${vacancy.id}" data-vacancy-status="DECLINED">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </button>
+        <button class="card-action" @click="updateVacancyStatus($event)"
+                th:data-vacancy-id="${vacancy.id}" data-vacancy-status="IN_PROGRESS">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+               stroke-linejoin="round">
+            <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </th:block>
 </html>

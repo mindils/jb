@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.springframework.stereotype.Service;
+import ru.mindils.jb.sync.dto.ResponseWrapperSync;
 
 @Service
 public class HttpClientProvider {
@@ -23,10 +24,12 @@ public class HttpClientProvider {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public <T> T retrieve(URI uri, Class<T> responseType) throws IOException, InterruptedException {
+  public <T> ResponseWrapperSync<T> retrieve(URI uri, Class<T> responseType)
+      throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    T data = mapper.readValue(response.body(), responseType);
 
-    return mapper.readValue(response.body(), responseType);
+    return ResponseWrapperSync.<T>builder().data(data).response(response).build();
   }
 }

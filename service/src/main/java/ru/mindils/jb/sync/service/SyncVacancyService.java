@@ -9,8 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.service.entity.Employer;
@@ -18,9 +18,11 @@ import ru.mindils.jb.service.entity.Vacancy;
 import ru.mindils.jb.service.repository.EmployerRepository;
 import ru.mindils.jb.service.repository.VacancyRepository;
 import ru.mindils.jb.sync.dto.BriefVacancyDto;
-import ru.mindils.jb.sync.dto.DetailedEmployerDto;
-import ru.mindils.jb.sync.dto.DetailedVacancyDto;
+import ru.mindils.jb.sync.dto.ResponseWrapperSync;
 import ru.mindils.jb.sync.dto.VacancyListResponseDto;
+import ru.mindils.jb.sync.dto.VacancySyncCurrentProgressDto;
+import ru.mindils.jb.sync.entity.SyncLogStatus;
+import ru.mindils.jb.sync.entity.SyncLogType;
 import ru.mindils.jb.sync.mapper.EmployerMapper;
 import ru.mindils.jb.sync.mapper.VacancyMapper;
 import ru.mindils.jb.sync.util.EmployerUtil;
@@ -38,24 +40,31 @@ public class SyncVacancyService {
   private final EmployerMapper employerMapper;
   private final EmployerRepository employerRepository;
   private final VacancyRepository vacancyRepository;
+  private final SyncLogService syncLogService;
 
-  public boolean syncEmployerDetailsBatch() {
-    Slice<Employer> employers = employerRepository.findAllByDetailed(false, PageRequest.of(0, 10));
+  public VacancySyncCurrentProgressDto syncEmployerDetailsBatch() {
+    Page<Employer> employers = employerRepository.findAllByDetailed(false, PageRequest.of(0, 10));
 
     employers.forEach(employer -> syncEmployerById(employer.getId()));
 
-    return !employers.isEmpty();
+    return VacancySyncCurrentProgressDto.builder()
+        .total(employers.getTotalElements())
+        .finished(employers.isEmpty())
+        .build();
   }
 
   @SneakyThrows
-  public boolean syncVacancyDetailsBatch() {
-    Slice<Vacancy> vacancies = vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 10));
+  public VacancySyncCurrentProgressDto syncVacancyDetailsBatch() {
+    Page<Vacancy> vacancies = vacancyRepository.findAllByDetailed(false, PageRequest.of(0, 1));
 
     vacancies.forEach(vacancy -> {
       syncVacancyById(vacancy.getId());
     });
 
-    return !vacancies.isEmpty();
+    return VacancySyncCurrentProgressDto.builder()
+        .total(vacancies.getTotalElements())
+        .finished(vacancies.isEmpty())
+        .build();
   }
 
   public void syncVacancyByDefaultFilterBatch() {
@@ -63,7 +72,7 @@ public class SyncVacancyService {
   }
 
   @SneakyThrows
-  public int syncVacancyByDefaultFilterBatch(String period, int page) {
+  public VacancySyncCurrentProgressDto syncVacancyByDefaultFilterBatch(String period, int page) {
     List<Map<String, String>> defaultFilter = vacancyFilterService.getDefaultFilter();
 
     List<Map<String, String>> updatedFilter = new ArrayList<>(defaultFilter);
@@ -75,28 +84,48 @@ public class SyncVacancyService {
     var vacancyListResponseDto = syncVacancyFilter(updatedFilter);
 
     if (vacancyListResponseDto.getPage() < vacancyListResponseDto.getPages() - 1) {
-      return vacancyListResponseDto.getPage() + 1;
+      return VacancySyncCurrentProgressDto.builder()
+          .total(vacancyListResponseDto.getPages())
+          .current(vacancyListResponseDto.getPage() + 1)
+          .finished(false)
+          .build();
     }
-    return -1;
+    return VacancySyncCurrentProgressDto.builder()
+        .total(vacancyListResponseDto.getPages())
+        .finished(true)
+        .build();
   }
 
   public void syncEmployerById(String id) {
-    DetailedEmployerDto objects = vacancyApiClientService.loadEmployerById(id);
+    var responseWrapperSync = vacancyApiClientService.loadEmployerById(id);
+    var objects = responseWrapperSync.getData();
 
     if (objects.getId() == null) {
       // если не нашли работодателя, то создаем пустого
       Employer employerEmpty = EmployerUtil.getEmployerEmpty(id);
       employerRepository.save(employerEmpty);
+
+      syncLogService.saveLog(
+          id,
+          responseWrapperSync.getResponse().body(),
+          SyncLogType.EMPLOYER_DETAIL,
+          SyncLogStatus.ERROR);
     } else {
       Optional<Employer> optionalEmployer = employerRepository.findById(id);
       Employer employer = optionalEmployer.orElseThrow(
           () -> new EntityNotFoundException("Employer not found with id: " + id));
       employerRepository.save(employerMapper.map(objects, employer));
+      syncLogService.saveLog(
+          id,
+          responseWrapperSync.getResponse().body(),
+          SyncLogType.EMPLOYER_DETAIL,
+          SyncLogStatus.SUCCESS);
     }
   }
 
   public void syncVacancyById(String id) {
-    DetailedVacancyDto vacancyDto = vacancyApiClientService.loadVacancyById(id);
+    var vacancyResponse = vacancyApiClientService.loadVacancyById(id);
+    var vacancyDto = vacancyResponse.getData();
 
     Optional<Vacancy> optionalVacancy = vacancyRepository.findById(id);
 
@@ -107,7 +136,17 @@ public class SyncVacancyService {
     // если при загрузке деталей вакансии получаем 404 от hh помечаем, что делали загружены
     if (vacancyDto.getId() == null) {
       vacancy.setDetailed(true);
+
+      if (vacancyResponse.getResponse().statusCode() == 404) {
+        vacancy.setArchived(true);
+      }
+
       vacancyRepository.save(vacancy);
+      syncLogService.saveLog(
+          id,
+          vacancyResponse.getResponse().body(),
+          SyncLogType.VACANCY_DETAIL,
+          SyncLogStatus.ERROR);
     } else {
       // TODO: тут если работодатель уже загружен с деталями то не нужно его обновлять
       //  затирается поле detailed
@@ -115,21 +154,29 @@ public class SyncVacancyService {
       Vacancy newVacancy = vacancyMapper.map(vacancyDto, vacancy);
       employerRepository.save(newVacancy.getEmployer());
       vacancyRepository.save(newVacancy);
+
+      syncLogService.saveLog(
+          id,
+          vacancyResponse.getResponse().body(),
+          SyncLogType.VACANCY_DETAIL,
+          SyncLogStatus.SUCCESS);
     }
   }
 
   private VacancyListResponseDto syncVacancyFilter(List<Map<String, String>> defaultFilter) {
-    VacancyListResponseDto vacancyListResponseDto =
+    ResponseWrapperSync<VacancyListResponseDto> vacancyListResponse =
         vacancyApiClientService.loadVacancies(defaultFilter);
 
+    var vacancyListDto = vacancyListResponse.getData();
+
     List<String> vacancyIds =
-        vacancyListResponseDto.getItems().stream().map(BriefVacancyDto::getId).toList();
+        vacancyListDto.getItems().stream().map(BriefVacancyDto::getId).toList();
 
     // Получаем все которые ранее были загружены, чтобы обновить
     Map<String, Vacancy> vacancyMaps = vacancyRepository.findByIdIn(vacancyIds).stream()
         .collect(Collectors.toMap(Vacancy::getId, Function.identity()));
 
-    vacancyListResponseDto.getItems().forEach(vacancyDto -> {
+    vacancyListDto.getItems().forEach(vacancyDto -> {
       Vacancy vacancy;
       if (vacancyMaps.containsKey(vacancyDto.getId())) {
         vacancy = vacancyMapper.map(vacancyDto, vacancyMaps.get(vacancyDto.getId()));
@@ -143,6 +190,6 @@ public class SyncVacancyService {
       vacancyRepository.save(vacancy);
     });
 
-    return vacancyListResponseDto;
+    return vacancyListDto;
   }
 }

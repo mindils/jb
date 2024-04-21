@@ -28,8 +28,11 @@ public class UserRestController {
   private final UserService userService;
 
   @GetMapping("/{id}")
-  public UserReadDto findById(@PathVariable Long id) {
-    return userService.findById(id).orElseThrow();
+  public ResponseEntity<UserReadDto> findById(@PathVariable Long id) {
+    return userService
+        .findById(id)
+        .map(user -> ResponseEntity.ok().body(user))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
   }
 
   @PostMapping
@@ -39,10 +42,17 @@ public class UserRestController {
   }
 
   @PutMapping("{id}")
-  public UserReadDto update(@PathVariable Long id, @RequestBody UserUpdateDto updateUserDto) {
+  public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UserUpdateDto updateUserDto) {
     return userService
         .update(id, updateUserDto)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        .map(user -> ResponseEntity.ok().body(user)) // Возвращает обновленного пользователя
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "User with ID " + id + " not found")); // Пользователь не найден
+  }
+
+  @GetMapping("{username}/avatar")
+  public byte[] findAvatar(@PathVariable String username) {
+    return userService.findAvatar(username);
   }
 
   @DeleteMapping("{id}")

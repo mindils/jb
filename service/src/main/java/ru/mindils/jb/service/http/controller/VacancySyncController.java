@@ -20,7 +20,6 @@ public class VacancySyncController extends BaseController {
   @GetMapping
   public String syncAll(Model model) {
     model.addAttribute("isSyncRunning", vacancySyncService.isSyncRunning());
-
     return "pages/vacancy-sync.all";
   }
 
@@ -33,6 +32,18 @@ public class VacancySyncController extends BaseController {
   @PostMapping("/employer")
   public String syncEmployer(@RequestParam LocalDate syncDate) {
     vacancySyncService.startEmployerSync(syncDate);
+    return "redirect:/vacancies-sync";
+  }
+
+  @PostMapping("/vacancy")
+  public String syncVacancy(@RequestParam LocalDate syncDate) {
+    vacancySyncService.startVacancySync(syncDate);
+    return "redirect:/vacancies-sync";
+  }
+
+  @PostMapping("/vacancy-ai")
+  public String syncVacancyAi() {
+    vacancySyncService.startVacancyAiSync();
     return "redirect:/vacancies-sync";
   }
 }

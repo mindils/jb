@@ -1,5 +1,7 @@
 package ru.mindils.jb.sync.mapper;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,6 +28,11 @@ public interface VacancyMapper {
   @Mapping(target = "vacancyInfo", ignore = true)
   @Mapping(target = "internalCreatedAt", ignore = true)
   @Mapping(target = "internalModifiedAt", ignore = true)
+  @Mapping(
+      source = "publishedAt",
+      target = "publishedAt",
+      qualifiedByName = "zonedDateTimeToInstant")
+  @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "zonedDateTimeToInstant")
   Vacancy map(BriefVacancyDto entity);
 
   @Mapping(source = "area.name", target = "city")
@@ -37,6 +44,11 @@ public interface VacancyMapper {
   @Mapping(target = "vacancyInfo", ignore = true)
   @Mapping(target = "internalCreatedAt", ignore = true)
   @Mapping(target = "internalModifiedAt", ignore = true)
+  @Mapping(
+      source = "publishedAt",
+      target = "publishedAt",
+      qualifiedByName = "zonedDateTimeToInstant")
+  @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "zonedDateTimeToInstant")
   Vacancy map(BriefVacancyDto entity, @MappingTarget Vacancy vacancy);
 
   @Mapping(source = "area.name", target = "city")
@@ -47,6 +59,11 @@ public interface VacancyMapper {
   @Mapping(target = "vacancyInfo", ignore = true)
   @Mapping(target = "internalCreatedAt", ignore = true)
   @Mapping(target = "internalModifiedAt", ignore = true)
+  @Mapping(
+      source = "publishedAt",
+      target = "publishedAt",
+      qualifiedByName = "zonedDateTimeToInstant")
+  @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "zonedDateTimeToInstant")
   Vacancy map(DetailedVacancyDto entity, @MappingTarget Vacancy vacancy);
 
   @Named("mapKeySkillsToString")
@@ -58,5 +75,10 @@ public interface VacancyMapper {
         .map(KeySkillDto::getName)
         .filter(Objects::nonNull)
         .collect(Collectors.joining(", "));
+  }
+
+  @Named("zonedDateTimeToInstant")
+  default Instant zonedDateTimeToInstant(ZonedDateTime zonedDateTime) {
+    return zonedDateTime != null ? zonedDateTime.toInstant() : null;
   }
 }

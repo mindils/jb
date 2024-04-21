@@ -1,6 +1,7 @@
-package ru.mindils.jb.integration.service;
+package ru.mindils.jb.integration;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -10,6 +11,7 @@ import ru.mindils.jb.integration.service.annotation.IT;
 
 @IT
 @Sql({"classpath:sql/dataset.sql"})
+@WithMockUser(username = "admin", authorities = "ADMIN")
 public abstract class ITBase {
 
   private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(

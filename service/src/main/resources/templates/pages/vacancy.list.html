@@ -4,44 +4,6 @@
       layout:decorate="~{layout}">
 <head>
   <title layout:fragment="title">Vacancy list</title>
-  <script>
-    function updateVacancyStatus(event) {
-      const button = event.target.closest('button');
-      const vacancyId = button.getAttribute('data-vacancy-id');
-      const status = button.getAttribute('data-status');
-
-      fetch(`/api/v1/vacancies/${vacancyId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({status}),
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        console.log('Vacancy status updated successfully');
-        const iconElement = event.target.closest('.card-item').querySelector(
-            '.card-status-action svg');
-        updateIcon(iconElement, status);
-      })
-      .catch(error => {
-        console.error('There was a problem updating vacancy status:', error);
-      });
-    }
-
-    function updateIcon(iconElement, status) {
-      fetch(`/icons/vacancy-status?status=${status}`)
-      .then(response => response.text())
-      .then(html => {
-        iconElement.outerHTML = html;
-      })
-      .catch(error => {
-        console.error('There was a problem fetching the icon:', error);
-      });
-    }
-  </script>
 </head>
 <th:block layout:fragment="content">
   <div class="content">
@@ -90,16 +52,18 @@
     </div>
 
     <div class="card-list">
-      <div th:each="vacancy : ${vacancies}" class="card-item">
-        <h3>
+      <span th:each="vacancy : ${vacancies}" class="card-item">
+       <h3>
           <a th:href="@{|/vacancies/${vacancy.id}|}">
             <span class="card-status-action">
-              <span
-                  th:replace="~{fragments/vacancy-status :: vacancy-status-icon(status=${vacancy.vacancyInfo.status.name})}"></span>
+             <span th:if="${vacancy.vacancyInfo?.status != null}"
+                   th:replace="~{fragments/vacancy-status :: vacancy-status-icon(status=${vacancy.vacancyInfo?.status?.name})}"></span>
             </span>
             <span th:text="${vacancy.name}" class="card-link">Заголовок вакансии</span>
           </a>
-          <a th:href="${vacancy.alternateUrl}" target="_blank" class="card-hh-link" title="Открыть на hh.ru">
+
+          <a th:href="${vacancy.alternateUrl}" target="_blank" class="card-hh-link"
+             title="Открыть на hh.ru">
             <svg color="#007BFF" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -110,9 +74,12 @@
           </a>
         </h3>
         <p class="card-meta">
-          <a th:href="@{|/employers/${vacancy.employer.id}|}">
-            <span th:text="${vacancy.employer.name}">Название компании</span>
+          <a th:href="@{|/employers/${vacancy?.employer?.id}|}">
+            <span th:text="${vacancy?.employer?.name}">Название компании</span>
           </a>
+          <span class="card-property">В архиве:
+            <span th:text="${vacancy.archived ? 'Да' : 'НЕТ'}"></span>
+          </span>
           <span class="card-location" th:text="${vacancy.city}">(Москва)</span>
           <span class="card-property">Создано в системе: <span
               th:text="${#temporals.format(vacancy.internalCreatedAt, 'dd.MM.yyyy HH:mm')}"
@@ -124,7 +91,7 @@
           </span>
           <span class="card-property">
             Рейтинг AI: <span
-              th:text="${vacancy.vacancyInfo.aiApproved}"></span>
+              th:text="${vacancy?.vacancyInfo?.aiApproved}"></span>
           </span>
         </p>
         <p class="card-salary" th:if="${vacancy.salary != null}">
@@ -134,11 +101,13 @@
           <span class="salary-to" th:text="|до ${vacancy.salary.to}|"
                 th:if="${vacancy.salary.to != null}"/>
         </p>
-        <p class="card-description" th:utext="${vacancy.description}">Краткое описание
-          вакансии...</p>
+        <div class="card-description">
+          <p th:utext="${vacancy.description}">Краткое описание
+            вакансии...</p>
+        </div>
         <div class="card-actions">
           <button class="card-action" @click="updateVacancyStatus($event)"
-                  th:data-vacancy-id="${vacancy.id}" data-status="APPROVED">
+                  th:data-vacancy-id="${vacancy.id}" data-vacancy-status="APPROVED">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -147,7 +116,7 @@
             </svg>
           </button>
           <button class="card-action" @click="updateVacancyStatus($event)"
-                  th:data-vacancy-id="${vacancy.id}" data-status="DECLINED">
+                  th:data-vacancy-id="${vacancy.id}" data-vacancy-status="DECLINED">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -157,7 +126,7 @@
             </svg>
           </button>
           <button class="card-action" @click="updateVacancyStatus($event)"
-                  th:data-vacancy-id="${vacancy.id}" data-status="IN_PROGRESS">
+                  th:data-vacancy-id="${vacancy.id}" data-vacancy-status="IN_PROGRESS">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
                  stroke-linejoin="round">
@@ -166,39 +135,14 @@
             </svg>
           </button>
         </div>
-      </div>
+      </span>
     </div>
+    <div th:replace="~{fragments/pagination:: pagination}"></div>
 
-    <div class="pagination" th:if="${totalPages} > 1">
-      <a th:if="${currentPage > 1}"
-         th:href="@{|${basePaginationUrl}page=${currentPage > 1 ? currentPage - 1 : 1}|}"
-         class="pagination-link">« Пред.</a>
-
-
-      <th:block th:each="i : ${#numbers.sequence(1, 2)}">
-        <a th:href="@{|${basePaginationUrl}page=${i}|}"
-           th:class="${currentPage == i || (currentPage == 0 && i == 1)} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
-      </th:block>
-
-      <span th:if="${currentPage > 4}" class="pagination-link">...</span>
-
-      <th:block th:each="i : ${#numbers.sequence(currentPage - 1, currentPage + 1)}"
-                th:if="${i > 2 and i < totalPages - 1}">
-        <a th:href="@{|${basePaginationUrl}page=${i}|}"
-           th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
-      </th:block>
-
-      <span th:if="${totalPages - currentPage > 3}" class="pagination-link">...</span>
-
-      <th:block th:each="i : ${#numbers.sequence(totalPages - 1, totalPages)}">
-        <a th:href="@{|${basePaginationUrl}page=${i}|}"
-           th:class="${currentPage == i} ? 'pagination-link active' : 'pagination-link'">[[${i}]]</a>
-      </th:block>
-
-      <a th:if="${currentPage < totalPages}"
-         th:href="@{|${basePaginationUrl}page=${currentPage < totalPages ? (currentPage == 0 ? 2 : currentPage + 1) : totalPages}|}"
-         class="pagination-link">След. »</a>
-    </div>
+    <form method="post">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button class="sync-button" type="submit">Обновить по фильтру</button>
+    </form>
   </div>
 </th:block>
 </html>

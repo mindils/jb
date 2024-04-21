@@ -1,9 +1,8 @@
 package ru.mindils.jb.service.http.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import ru.mindils.jb.service.util.ControllerUtils;
 
 public abstract class BaseController {
 
@@ -17,21 +16,8 @@ public abstract class BaseController {
     return "home";
   }
 
-  @ModelAttribute("basePaginationUrl")
-  public String basePaginationUrl(HttpServletRequest request) {
-    Map<String, String[]> parameterMap = request.getParameterMap();
-    return ControllerUtils.createQueryStringForParams(parameterMap, "page");
-  }
-
-  @ModelAttribute("baseSortUrl")
-  public String baseSortingUrl(HttpServletRequest request) {
-    Map<String, String[]> parameterMap = request.getParameterMap();
-    return ControllerUtils.createQueryStringForParams(parameterMap, "page", "sort");
-  }
-
-  @ModelAttribute("currentSort")
-  public String currentSort(HttpServletRequest request) {
-    String currentSort = request.getParameter("sort");
-    return currentSort != null ? currentSort : "";
+  @ModelAttribute("currentLang")
+  public String language() {
+    return LocaleContextHolder.getLocale().getLanguage();
   }
 }

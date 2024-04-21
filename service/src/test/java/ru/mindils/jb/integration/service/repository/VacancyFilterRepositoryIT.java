@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import ru.mindils.jb.integration.service.ITBase;
+import ru.mindils.jb.integration.ITBase;
 import ru.mindils.jb.integration.service.annotation.IT;
 import ru.mindils.jb.service.entity.VacancyFilter;
 import ru.mindils.jb.service.entity.VacancyFilterParams;

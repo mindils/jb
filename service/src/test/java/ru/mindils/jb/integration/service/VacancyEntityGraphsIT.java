@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.graph.GraphSemantic;
 import org.junit.jupiter.api.Test;
+import ru.mindils.jb.integration.ITBase;
 import ru.mindils.jb.service.entity.Employer;
 import ru.mindils.jb.service.entity.Salary;
 import ru.mindils.jb.service.entity.Vacancy;

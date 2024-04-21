@@ -12,17 +12,20 @@ import ru.mindils.jb.service.entity.QVacancy;
 public class VacancyQueryDslFilterBuilder {
 
   public static Predicate build(AppVacancyFilterDto filter) {
-    SystemVacancyFilterDto systemFilter =
-        SystemVacancyFilterDto.builder().aiApproved(BigDecimal.valueOf(0.7)).build();
+    SystemVacancyFilterDto systemFilter = SystemVacancyFilterDto.builder()
+        .aiApproved(BigDecimal.valueOf(0.7))
+        .archived(false)
+        .build();
 
     return QPredicate.builder()
         .add(systemFilter.getAiApproved(), QVacancy.vacancy.vacancyInfo.aiApproved::gt)
+        .add(systemFilter.isArchived(), QVacancy.vacancy.archived::eq)
         .add(EmployerStatusEnum.DECLINED, status -> QVacancy.vacancy
             .employer
             .employerInfo
             .status
             .ne(status)
-            .or(QVacancy.vacancy.employer.employerInfo.status.isNull()))
+            .or(QVacancy.vacancy.employer.employerInfo.id.isNull()))
         .add(filter.getSalaryFrom(), salaryFrom -> QVacancy.vacancy
             .salary
             .from

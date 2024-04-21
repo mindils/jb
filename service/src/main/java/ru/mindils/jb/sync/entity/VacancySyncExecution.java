@@ -45,6 +45,9 @@ public class VacancySyncExecution {
   @JdbcTypeCode(SqlTypes.JSON)
   private Map<String, ?> parameters;
 
+  @JdbcTypeCode(SqlTypes.JSON)
+  private VacancySyncProgress progress;
+
   private LocalDateTime startTime;
   private LocalDateTime endTime;
   private String errorMessage;

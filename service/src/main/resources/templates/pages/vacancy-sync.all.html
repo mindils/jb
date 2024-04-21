@@ -7,22 +7,22 @@
 </head>
 <th:block layout:fragment="content">
     <div class="content" x-data="{
-          isSyncRunning: false,
+          syncRunning: false,
           syncStatus: { statusText: '', progress: 0, step: 0 },
           intervalId: null,
           async fetchSyncStatus() {
             const response = await fetch('/api/v1/vacancies-sync/status');
             const data = await response.json();
-            this.isSyncRunning = data.isSyncRunning;
+            this.syncRunning = data.syncRunning;
             this.syncStatus = data;
-            if (!this.isSyncRunning && this.intervalId) {
+            if (!this.syncRunning && this.intervalId) {
               clearInterval(this.intervalId);
             }
           },
           startPolling() {
             this.fetchSyncStatus();
             this.intervalId = setInterval(() => {
-              if (this.isSyncRunning) {
+              if (this.syncRunning) {
                 this.fetchSyncStatus();
               }
             }, 1000);
@@ -35,7 +35,7 @@
             <span class="last-sync-time" th:text="${#temporals.format(lastSyncTime, 'dd.MM.yyyy HH:mm')}"></span>
         </div>
 
-        <form method="post">
+        <form method="post" th:action="@{/vacancies-sync}">
             <div class="sync-settings">
                 <label for="syncPeriod" class="sync-period-label">Период синхронизации:</label>
                 <input type="number" name="syncPeriod" id="syncPeriod" class="sync-period-input" min="1" max="365"
@@ -46,7 +46,7 @@
         </form>
 
         <h3>Синхронизировать только компании</h3>
-        <form method="post" action="/vacancies-sync/employer">
+        <form method="post" th:action="@{/vacancies-sync/employer}">
             <div class="sync-settings">
                 <label for="syncDate" class="sync-period-label">Дата последнего обновления:</label>
                 <input type="date" name="syncDate" id="syncDate" class="sync-period-input">
@@ -54,10 +54,22 @@
             <button class="sync-button" type="submit">Запустить обновление вакансий</button>
         </form>
 
-        <div x-show="isSyncRunning">
+        <h3>Синхронизировать только детальное отображение</h3>
+        <form method="post" th:action="@{/vacancies-sync/vacancy}">
+            <div class="sync-settings">
+                <label for="syncDateVacancy" class="sync-period-label">Дата последнего обновления:</label>
+                <input type="date" name="syncDate" id="syncDateVacancy" class="sync-period-input">
+            </div>
+            <button class="sync-button" type="submit">Запустить обновление вакансий</button>
+        </form>
+
+        <h3>Синхронизировать только рейтинг</h3>
+        <form method="post" th:action="@{/vacancies-sync/vacancy-ai}">
+            <button class="sync-button" type="submit">Запустить обновление вакансий</button>
+        </form>
+        <div x-show="syncRunning">
             <div class="sync-info">
-                <span class="sync-step" x-text="'Шаг ' + (syncStatus.step + 1) + ': ' + syncStatus.statusText"></span>
-                <span class="sync-details" x-text="syncStatus.statusText"></span>
+                <span class="sync-step" x-text="'Шаг ' + (syncStatus.step + 1) + ': ' + syncStatus.statusText + ' (' + syncStatus.currentElement + '/'  + syncStatus.totalElements + ')'"></span>
             </div>
 
             <div class="progress-bar">
