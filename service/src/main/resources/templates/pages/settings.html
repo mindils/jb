@@ -4,10 +4,117 @@
       layout:decorate="~{layout}">
 <head>
   <title layout:fragment="title">Настройки</title>
+  <style>
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .table th,
+    .table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table th {
+      background-color: var(--bg-secondary-color);
+      font-weight: bold;
+    }
+
+    .btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+  </style>
 </head>
 <th:block layout:fragment="content">
   <div class="content">
-    <h1>Settings</h1>
+    <h1>Настройки</h1>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Имя пользователя</th>
+        <th>Имя</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Статус</th>
+        <th>Действие</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.firstname}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+          <select th:onchange="'updateUserRole(' + ${user.id} + ', this.value)'">
+            <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"
+                    th:selected="${role == user.role}"></option>
+          </select>
+        </td>
+        <td th:text="${user.enabled ? 'Активен' : 'Неактивен'}"></td>
+        <td>
+          <button class="btn" th:classappend="${user.enabled ? 'btn-danger' : 'btn-success'}"
+                  th:onclick="'toggleUserStatus(' + ${user.id} + ')'">
+            <span th:text="${user.enabled ? 'Деактивировать' : 'Активировать'}"></span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
+  <script>
+    function toggleUserStatus(userId) {
+      fetch(`/api/v1/users/${userId}/status`, {
+        method: 'PATCH'
+      })
+      .then(response => {
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('Ошибка при изменении статуса пользователя');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при изменении статуса пользователя');
+      });
+    }
+
+    function updateUserRole(userId, role) {
+      fetch(`/api/v1/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({role: role})
+      })
+      .then(response => {
+        if (!response.ok) {
+          alert('Ошибка при изменении роли пользователя');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при изменении роли пользователя');
+      });
+    }
+  </script>
 </th:block>
 </html>

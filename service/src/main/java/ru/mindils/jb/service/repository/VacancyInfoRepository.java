@@ -11,7 +11,7 @@ import ru.mindils.jb.service.entity.VacancyInfo;
 @Repository
 public interface VacancyInfoRepository extends JpaRepository<VacancyInfo, Long> {
 
-  @Modifying(clearAutomatically = true)
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query(
       value =
           "UPDATE jb_vacancy_info SET ai_approved = null WHERE jb_vacancy_info.vacancy_id IN (SELECT id FROM jb_vacancy WHERE internal_modified_at < :threshold)",

@@ -1,6 +1,7 @@
 package ru.mindils.jb.service.service;
 
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,14 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ImageService {
+public class UserImageService {
 
   private final String bucket;
-  private final Path defaultAvatar;
+  private final Path defaultAvatar; // =
 
-  public ImageService(
+  public UserImageService(
       @Value("${app.image.buckets}") String bucket,
-      @Value("${app.image.default}") String defaultAvatar) {
+      @Value("${app.image.avatar.default}") String defaultAvatar) {
     this.bucket = bucket;
     this.defaultAvatar = Path.of(defaultAvatar);
   }
@@ -26,15 +27,8 @@ public class ImageService {
   public void upload(String path, InputStream content) {
     Path fullImagePath = Path.of(bucket, path);
 
-    try (content) {
-      Files.createDirectories(fullImagePath.getParent());
-      Files.write(fullImagePath, content.readAllBytes(), CREATE, TRUNCATE_EXISTING);
-    }
-  }
-
-  @SneakyThrows
-  public byte[] getDefault() {
-    return Files.readAllBytes(defaultAvatar);
+    Files.createDirectories(fullImagePath.getParent());
+    Files.write(fullImagePath, content.readAllBytes(), CREATE, TRUNCATE_EXISTING);
   }
 
   @SneakyThrows
@@ -46,5 +40,10 @@ public class ImageService {
     Path fullImagePath = Path.of(bucket, path);
 
     return Files.exists(fullImagePath) ? Files.readAllBytes(fullImagePath) : getDefault();
+  }
+
+  @SneakyThrows
+  public byte[] getDefault() {
+    return Files.readAllBytes(defaultAvatar);
   }
 }

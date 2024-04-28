@@ -1,6 +1,5 @@
 package ru.mindils.jb.integration.service.service;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;

@@ -25,25 +25,17 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<String> handleMethodArgumentNotValidException(
-      MethodArgumentNotValidException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-  }
-
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<String> handleHttpMessageNotReadableException(
-      HttpMessageNotReadableException ex) {
+  @ExceptionHandler({
+    MethodArgumentNotValidException.class,
+    ValidationException.class,
+    HttpMessageNotReadableException.class
+  })
+  public ResponseEntity<String> handleBadRequest(Exception ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 
   @ExceptionHandler(DataAccessException.class)
   public ResponseEntity<String> handleDataAccessException(DataAccessException ex) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error occurred");
-  }
-
-  @ExceptionHandler(ValidationException.class)
-  public ResponseEntity<String> handleValidationException(ValidationException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
 }

@@ -34,7 +34,7 @@ class EmployerRestControllerTest extends ITBase {
   private EmployerService employerService;
 
   @Test
-  void updateStatus_Success() throws Exception {
+  void updateStatus_success() throws Exception {
     String employerId = "1";
     EmployerUpdateStatusDto updateStatusDto =
         new EmployerUpdateStatusDto(EmployerStatusEnum.APPROVED);
@@ -70,7 +70,7 @@ class EmployerRestControllerTest extends ITBase {
   }
 
   @Test
-  void updateStatus_NotFound() throws Exception {
+  void updateStatus_notFound() throws Exception {
     String employerId = "1";
     EmployerUpdateStatusDto updateStatusDto =
         new EmployerUpdateStatusDto(EmployerStatusEnum.APPROVED);

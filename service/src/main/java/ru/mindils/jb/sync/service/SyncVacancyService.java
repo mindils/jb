@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mindils.jb.service.entity.Employer;
@@ -137,7 +138,7 @@ public class SyncVacancyService {
     if (vacancyDto.getId() == null) {
       vacancy.setDetailed(true);
 
-      if (vacancyResponse.getResponse().statusCode() == 404) {
+      if (vacancyResponse.getResponse().statusCode() == HttpStatus.NOT_FOUND.value()) {
         vacancy.setArchived(true);
       }
 
@@ -184,8 +185,6 @@ public class SyncVacancyService {
         vacancy = vacancyMapper.map(vacancyDto);
       }
 
-      // TODO: тут если работодатель уже загружен с деталями то не нужно
-      // его обновлять
       employerRepository.save(vacancy.getEmployer());
       vacancyRepository.save(vacancy);
     });

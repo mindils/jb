@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +66,7 @@ public class SyncVacancyServiceTest extends ITBase {
   private SyncVacancyService syncVacancyService;
 
   @Test
-  public void syncEmployerDetailsBatch() {
+  void syncEmployerDetailsBatch() {
     String employerId = "employer-id-example";
     Employer employer = getEmployer(employerId);
 
@@ -96,7 +95,7 @@ public class SyncVacancyServiceTest extends ITBase {
     VacancySyncCurrentProgressDto result = syncVacancyService.syncEmployerDetailsBatch();
 
     verify(employerRepository).findAllByDetailed(false, PageRequest.of(0, 10));
-    verify(syncLogService, times(1)).saveLog(eq(employerId), anyString(), any(), any());
+    verify(syncLogService).saveLog(eq(employerId), anyString(), any(), any());
 
     assertThat(result.getTotal()).isEqualTo(1);
     assertThat(result.getCurrent()).isEqualTo(0);
@@ -104,7 +103,7 @@ public class SyncVacancyServiceTest extends ITBase {
   }
 
   @Test
-  public void syncVacancyDetailsBatch() {
+  void syncVacancyDetailsBatch() {
     String vacancyId = "vacancy-id-example";
     String employerId = "employer-id-example";
     Employer employer = getEmployer(employerId);
@@ -135,7 +134,7 @@ public class SyncVacancyServiceTest extends ITBase {
     VacancySyncCurrentProgressDto result = syncVacancyService.syncVacancyDetailsBatch();
 
     verify(vacancyRepository).findAllByDetailed(false, PageRequest.of(0, 1));
-    verify(syncLogService, times(1)).saveLog(eq(vacancyId), anyString(), any(), any());
+    verify(syncLogService).saveLog(eq(vacancyId), anyString(), any(), any());
 
     assertThat(result.getTotal()).isEqualTo(1);
     assertThat(result.getCurrent()).isEqualTo(0);
@@ -143,7 +142,7 @@ public class SyncVacancyServiceTest extends ITBase {
   }
 
   @Test
-  public void syncVacancyByDefaultFilterBatch() {
+  void syncVacancyByDefaultFilterBatch() {
     List<Map<String, String>> defaultFilter = List.of(Map.of("test", "value"));
 
     String vacancyId = "vacancy-id-example";

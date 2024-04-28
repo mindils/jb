@@ -1,11 +1,12 @@
 package ru.mindils.jb.integration.service.http.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,7 @@ public class VacancyControllerTest extends ITBase {
         .andExpect(model().attribute("totalPages", page.getTotalPages()))
         .andExpect(model().attribute("totalElements", page.getTotalElements()));
 
-    verify(vacancyService, times(1)).findAll(any(AppVacancyFilterDto.class), any(Pageable.class));
+    verify(vacancyService).findAll(any(AppVacancyFilterDto.class), any(Pageable.class));
   }
 
   @Test
@@ -64,7 +65,7 @@ public class VacancyControllerTest extends ITBase {
         .andExpect(view().name("pages/vacancy.detail"))
         .andExpect(model().attribute("vacancy", vacancy));
 
-    verify(vacancyService, times(1)).findById(vacancyId);
+    verify(vacancyService).findById(vacancyId);
   }
 
   private VacancyReadDto getVacancy(String id) {

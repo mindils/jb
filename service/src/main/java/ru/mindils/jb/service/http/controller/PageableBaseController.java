@@ -1,8 +1,9 @@
 package ru.mindils.jb.service.http.controller;
 
+import static java.util.stream.Collectors.joining;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import ru.mindils.jb.service.util.ControllerUtils;
@@ -27,7 +28,7 @@ public abstract class PageableBaseController extends BaseController {
       return pageable.getSort().stream()
           .map(order ->
               order.getProperty() + "," + order.getDirection().toString().toLowerCase())
-          .collect(Collectors.joining(";"));
+          .collect(joining(";"));
     }
     return "";
   }

@@ -43,7 +43,7 @@ public class VacancyRepositoryIT extends ITBase {
   }
 
   @Test
-  public void save() {
+  void save() {
     Employer employer = getEmployer();
     Vacancy vacancy = getVacancy(employer);
 

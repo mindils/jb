@@ -1,12 +1,14 @@
 package ru.mindils.jb.integration.service.http.controller;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class VacancySyncControllerTest extends ITBase {
   private VacancySyncService vacancySyncService;
 
   @Test
-  public void syncAll() throws Exception {
+  void syncAll() throws Exception {
     when(vacancySyncService.isSyncRunning()).thenReturn(true);
 
     mockMvc
@@ -36,11 +38,11 @@ public class VacancySyncControllerTest extends ITBase {
         .andExpect(view().name("pages/vacancy-sync.all"))
         .andExpect(model().attribute("isSyncRunning", true));
 
-    verify(vacancySyncService, times(1)).isSyncRunning();
+    verify(vacancySyncService).isSyncRunning();
   }
 
   @Test
-  public void syncAllPost() throws Exception {
+  void syncAllPost() throws Exception {
     String syncPeriod = "30";
 
     mockMvc
@@ -48,11 +50,11 @@ public class VacancySyncControllerTest extends ITBase {
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/vacancies-sync"));
 
-    verify(vacancySyncService, times(1)).startAllSync(syncPeriod);
+    verify(vacancySyncService).startAllSync(syncPeriod);
   }
 
   @Test
-  public void syncEmployer() throws Exception {
+  void syncEmployer() throws Exception {
     LocalDate syncDate = LocalDate.of(2023, 6, 1);
 
     mockMvc
@@ -61,11 +63,11 @@ public class VacancySyncControllerTest extends ITBase {
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/vacancies-sync"));
 
-    verify(vacancySyncService, times(1)).startEmployerSync(syncDate);
+    verify(vacancySyncService).startEmployerSync(syncDate);
   }
 
   @Test
-  public void syncVacancy() throws Exception {
+  void syncVacancy() throws Exception {
     LocalDate syncDate = LocalDate.of(2023, 6, 1);
 
     mockMvc
@@ -74,16 +76,16 @@ public class VacancySyncControllerTest extends ITBase {
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/vacancies-sync"));
 
-    verify(vacancySyncService, times(1)).startVacancySync(syncDate);
+    verify(vacancySyncService).startVacancySync(syncDate);
   }
 
   @Test
-  public void syncVacancyAi() throws Exception {
+  void syncVacancyAi() throws Exception {
     mockMvc
         .perform(post("/vacancies-sync/vacancy-ai").with(csrf()))
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/vacancies-sync"));
 
-    verify(vacancySyncService, times(1)).startVacancyAiSync();
+    verify(vacancySyncService).startVacancyAiSync();
   }
 }

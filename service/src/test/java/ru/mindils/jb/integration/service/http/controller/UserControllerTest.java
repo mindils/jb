@@ -2,13 +2,15 @@ package ru.mindils.jb.integration.service.http.controller;
 
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,7 @@ public class UserControllerTest extends ITBase {
 
   @Test
   @WithMockUser(username = "testuser", authorities = "USER")
-  public void profile() throws Exception {
+  void profile() throws Exception {
     UserReadDto userReadDto =
         new UserReadDto(1L, "testuser", "USER", "test@example.com", "John", true);
     when(userService.findByUsername("testuser")).thenReturn(userReadDto);
@@ -42,12 +44,12 @@ public class UserControllerTest extends ITBase {
         .andExpect(view().name("pages/user.profile"))
         .andExpect(model().attribute("user", userReadDto));
 
-    verify(userService, times(1)).findByUsername("testuser");
+    verify(userService).findByUsername("testuser");
   }
 
   @Test
   @WithMockUser(username = "user", authorities = "USER")
-  public void updateProfile() throws Exception {
+  void updateProfile() throws Exception {
     mockMvc
         .perform(post("/user/profile")
             .with(csrf())
@@ -56,7 +58,7 @@ public class UserControllerTest extends ITBase {
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/user/profile"));
 
-    verify(userService, times(1))
+    verify(userService)
         .updateProfile(
             eq("user"),
             argThat(dto ->

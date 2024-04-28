@@ -2,12 +2,14 @@ package ru.mindils.jb.integration.service.http.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,7 @@ public class RegistrationControllerTest extends ITBase {
   private UserService userService;
 
   @Test
-  public void showRegistration() throws Exception {
+  void showRegistration() throws Exception {
     mockMvc
         .perform(get("/registration"))
         .andExpect(status().isOk())
@@ -37,7 +39,7 @@ public class RegistrationControllerTest extends ITBase {
   }
 
   @Test
-  public void registration_Success() throws Exception {
+  void registration_success() throws Exception {
     RegistrationDto registrationDto = RegistrationDto.builder()
         .username("testuser")
         .firstname("John")
@@ -51,11 +53,11 @@ public class RegistrationControllerTest extends ITBase {
         .andExpect(status().isFound())
         .andExpect(redirectedUrl("/login?registration"));
 
-    verify(userService, times(1)).create(registrationDto);
+    verify(userService).create(registrationDto);
   }
 
   @Test
-  public void registration_ValidationError() throws Exception {
+  void registration_validationError() throws Exception {
     RegistrationDto registrationDto = RegistrationDto.builder()
         .username("")
         .firstname("")

@@ -1,7 +1,9 @@
 .gradle
 build/
 images
+logs
 docker/data
+service/src/main/resources/application-dev.properties
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

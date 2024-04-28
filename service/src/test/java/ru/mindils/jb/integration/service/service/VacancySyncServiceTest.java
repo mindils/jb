@@ -3,7 +3,6 @@ package ru.mindils.jb.integration.service.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +12,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.Scheduler;
@@ -47,7 +45,6 @@ public class VacancySyncServiceTest extends ITBase {
   @Mock
   private EmployerRepository employerRepository;
 
-  @InjectMocks
   private VacancySyncService vacancySyncService;
 
   @BeforeEach
@@ -66,10 +63,10 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startAllSync(syncPeriod);
 
-    verify(vacancySyncExecutionService, times(1))
+    verify(vacancySyncExecutionService)
         .createNewStep(
             eq(VacancySyncStep.LOAD_VACANCIES), eq(Map.of("currentPage", 0, "period", syncPeriod)));
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test
@@ -78,9 +75,9 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startVacancySync(ProgressType.ONE_STEP);
 
-    verify(vacancySyncExecutionService, times(1))
+    verify(vacancySyncExecutionService)
         .createNewStep(eq(VacancySyncStep.LOAD_VACANCY_DETAIL), eq(null), any());
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test
@@ -89,10 +86,10 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startVacancySync(syncDate);
 
-    verify(vacancyRepository, times(1)).updateDetailedBy(syncDate);
-    verify(vacancySyncExecutionService, times(1))
+    verify(vacancyRepository).updateDetailedBy(syncDate);
+    verify(vacancySyncExecutionService)
         .createNewStep(eq(VacancySyncStep.LOAD_VACANCY_DETAIL), eq(null), any());
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test
@@ -101,10 +98,10 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startVacancyAiSync();
 
-    verify(vacancyInfoRepository, times(1)).updateAiApprovedToNullByThreshold(any());
-    verify(vacancySyncExecutionService, times(1))
+    verify(vacancyInfoRepository).updateAiApprovedToNullByThreshold(any());
+    verify(vacancySyncExecutionService)
         .createNewStep(eq(VacancySyncStep.LOAD_VACANCY_RATING), eq(null), any());
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test
@@ -113,9 +110,9 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startEmployerSync();
 
-    verify(vacancySyncExecutionService, times(1))
+    verify(vacancySyncExecutionService)
         .createNewStep(eq(VacancySyncStep.LOAD_EMPLOYER_DETAIL), eq(null), any());
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test
@@ -124,10 +121,10 @@ public class VacancySyncServiceTest extends ITBase {
 
     vacancySyncService.startEmployerSync(syncDate);
 
-    verify(employerRepository, times(1)).updateDetailedBy(syncDate);
-    verify(vacancySyncExecutionService, times(1))
+    verify(employerRepository).updateDetailedBy(syncDate);
+    verify(vacancySyncExecutionService)
         .createNewStep(eq(VacancySyncStep.LOAD_EMPLOYER_DETAIL), eq(null), any());
-    verify(scheduler, times(1)).resumeJob(any());
+    verify(scheduler).resumeJob(any());
   }
 
   @Test

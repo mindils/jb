@@ -2,7 +2,11 @@ package ru.mindils.jb.integration.sync.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +37,7 @@ class VacancySyncExecutionServiceTest extends ITBase {
 
     vacancySyncExecutionService.createNewStep(step);
 
-    verify(vacancySyncExecutionRepository, times(1)).save(argThat(execution -> {
+    verify(vacancySyncExecutionRepository).save(argThat(execution -> {
       assertThat(execution.getStep()).isEqualTo(step);
       assertThat(execution.getStatus()).isEqualTo(VacancySyncStatus.NEW);
       assertThat(execution.getPriority()).isEqualTo(1);
@@ -48,7 +52,7 @@ class VacancySyncExecutionServiceTest extends ITBase {
 
     vacancySyncExecutionService.createNewStep(step, params);
 
-    verify(vacancySyncExecutionRepository, times(1)).save(argThat(execution -> {
+    verify(vacancySyncExecutionRepository).save(argThat(execution -> {
       assertThat(execution.getStep()).isEqualTo(step);
       assertThat(execution.getStatus()).isEqualTo(VacancySyncStatus.NEW);
       assertThat(execution.getPriority()).isEqualTo(1);
@@ -65,7 +69,7 @@ class VacancySyncExecutionServiceTest extends ITBase {
 
     vacancySyncExecutionService.createNewStep(step, params, progress);
 
-    verify(vacancySyncExecutionRepository, times(1)).save(argThat(execution -> {
+    verify(vacancySyncExecutionRepository).save(argThat(execution -> {
       assertThat(execution.getStep()).isEqualTo(step);
       assertThat(execution.getStatus()).isEqualTo(VacancySyncStatus.NEW);
       assertThat(execution.getPriority()).isEqualTo(1);
@@ -105,7 +109,7 @@ class VacancySyncExecutionServiceTest extends ITBase {
 
     assertThat(runningJob.getEndTime()).isNotNull();
     assertThat(runningJob.getStatus()).isEqualTo(VacancySyncStatus.COMPLETED);
-    verify(vacancySyncExecutionRepository, times(1)).save(runningJob);
+    verify(vacancySyncExecutionRepository).save(runningJob);
   }
 
   @Test
@@ -132,7 +136,7 @@ class VacancySyncExecutionServiceTest extends ITBase {
     assertThat(runningJob.getEndTime()).isNotNull();
     assertThat(runningJob.getStatus()).isEqualTo(VacancySyncStatus.FAILED);
     assertThat(runningJob.getErrorMessage()).isEqualTo(error.toString());
-    verify(vacancySyncExecutionRepository, times(1)).save(runningJob);
+    verify(vacancySyncExecutionRepository).save(runningJob);
   }
 
   @Test

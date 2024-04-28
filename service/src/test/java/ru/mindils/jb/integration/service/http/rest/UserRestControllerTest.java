@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +36,7 @@ class UserRestControllerTest extends ITBase {
   private UserService userService;
 
   @Test
-  void findById_Success() throws Exception {
+  void findById_success() throws Exception {
     Long userId = 1L;
     UserReadDto userReadDto =
         new UserReadDto(userId, "testuser", "USER", "test@example.com", "John", true);
@@ -51,7 +54,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void findById_NotFound() throws Exception {
+  void findById_notFound() throws Exception {
     Long userId = 1L;
     when(userService.findById(userId)).thenReturn(Optional.empty());
 
@@ -59,7 +62,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void create_Success() throws Exception {
+  void create_success() throws Exception {
     RegistrationDto registrationDto = RegistrationDto.builder()
         .username("testuser")
         .firstname("John")
@@ -85,7 +88,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void update_Success() throws Exception {
+  void update_success() throws Exception {
     Long userId = 1L;
     UserUpdateDto userUpdateDto = new UserUpdateDto("test@example.com", "John", null);
     UserReadDto userReadDto =
@@ -107,7 +110,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void update_NotFound() throws Exception {
+  void update_notFound() throws Exception {
     Long userId = 1L;
     UserUpdateDto userUpdateDto = new UserUpdateDto("test@example.com", "John", null);
     when(userService.update(eq(userId), any(UserUpdateDto.class))).thenReturn(Optional.empty());
@@ -120,7 +123,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void deleteUser_Success() throws Exception {
+  void deleteUser_success() throws Exception {
     Long userId = 1L;
     when(userService.delete(userId)).thenReturn(true);
 
@@ -128,7 +131,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void deleteUser_NotFound() throws Exception {
+  void deleteUser_notFound() throws Exception {
     Long userId = 1L;
     when(userService.delete(userId)).thenReturn(false);
 
@@ -136,7 +139,7 @@ class UserRestControllerTest extends ITBase {
   }
 
   @Test
-  void findAvatar_Success() throws Exception {
+  void findAvatar_success() throws Exception {
     String username = "testuser";
     byte[] avatarBytes = "avatar".getBytes();
     when(userService.findAvatar(username)).thenReturn(avatarBytes);

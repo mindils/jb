@@ -38,7 +38,7 @@ public interface VacancyRepository
   @Query("select count(e) from Vacancy e where e.detailed = false or e.detailed is null")
   long countVacanciesDetailedFalse();
 
-  @Modifying(clearAutomatically = true)
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query(
       value =
           "UPDATE jb_vacancy SET detailed = false WHERE jb_vacancy.internal_modified_at < :threshold",

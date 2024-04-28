@@ -113,36 +113,36 @@ public class VacancySyncService {
   }
 
   private VacancySyncStatusDto calculateStatus(VacancySyncExecution job) {
-    if (job.getProgress() != null) {
-      return buildStatusDto(job, calculateProgressPercentage(job));
-    } else {
-      return buildInitialStatusDto(job);
-    }
+    return job.getProgress() != null
+        ? buildStatusDto(job, calculateProgressPercentage(job))
+        : buildInitialStatusDto(job);
   }
 
   private int calculateProgressPercentage(VacancySyncExecution job) {
     VacancySyncProgress progress = job.getProgress();
-
     if (progress == null || progress.getTotal() == 0) {
       return 0;
     }
-
     long currentElement = progress.getCurrentElement();
-
     double remaining = (double) currentElement / progress.getTotal() * 100;
-
     if (ProgressType.ONE_STEP.equals(progress.getType())) {
       return (int) remaining;
     } else {
-      int step = job.getStep().ordinal();
-      if (step > 3) {
-        return 0;
-      }
-      int base = step * 25;
-
+      VacancySyncStep step = job.getStep();
+      int base = getBasePercentage(step);
       double stepProgress = 25 * (remaining / 100);
       return base + (int) stepProgress;
     }
+  }
+
+  private int getBasePercentage(VacancySyncStep step) {
+    return switch (step) {
+      case LOAD_VACANCIES -> 0;
+      case LOAD_VACANCY_DETAIL -> 25;
+      case LOAD_EMPLOYER_DETAIL -> 50;
+      case LOAD_VACANCY_RATING -> 75;
+      default -> 0;
+    };
   }
 
   private VacancySyncStatusDto buildStatusDto(VacancySyncExecution job, int progress) {

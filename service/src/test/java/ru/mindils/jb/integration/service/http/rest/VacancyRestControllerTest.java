@@ -31,7 +31,7 @@ class VacancyRestControllerTest extends ITBase {
   private VacancyService vacancyService;
 
   @Test
-  void updateStatus_Success() throws Exception {
+  void updateStatus_success() throws Exception {
     String vacancyId = "1";
     UpdateStatusVacancyDto updateStatusDto = new UpdateStatusVacancyDto(VacancyStatusEnum.APPROVED);
     UpdateStatusVacancyDto updatedStatusDto =
@@ -54,7 +54,7 @@ class VacancyRestControllerTest extends ITBase {
   }
 
   @Test
-  void updateStatus_NotFound() throws Exception {
+  void updateStatus_notFound() throws Exception {
     String vacancyId = "1";
     UpdateStatusVacancyDto updateStatusDto = new UpdateStatusVacancyDto(VacancyStatusEnum.APPROVED);
     when(vacancyService.updateStatus(eq(vacancyId), any(UpdateStatusVacancyDto.class)))

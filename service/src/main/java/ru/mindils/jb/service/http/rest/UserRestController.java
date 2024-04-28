@@ -1,12 +1,17 @@
 package ru.mindils.jb.service.http.rest;
 
-import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.notFound;
 
+import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,8 +42,24 @@ public class UserRestController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public UserReadDto create(@RequestBody RegistrationDto userDto) {
+  public UserReadDto create(@RequestBody @Valid RegistrationDto userDto) {
     return userService.create(userDto);
+  }
+
+  @PatchMapping("/{id}/status")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<?> updateUserStatus(@PathVariable Long id) {
+    userService.toggleUserStatus(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/{id}/role")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<?> updateUserRole(
+      @PathVariable Long id, @RequestBody Map<String, String> request) {
+    String role = request.get("role");
+    userService.updateUserRole(id, role);
+    return ResponseEntity.ok().build();
   }
 
   @PutMapping("{id}")

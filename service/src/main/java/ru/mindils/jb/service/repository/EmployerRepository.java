@@ -18,7 +18,7 @@ public interface EmployerRepository extends JpaRepository<Employer, String> {
   @Query("select count(e) from Employer e where e.detailed = false or e.detailed is null")
   long countEmployerWithoutDetailed();
 
-  @Modifying(clearAutomatically = true)
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query(
       value = "UPDATE jb_employer SET detailed = false WHERE modified_at < :threshold",
       nativeQuery = true)

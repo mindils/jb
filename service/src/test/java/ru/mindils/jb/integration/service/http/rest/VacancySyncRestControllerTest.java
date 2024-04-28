@@ -26,7 +26,7 @@ class VacancySyncRestControllerTest extends ITBase {
   private VacancySyncService vacancySyncService;
 
   @Test
-  void getStatus_Success() throws Exception {
+  void getStatus_success() throws Exception {
     VacancySyncStatusDto vacancySyncStatusDto = VacancySyncStatusDto.builder()
         .syncRunning(true)
         .statusText("Sync in progress")
@@ -48,7 +48,7 @@ class VacancySyncRestControllerTest extends ITBase {
   }
 
   @Test
-  void getStatus_NoSyncRunning() throws Exception {
+  void getStatus_noSyncRunning() throws Exception {
     VacancySyncStatusDto vacancySyncStatusDto = VacancySyncStatusDto.builder()
         .syncRunning(false)
         .statusText("No sync running")

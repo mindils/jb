@@ -1,11 +1,12 @@
 package ru.mindils.jb.integration.service.http.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class EmployerControllerTest extends ITBase {
         .andExpect(model().attribute("totalPages", page.getTotalPages()))
         .andExpect(model().attribute("totalElements", page.getTotalElements()));
 
-    verify(employerService, times(1)).findAll(any(Pageable.class));
+    verify(employerService).findAll(any(Pageable.class));
   }
 
   @Test
@@ -62,7 +63,7 @@ public class EmployerControllerTest extends ITBase {
         .andExpect(view().name("pages/employer.detail"))
         .andExpect(model().attribute("employer", employer));
 
-    verify(employerService, times(1)).findById(employerId);
+    verify(employerService).findById(employerId);
   }
 
   private static Employer getEmployer(String id) {

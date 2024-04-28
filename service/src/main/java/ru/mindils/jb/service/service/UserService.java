@@ -1,9 +1,14 @@
 package ru.mindils.jb.service.service;
 
+import static io.micrometer.common.util.StringUtils.isNotEmpty;
+
 import jakarta.validation.Valid;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +31,7 @@ public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
-  private final ImageService imageService;
+  private final UserImageService imageService;
 
   public Optional<UserReadDto> findById(Long id) {
     return userRepository.findById(id).map(userMapper::map);
@@ -34,6 +39,10 @@ public class UserService implements UserDetailsService {
 
   public UserReadDto findByUsername(String username) {
     return userRepository.findByUsername(username).map(userMapper::map).orElseThrow();
+  }
+
+  public List<UserReadDto> findAll() {
+    return userRepository.findAll().stream().map(userMapper::map).toList();
   }
 
   @Transactional
@@ -71,12 +80,11 @@ public class UserService implements UserDetailsService {
   }
 
   public byte[] findAvatar(String username) {
-    User user = userRepository.findByUsername(username).orElse(null);
-    if (user != null && user.getImage() != null && !user.getImage().isEmpty()) {
-      return imageService.get(user.getImage());
-    } else {
-      return imageService.getDefault();
-    }
+    return userRepository
+        .findByUsername(username)
+        .filter(user -> isNotEmpty(user.getImage()))
+        .map(user -> imageService.get(user.getImage()))
+        .orElseGet(imageService::getDefault);
   }
 
   @Transactional
@@ -106,17 +114,32 @@ public class UserService implements UserDetailsService {
         .map(user -> org.springframework.security.core.userdetails.User.builder()
             .username(user.getUsername())
             .password(user.getPassword())
-            .authorities(user.getAuthorities())
-            .accountExpired(!user.isAccountNonExpired())
-            .accountLocked(!user.isAccountNonLocked())
-            .credentialsExpired(false)
-            .disabled(!user.isEnabled())
+            .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+            .disabled(!user.getEnabled())
             .build())
         .orElseThrow(() -> new UsernameNotFoundException(username));
   }
 
   @SneakyThrows
   private void uploadImage(MultipartFile image) {
-    imageService.upload(image.getOriginalFilename(), image.getInputStream());
+    try (InputStream inputStream = image.getInputStream()) {
+      imageService.upload(image.getOriginalFilename(), inputStream);
+    }
+  }
+
+  @Transactional
+  public void toggleUserStatus(Long userId) {
+    userRepository.findById(userId).ifPresent(user -> {
+      user.setEnabled(!user.getEnabled());
+      userRepository.save(user);
+    });
+  }
+
+  @Transactional
+  public void updateUserRole(Long userId, String role) {
+    userRepository.findById(userId).ifPresent(user -> {
+      user.setRole(role);
+      userRepository.save(user);
+    });
   }
 }

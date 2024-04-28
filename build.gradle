@@ -43,7 +43,7 @@ subprojects {
         fileTree(dir: it, exclude: [
             '**/dto/*',
             '**/entity/*',
-            '**/mapper/*'
+            '**/config/*'
         ])
       }))
     }

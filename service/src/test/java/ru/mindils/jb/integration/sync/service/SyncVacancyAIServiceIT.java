@@ -1,6 +1,6 @@
 package ru.mindils.jb.integration.sync.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
 import java.time.Instant;

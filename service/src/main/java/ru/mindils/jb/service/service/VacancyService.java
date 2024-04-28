@@ -31,8 +31,10 @@ public class VacancyService {
         .map(vacancyReadMapper::map);
   }
 
+  @Transactional
   public void setDetailedFalse(AppVacancyFilterDto filter) {
-    vacancyRepository.findAllByFilter(VacancyQueryDslFilterBuilder.build(filter)).stream()
+    var allByFilter = vacancyRepository.findAllByFilter(VacancyQueryDslFilterBuilder.build(filter));
+    allByFilter.stream()
         .peek(vacancy -> vacancy.setDetailed(false))
         .forEach(vacancyRepository::saveAndFlush);
   }
@@ -43,7 +45,7 @@ public class VacancyService {
 
   @Transactional
   public Optional<UpdateStatusVacancyDto> updateStatus(String id, UpdateStatusVacancyDto dto) {
-    return Optional.of(vacancyRepository
+    return vacancyRepository
         .findById(id)
         .map(vacancy -> {
           VacancyInfo vacancyInfo = vacancy.getVacancyInfo();
@@ -56,11 +58,14 @@ public class VacancyService {
           }
           return vacancy;
         })
-        .map(vacancyRepository::saveAndFlush)
-        .map(vacancyMapper::map)
-        .orElseThrow(
-            () ->
-            new OptimisticLockingFailureException(
-                    "Vacancy status has been updated by another user")));
+        .map(vacancy -> {
+          try {
+            return vacancyRepository.saveAndFlush(vacancy);
+          } catch (OptimisticLockingFailureException e) {
+            throw new OptimisticLockingFailureException(
+                "Vacancy status has been updated by another user");
+          }
+        })
+        .map(vacancyMapper::map);
   }
 }

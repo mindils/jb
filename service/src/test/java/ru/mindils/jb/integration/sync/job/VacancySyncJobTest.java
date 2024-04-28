@@ -1,6 +1,5 @@
 package ru.mindils.jb.integration.sync.job;
 
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -59,7 +58,7 @@ public class VacancySyncJobTest extends ITBase {
   private VacancySyncJob vacancySyncJob;
 
   @Test
-  public void execute_whenNoRunningJob() throws SchedulerException {
+  void execute_whenNoRunningJob() throws SchedulerException {
     when(vacancyJobExecutionService.getRunningJob()).thenReturn(Optional.empty());
     JobDetail jobDetail = mock(JobDetail.class);
     when(jobDetail.getKey()).thenReturn(JobKey.jobKey("vacancySyncJob", "vacancySync"));
@@ -72,7 +71,7 @@ public class VacancySyncJobTest extends ITBase {
   }
 
   @Test
-  public void execute_whenLoadVacancies() throws JobExecutionException {
+  void execute_whenLoadVacancies() throws JobExecutionException {
     VacancySyncExecution runningJob = VacancySyncExecution.builder()
         .id(1L)
         .step(VacancySyncStep.LOAD_VACANCIES)
@@ -100,7 +99,7 @@ public class VacancySyncJobTest extends ITBase {
   }
 
   @Test
-  public void execute_whenLoadVacancyDetail() throws JobExecutionException {
+  void execute_whenLoadVacancyDetail() throws JobExecutionException {
     VacancySyncExecution runningJob = VacancySyncExecution.builder()
         .id(1L)
         .step(VacancySyncStep.LOAD_VACANCY_DETAIL)
@@ -125,7 +124,7 @@ public class VacancySyncJobTest extends ITBase {
   }
 
   @Test
-  public void execute_whenLoadEmployerDetail() throws JobExecutionException {
+  void execute_whenLoadEmployerDetail() throws JobExecutionException {
     VacancySyncExecution runningJob = VacancySyncExecution.builder()
         .id(1L)
         .step(VacancySyncStep.LOAD_EMPLOYER_DETAIL)
@@ -150,7 +149,7 @@ public class VacancySyncJobTest extends ITBase {
   }
 
   @Test
-  public void execute_whenLoadVacancyRating() throws JobExecutionException {
+  void execute_whenLoadVacancyRating() throws JobExecutionException {
     VacancySyncExecution runningJob = VacancySyncExecution.builder()
         .id(1L)
         .step(VacancySyncStep.LOAD_VACANCY_RATING)

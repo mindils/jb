@@ -1,7 +1,7 @@
 package ru.mindils.jb.sync.service;
 
-import static java.nio.charset.StandardCharsets.*;
-import static java.util.stream.Collectors.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
 
 import java.net.URI;
 import java.net.URLEncoder;
